@@ -1,89 +1,109 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شاپ‌یار | ثبت سفارش کالا</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/Farsi-Digits/font-face.css" rel="stylesheet">
-    <style>
-        body { font-family: 'Vazirmatn FD', sans-serif; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>شاپ‌یار | ثبت سفارش</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 24px 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #fff7ed, #f1f5f9);
+      font-family: Tahoma, sans-serif; color: #1e293b;
+    }
+    .card {
+      width: 100%; max-width: 460px; padding: 28px 24px;
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, .09);
+    }
+    .logo {
+      display: grid; place-items: center; width: 64px;
+      height: 64px; margin: 0 auto 15px; border-radius: 19px;
+      background: #f59e0b; font-size: 30px;
+    }
+    h1 { text-align: center; font-size: 23px; margin: 0 0 8px; }
+    .subtitle {
+      text-align: center; color: #64748b; font-size: 13px;
+      line-height: 1.9; margin: 0 0 25px;
+    }
+    label {
+      display: block; font-size: 13px; font-weight: bold;
+      margin: 16px 0 7px;
+    }
+    input, textarea {
+      display: block; width: 100%; padding: 13px 14px;
+      border: 1px solid #cbd5e1; border-radius: 12px;
+      background: #f8fafc; font: inherit; font-size: 14px;
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: #f59e0b; }
+    textarea { min-height: 85px; resize: vertical; }
+    button {
+      width: 100%; padding: 15px; margin-top: 24px;
+      border: 0; border-radius: 13px; background: #f59e0b;
+      color: #172033; font: inherit; font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .hint {
+      text-align: center; color: #64748b; font-size: 11px;
+      line-height: 1.8; margin: 16px 0 0;
+    }
+  </style>
 </head>
+<body>
+  <main class="card">
+    <div class="logo">🛍️</div>
+    <h1>ثبت سفارش سریع</h1>
+    <p class="subtitle">مشخصاتتان را وارد کنید تا سفارش شما ثبت شود.</p>
 
-<body class="bg-slate-100 min-h-screen py-8 px-4 flex items-center justify-center">
-    <div class="bg-white max-w-md w-full rounded-2xl shadow-xl p-6 border border-slate-200">
+    <form id="orderForm"
+      action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
+      method="post"
+      target="_self">
 
-        <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-amber-500 rounded-2xl mx-auto flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-md">
-                🛒
-            </div>
-            <h1 class="text-xl font-black text-slate-800">فرم ثبت سفارش سریع</h1>
-            <p class="text-xs text-slate-500 mt-1">
-                مشخصات خودتون رو برای ارسال سفارش وارد کنید
-            </p>
-        </div>
+      <label for="name">نام و نام خانوادگی</label>
+      <input id="name" name="name" type="text" required maxlength="100"
+        autocomplete="name" placeholder="مثلاً علی نوری">
 
-        <form
-            action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
-            method="post"
-            target="_blank"
-            class="space-y-4"
-        >
-            <div>
-                <label for="name" class="block text-xs font-bold text-slate-700 mb-1">
-                    نام و نام خانوادگی:
-                </label>
-                <input id="name" name="name" type="text" required
-                    placeholder="مثلاً: علی نوری"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-            </div>
+      <label for="phone">شماره تماس</label>
+      <input id="phone" name="phone" type="tel" required maxlength="20"
+        autocomplete="tel" placeholder="مثلاً 09123456789" dir="ltr">
 
-            <div>
-                <label for="phone" class="block text-xs font-bold text-slate-700 mb-1">
-                    شماره تماس:
-                </label>
-                <input id="phone" name="phone" type="tel" required
-                    placeholder="0912xxxxxxx" dir="ltr"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-amber-500">
-            </div>
+      <label for="city">شهر</label>
+      <input id="city" name="city" type="text" required maxlength="100"
+        placeholder="مثلاً تهران">
 
-            <div>
-                <label for="city" class="block text-xs font-bold text-slate-700 mb-1">
-                    شهر:
-                </label>
-                <input id="city" name="city" type="text" required
-                    placeholder="مثلاً: تهران"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-            </div>
+      <label for="address">آدرس کامل</label>
+      <textarea id="address" name="address" required maxlength="500"
+        placeholder="خیابان، کوچه، پلاک، واحد..."></textarea>
 
-            <div>
-                <label for="address" class="block text-xs font-bold text-slate-700 mb-1">
-                    آدرس کامل:
-                </label>
-                <textarea id="address" name="address" rows="3" required
-                    placeholder="خیابان، کوچه، پلاک، واحد..."
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-            </div>
+      <label for="product">محصول یا توضیحات سفارش</label>
+      <input id="product" name="product" type="text" required maxlength="200"
+        placeholder="مثلاً هودی مشکی سایز L">
 
-            <div>
-                <label for="product" class="block text-xs font-bold text-slate-700 mb-1">
-                    نام محصول یا توضیحات سفارش:
-                </label>
-                <input id="product" name="product" type="text" required
-                    placeholder="مثلاً: هودی مشکی سایز L"
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
-            </div>
+      <button id="submitBtn" type="submit">ثبت سفارش</button>
+      <p class="hint">پس از ثبت، نتیجهٔ سفارش در همین صفحه نمایش داده می‌شود.</p>
+    </form>
+  </main>
 
-            <button type="submit"
-                class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl transition duration-200 shadow-lg shadow-amber-500/30">
-                ارسال سفارش
-            </button>
+  <script>
+    const form = document.getElementById('orderForm');
+    const button = document.getElementById('submitBtn');
 
-            <p class="text-xs text-slate-500 text-center leading-6">
-                نتیجهٔ ارسال در صفحهٔ جدید باز می‌شود. ثبت سفارش را در گوگل‌شیت بررسی کنید.
-            </p>
-        </form>
-    </div>
+    // هنگام بازگشت با دکمهٔ مرورگر، فرم سفارش قبلی باقی نماند.
+    window.addEventListener('pageshow', function () {
+      form.reset();
+      button.disabled = false;
+      button.textContent = 'ثبت سفارش';
+    });
+
+    form.addEventListener('submit', function () {
+      button.disabled = true;
+      button.textContent = 'در حال ارسال...';
+    });
+  </script>
 </body>
 </html>
