@@ -7,59 +7,92 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; padding: 24px 16px;
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(145deg, #fff7ed, #f1f5f9);
-      font-family: Tahoma, sans-serif; color: #1e293b;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-family: Tahoma, sans-serif;
     }
-    .card {
-      width: 100%; max-width: 460px; padding: 28px 24px;
-      background: white; border: 1px solid #e2e8f0;
-      border-radius: 24px;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, .09);
+    main {
+      width: 100%;
+      max-width: 460px;
+      padding: 28px 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, .08);
     }
     .logo {
-      display: grid; place-items: center; width: 64px;
-      height: 64px; margin: 0 auto 15px; border-radius: 19px;
-      background: #f59e0b; font-size: 30px;
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: #f59e0b;
+      font-size: 28px;
     }
-    h1 { text-align: center; font-size: 23px; margin: 0 0 8px; }
+    h1 { margin: 0; text-align: center; font-size: 22px; }
     .subtitle {
-      text-align: center; color: #64748b; font-size: 13px;
-      line-height: 1.9; margin: 0 0 25px;
+      margin: 9px 0 22px;
+      color: #64748b;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.9;
     }
     label {
-      display: block; font-size: 13px; font-weight: bold;
-      margin: 16px 0 7px;
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 13px;
+      font-weight: bold;
     }
     input, textarea {
-      display: block; width: 100%; padding: 13px 14px;
-      border: 1px solid #cbd5e1; border-radius: 12px;
-      background: #f8fafc; font: inherit; font-size: 14px;
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 11px;
+      background: #f8fafc;
+      font: inherit;
+      font-size: 14px;
       outline: none;
     }
     input:focus, textarea:focus { border-color: #f59e0b; }
-    textarea { min-height: 85px; resize: vertical; }
+    textarea { min-height: 82px; resize: vertical; }
     button {
-      width: 100%; padding: 15px; margin-top: 24px;
-      border: 0; border-radius: 13px; background: #f59e0b;
-      color: #172033; font: inherit; font-weight: bold;
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #f59e0b;
+      color: #172033;
+      font: inherit;
+      font-weight: bold;
       cursor: pointer;
     }
-    button:disabled { opacity: .6; cursor: wait; }
+    button:disabled { opacity: .65; cursor: wait; }
     .hint {
-      text-align: center; color: #64748b; font-size: 11px;
-      line-height: 1.8; margin: 16px 0 0;
+      margin: 14px 0 0;
+      color: #64748b;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.8;
     }
   </style>
 </head>
 <body>
-  <main class="card">
+  <main>
     <div class="logo">🛍️</div>
     <h1>ثبت سفارش سریع</h1>
-    <p class="subtitle">مشخصاتتان را وارد کنید تا سفارش شما ثبت شود.</p>
+    <p class="subtitle">مشخصاتتان را وارد کنید تا سفارشتان ثبت شود.</p>
 
-    <form id="orderForm"
+    <form
+      id="orderForm"
       action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
       method="post"
       target="_self">
@@ -85,7 +118,7 @@
         placeholder="مثلاً هودی مشکی سایز L">
 
       <button id="submitBtn" type="submit">ثبت سفارش</button>
-      <p class="hint">پس از ثبت، نتیجهٔ سفارش در همین صفحه نمایش داده می‌شود.</p>
+      <p class="hint">بعد از ثبت موفق، سفارش در گوگل‌شیت ذخیره می‌شود.</p>
     </form>
   </main>
 
@@ -93,7 +126,6 @@
     const form = document.getElementById('orderForm');
     const button = document.getElementById('submitBtn');
 
-    // هنگام بازگشت با دکمهٔ مرورگر، فرم سفارش قبلی باقی نماند.
     window.addEventListener('pageshow', function () {
       form.reset();
       button.disabled = false;
