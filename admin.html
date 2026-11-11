@@ -3,134 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>شاپ‌یار | ثبت سفارش</title>
+  <title>شاپ‌یار | هدایت به پنل مدیریت</title>
   <style>
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 24px 14px;
-      background: linear-gradient(145deg, #eef2ff, #f8fafc);
-      color: #1e293b;
-      font-family: Tahoma, sans-serif;
+      margin: 0; padding: 40px 20px;
+      background: #f1f5f9; font-family: Tahoma, sans-serif;
+      display: flex; justify-content: center; align-items: center; min-height: 100vh;
+      color: #1e293b; text-align: center;
     }
     .card {
-      max-width: 540px;
-      margin: 24px auto;
-      padding: 28px;
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 24px;
-      box-shadow: 0 15px 40px rgba(15, 23, 42, .08);
+      background: #fff; padding: 35px; border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08); max-width: 420px; width: 100%;
     }
-    .icon { font-size: 42px; text-align: center; }
-    h1 { text-align: center; margin: 10px 0 6px; font-size: 24px; }
-    .intro { text-align: center; color: #64748b; line-height: 1.8; margin-bottom: 26px; }
-    label { display: block; font-weight: bold; font-size: 14px; margin: 17px 0 8px; }
-    input, textarea, select {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      background: #fff;
-      color: #1e293b;
-      font: inherit;
-      outline: none;
+    h1 { font-size: 22px; margin-bottom: 10px; }
+    p { color: #64748b; font-size: 14px; line-height: 1.8; margin-bottom: 25px; }
+    a.btn {
+      display: inline-block; background: #4f46e5; color: #fff;
+      text-decoration: none; padding: 14px 28px; border-radius: 12px;
+      font-weight: bold; width: 100%; box-sizing: border-box;
     }
-    input:focus, textarea:focus, select:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px #e0e7ff;
-    }
-    textarea { min-height: 95px; resize: vertical; }
-    .hint { color: #64748b; font-size: 12px; line-height: 1.8; margin-top: 6px; }
-    button {
-      width: 100%;
-      margin-top: 25px;
-      padding: 15px;
-      border: 0;
-      border-radius: 13px;
-      background: #4f46e5;
-      color: white;
-      font: inherit;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:disabled { opacity: .65; cursor: wait; }
+    a.btn:hover { background: #4338ca; }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="icon">🛍️</div>
-    <h1>ثبت سفارش سریع</h1>
-    <p class="intro">مشخصاتتان را وارد کنید تا سفارشتان ثبت شود.</p>
-
-    <form id="orderForm"
-          action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
-          method="post"
-          target="_self">
-
-      <label for="name">نام و نام خانوادگی</label>
-      <input id="name" name="name" type="text" maxlength="100" required
-             autocomplete="name" placeholder="مثلاً علی نوری">
-
-      <label for="phone">شماره تماس</label>
-      <input id="phone" name="phone" type="tel" maxlength="20" required
-             dir="ltr" autocomplete="tel" placeholder="مثلاً 09123456789">
-
-      <label for="city">شهر</label>
-      <input id="city" name="city" type="text" maxlength="100" required
-             placeholder="مثلاً تهران">
-
-      <label for="address">آدرس کامل</label>
-      <textarea id="address" name="address" maxlength="500" required
-                placeholder="خیابان، کوچه، پلاک و واحد"></textarea>
-
-      <label for="postalCode">کد پستی</label>
-      <input id="postalCode" name="postalCode" type="text" inputmode="numeric"
-             maxlength="10" pattern="[0-9]{10}" required dir="ltr"
-             autocomplete="postal-code" placeholder="کد پستی ۱۰ رقمی">
-      <div class="hint">برای ثبت دقیق‌تر مرسوله، کد پستی را وارد کنید.</div>
-
-      <label for="product">محصول یا توضیحات سفارش</label>
-      <input id="product" name="product" type="text" maxlength="200" required
-             placeholder="مثلاً هودی مشکی سایز L">
-
-      <label for="shippingMethod">روش ارسال دلخواه</label>
-      <select id="shippingMethod" name="shippingMethod" required>
-        <option value="" selected disabled>روش ارسال را انتخاب کنید</option>
-        <option value="پست پیشتاز">پست پیشتاز</option>
-        <option value="تیپاکس">تیپاکس</option>
-        <option value="پست سفارشی">پست سفارشی</option>
-        <option value="پیک شهری">پیک شهری، در صورت امکان</option>
-        <option value="تحویل حضوری">تحویل حضوری، با هماهنگی</option>
-      </select>
-      <div class="hint">هزینه و امکان نهاییِ ارسال پس از بررسی سفارش با شما هماهنگ می‌شود.</div>
-
-      <button id="submitBtn" type="submit">ثبت سفارش</button>
-    </form>
-  </main>
-
-  <script>
-    const form = document.getElementById('orderForm');
-    const button = document.getElementById('submitBtn');
-    const postalInput = document.getElementById('postalCode');
-
-    postalInput.addEventListener('input', function () {
-      this.value = this.value
-        .replace(/[۰-۹]/g, ch => String(ch.charCodeAt(0) - 1776))
-        .replace(/[٠-٩]/g, ch => String(ch.charCodeAt(0) - 1632))
-        .replace(/\D/g, '')
-        .slice(0, 10);
-    });
-
-    window.addEventListener('pageshow', function () {
-      button.disabled = false;
-      button.textContent = 'ثبت سفارش';
-    });
-
-    form.addEventListener('submit', function () {
-      button.disabled = true;
-      button.textContent = 'در حال ارسال...';
-    });
-  </script>
+  <div class="card">
+    <h1>👨‍💼 پنل مدیریت شاپ‌یار</h1>
+    <p>برای امنیت بیشتر و اتصال پایدار به دیتابیس، پنل مدیریت روی بستر امن گوگل‌اسکریپت میزبانی می‌شود.</p>
+    <a class="btn" href="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec?page=admin" target="_blank">ورود به پنل مدیریت اصلی</a>
+  </div>
 </body>
 </html>
