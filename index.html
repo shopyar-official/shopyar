@@ -57,8 +57,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">آدرس پستی</label>
-                    <textarea id="address" rows="2" required class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-3 text-xs focus:outline-none focus:border-indigo-600 resize-none"></textarea>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">آدرس پستی و کد پستی</label>
+                    <textarea id="address" rows="2" required placeholder="آدرس کامل به همراه کد پستی ۱۰ رقمی" class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-3 text-xs focus:outline-none focus:border-indigo-600 resize-none"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -135,7 +135,6 @@
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         let discountAmount = 0;
 
-        // بارگذاری محصولات از گوگل‌شیت تب Products
         async function loadProducts() {
             try {
                 const response = await fetch(SCRIPT_URL + '?action=get_products');
@@ -244,7 +243,6 @@
             }
         });
 
-        // اجرای اولیه بارگذاری محصولات
         loadProducts();
     </script>
 </body>
