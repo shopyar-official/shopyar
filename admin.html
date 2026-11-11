@@ -3,43 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شاپ‌یار | پنل مدیریت</title>
+    <title>شاپ‌یار | پنل مدیریت سفارش‌ها</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style> body { font-family: 'Vazirmatn', sans-serif; } </style>
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col justify-center items-center p-4">
+<body class="bg-slate-100 text-slate-800 min-h-screen p-4 md:p-8">
 
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 text-center space-y-5">
-        <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
-            📊
+    <div class="max-w-6xl mx-auto">
+        <!-- هدر پنل -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    🛍️ پنل مدیریت شاپ‌یار
+                </h1>
+                <p class="text-slate-500 text-sm mt-1">مدیریت و مشاهده لحظه‌ای سفارش1های مشتریان</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="fetchOrders()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm flex items-center gap-2">
+                    🔄 به‌روزرسانی لیست
+                </button>
+            </div>
         </div>
-        <h1 class="text-xl font-bold text-gray-900">مدیریت سفارش‌های شاپ‌یار</h1>
-        
-        <p class="text-xs text-gray-600 leading-relaxed">
-            برای مشاهده سفارش‌ها، روی دکمه زیر بزنید یا لینک را کپی کنید:
-        </p>
 
-        <div class="space-y-3 pt-2">
-            <!-- دکمه باز کردن با پروتکل استاندارد -->
-            <a href="https://docs.google.com/spreadsheets/d/1RuO05RJnXdxDkG4p5TPCS8RWaMn18bk5DtwgadU/edit" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               class="flex items-center justify-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white text-sm py-3 rounded-xl transition font-medium shadow-md">
-                <span>باز کردن جدول سفارش‌ها</span>
-            </a>
+        <!-- وضعیت بارگذاری -->
+        <div id="loading" class="text-center py-16">
+            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent"></div>
+            <p class="text-slate-500 mt-4 font-medium">در حال دریافت سفارش‌ها از سرور...</p>
+        </div>
 
-            <!-- دکمه کپی لینک برای مواقع ضروری -->
-            <button onclick="navigator.clipboard.writeText('https://docs.google.com/spreadsheets/d/1RuO05RJnXdxDkG4p5TPCS8RWaMn18bk5DtwgadU/edit'); alert('لینک گوگل‌شیت کپی شد! در مرورگر یا اپلیکیشن گوگل‌شیت پیست کنید.');" 
-                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs py-2.5 rounded-xl transition">
-                📋 کپی کردن لینک جدول
-            </button>
-            
-            <a href="index.html" class="block w-full bg-gray-50 hover:bg-gray-100 text-gray-500 text-xs py-2.5 rounded-xl transition mt-2">
-                بازگشت به صفحه فروشگاه
-            </a>
+        <!-- پیام خطا -->
+        <div id="error-box" class="hidden bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl text-center mb-6"></div>
+
+        <!-- لیست سفارش‌ها (گرید کارت‌ها) -->
+        <div id="orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- کارت‌ها به صورت داینامیک اینجا قرار می‌گیرند -->
+        </div>
+
+        <!-- حالت خالی بودن -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl shadow-sm">
+            <p class="text-4xl mb-3">📭</p>
+            <p class="text-slate-600 font-medium">هنوز سفارشی ثبت نشده است!</p>
         </div>
     </div>
 
+    <script>
+        // آدرس وب‌اپلیکیشن گوگل‌اسکریپت شما
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+
+        async function fetchOrders() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('orders-container');
+            const errorBox = document.getElementById('error-box');
+            const emptyState = document.getElementById('empty-state');
+
+            loading.classList.remove('hidden');
+            container.classList.add('hidden');
+            errorBox.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                // ارسال درخواست GET به گوگل اسکریپت برای گرفتن داده‌ها
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+
+                loading.classList.add('hidden');
+
+                if (data.status === 'success' && data.orders && data.orders.length > 0) {
+                    container.innerHTML = '';
+                    // نمایش از جدیدترین به قدیمی‌ترین
+                    data.orders.reverse().forEach((order, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col justify-between hover:shadow-md transition';
+                        
+                        card.innerHTML = `
+                            <div>
+                                <div class="flex justify-between items-start mb-4 pb-3 border-b border-slate-100">
+                                    <span class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">سفارش #${data.orders.length - index}</span>
+                                    <span class="text-slate-400 text-xs">${order.date || 'ثبت شده'}</span>
+                                </div>
+                                <div class="space-y-2.5 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">نام مشتری:</span>
+                                        <span class="font-bold text-slate-800">${order.name || '-'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">شماره تماس:</span>
+                                        <a href="tel:${order.phone}" class="font-bold text-indigo-600 hover:underline" dir="ltr">${order.phone || '-'}</a>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">محصول:</span>
+                                        <span class="font-bold text-slate-800">${order.product || '-'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">تعداد:</span>
+                                        <span class="font-bold text-slate-800">${order.quantity || '1'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">شهر / آدرس:</span>
+                                        <span class="text-slate-700 text-left max-w-[200px] truncate" title="${order.city} - ${order.address}">${order.city || ''} - ${order.address || '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
+                                <span class="text-xs text-slate-500">روش ارسال: پیشتاز</span>
+                                <a href="https://wa.me/98${order.phone ? order.phone.replace(/^0/, '') : ''}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                                    💬 واتساپ مشتری
+                                </a>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                    container.classList.remove('hidden');
+                } else {
+                    emptyState.classList.remove('hidden');
+                }
+            } catch (err) {
+                loading.classList.add('hidden');
+                errorBox.textContent = 'خطا در ارتباط با سرور یا دریافت اطلاعات. لطفا دوباره تلاش کنید.';
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        // بارگذاری اولیه به محض باز شدن صفحه
+        fetchOrders();
+    </script>
 </body>
 </html>
