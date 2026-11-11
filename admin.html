@@ -101,7 +101,6 @@
         function filterOrders(status) {
             currentFilter = status;
             
-            // استایل فعال برای کارت‌های بالا
             const cards = {
                 'همه': 'card-all',
                 'در حال بررسی': 'card-pending',
@@ -144,68 +143,4 @@
                 if (status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
                 if (status === 'تکمیل شده') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
 
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">${order.orderId}</span>
-                            <span class="text-xs px-2.5 py-1 rounded-lg border font-medium ${badgeColor}">${status}</span>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-800 mb-1">${order.name || 'بدون نام'}</h3>
-                        <p class="text-xs text-slate-500 mb-3 flex items-center gap-1">📞 <a href="tel:${order.phone}" class="hover:text-orange-600">${order.phone}</a></p>
-                        
-                        <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
-                            <div><strong class="text-slate-700">شهر:</strong> ${order.city}</div>
-                            <div><strong class="text-slate-700">آدرس:</strong> ${order.address}</div>
-                            <div><strong class="text-slate-700">خرید:</strong> ${order.product}</div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
-                        <span class="text-[11px] text-slate-400">${order.date}</span>
-                        <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
-                            <option value="" disabled selected>تغییر وضعیت...</option>
-                            <option value="در حال بررسی">در حال بررسی</option>
-                            <option value="در حال آماده‌سازی">در حال آماده‌سازی</option>
-                            <option value="ارسال شده">ارسال شده</option>
-                            <option value="تکمیل شده">تکمیل شده</option>
-                        </select>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function updateStatus(orderId, newStatus) {
-            const formData = new URLSearchParams({
-                action: 'update_status',
-                orderId: orderId,
-                status: newStatus
-            });
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    // به‌روزرسانی محلی و بازرندر کردن بدون نیاز به رفرش کامل
-                    const order = allOrders.find(o => o.orderId === orderId);
-                    if(order) order.status = newStatus;
-                    updateCounts();
-                    renderOrders();
-                } else {
-                    alert('خطا در به‌روزرسانی وضعیت');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('خطا در اتصال به سرور');
-            });
-        }
-    </script>
-</body>
-</html>
+                // استانداردسازی شماره 
