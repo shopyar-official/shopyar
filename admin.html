@@ -90,16 +90,31 @@
             tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-400">در حال دریافت اطلاعات...</td></tr>`;
 
             try {
-                const response = await fetch(SCRIPT_URL + '?action=get_orders');
-                allOrders = await response.json();
+                // استفاده از mode no-cors یا پروکسی عمومی برای جلوگیری از خطای مرورگر
+                const response = await fetch(SCRIPT_URL + '?action=get_orders', { redirect: "follow" });
+                const textData = await response.text();
+                allOrders = JSON.parse(textData);
                 
                 updateStats();
                 renderTable();
 
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500">خطا در دریافت اطلاعات از سرور. لطفاً صفحه را رفرش کنید.</td></tr>`;
+                // روش جایگزین با استفاده از JSONP در صورت محدودیت شدید مرورگر
+                loadOrdersJSONP();
             }
+        }
+
+        function loadOrdersJSONP() {
+            const script = document.createElement('script');
+            window.handleOrdersResponse = function(orders) {
+                allOrders = orders || [];
+                updateStats();
+                renderTable();
+                script.remove();
+            };
+            script.src = SCRIPT_URL + '?action=get_orders&callback=handleOrdersResponse';
+            document.body.appendChild(script);
         }
 
         function updateStats() {
@@ -112,7 +127,7 @@
                 let s = (o.status || 'در حال بررسی').trim();
                 if (s.includes('آماده‌سازی')) preparing++;
                 else if (s.includes('تکمیل')) completed++;
-                else pending++; // پیش‌فرض یا در حال بررسی
+                else pending++;
             });
 
             document.getElementById('statAll').textContent = total;
@@ -124,7 +139,6 @@
         function filterByStatus(status) {
             currentFilter = status;
             
-            // استایل کارت‌ها
             ['all', 'در حال بررسی', 'در حال آماده‌سازی', 'تکمیل شده'].forEach(s => {
                 const card = document.getElementById('card-' + s);
                 if (s === status) {
@@ -141,12 +155,4 @@
             const tbody = document.getElementById('ordersTableBody');
             let filtered = allOrders;
 
-            if (currentFilter !== 'all') {
-                filtered = allOrders.filter(o => {
-                    let s = (o.status || 'در حال بررسی').trim();
-                    if (currentFilter === 'در حال بررسی') return s === 'در حال بررسی' || (!s.includes('آماده‌سازی') && !s.includes('تکمیل') && !s.includes('ارسال'));
-                    if (currentFilter === 'در حال آماده‌سازی') return s.includes('آماده‌سازی');
-                    if (currentFilter === 'تکمیل شده') return s.includes('تکمیل');
-                    return s === currentFilter;
-                });
-                document.getElementById('tableTitle').textContent = `سفارش‌های وضعیت: ${currentFilter}`;
+            if 
