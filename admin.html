@@ -14,7 +14,7 @@
 
     <div class="max-w-6xl mx-auto">
         <!-- هدر صفحه -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">📦 مدیریت سفارشات شاپ‌یار</h1>
                 <p class="text-sm text-slate-500 mt-1">مدیریت و پیگیری سفارشات ثبت شده مشتریان</p>
@@ -22,6 +22,11 @@
             <button onclick="loadOrders()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm flex items-center gap-2">
                 🔄 به‌روزرسانی لیست
             </button>
+        </div>
+
+        <!-- کادر جستجو بر اساس نام و موبایل -->
+        <div class="mb-6">
+            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری یا شماره موبایل..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
         </div>
 
         <!-- کارت‌های وضعیت بالا (تب‌های فیلتر پویا) -->
@@ -123,14 +128,27 @@
 
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
             
             let filtered = allOrders;
+            
+            // فیلتر بر اساس تب وضعیت بالا
             if (currentFilter !== 'همه') {
-                filtered = allOrders.filter(o => (o.status || 'در حال بررسی') === currentFilter);
+                filtered = filtered.filter(o => (o.status || 'در حال بررسی') === currentFilter);
+            }
+
+            // فیلتر بر اساس جستجوی نام یا موبایل
+            if (searchQuery) {
+                filtered = filtered.filter(o => {
+                    const name = String(o.name || '').toLowerCase();
+                    const phone = String(o.phone || '').toLowerCase();
+                    const orderId = String(o.orderId || '').toLowerCase();
+                    return name.includes(searchQuery) || phone.includes(searchQuery) || orderId.includes(searchQuery);
+                });
             }
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">هیچ سفارشی در این وضعیت وجود ندارد</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">هیچ سفارشی یافت نشد</div>';
                 return;
             }
 
@@ -143,7 +161,6 @@
                 if (status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
                 if (status === 'تکمیل شده') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
 
-                // استانداردسازی شماره تلفن برای واتس‌اپ (تبدیل 09 به 989)
                 let cleanPhone = String(order.phone || '').trim();
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '98' + cleanPhone.substring(1);
@@ -172,6 +189,7 @@
                         </div>
                         
                         <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
+                            <div><strong class="text-slate-700">تلفن:</strong> ${order.phone}</div>
                             <div><strong class="text-slate-700">شهر:</strong> ${order.city}</div>
                             <div><strong class="text-slate-700">آدرس:</strong> ${order.address}</div>
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product}</div>
