@@ -19,7 +19,7 @@
                 <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
                     🛍️ پنل مدیریت شاپ‌یار
                 </h1>
-                <p class="text-slate-500 text-sm mt-1">مدیریت و مشاهده لحظه‌ای سفارش1های مشتریان</p>
+                <p class="text-slate-500 text-sm mt-1">مدیریت و مشاهده لحظه‌ای سفارش‌های مشتریان</p>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="fetchOrders()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm flex items-center gap-2">
@@ -45,12 +45,11 @@
         <!-- حالت خالی بودن -->
         <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl shadow-sm">
             <p class="text-4xl mb-3">📭</p>
-            <p class="text-slate-600 font-medium">هنوز سفارشی ثبت نشده است!</p>
+            <p class="text-slate-600 font-medium">هنوز سفارشی ثبت نشده است یا دسترسی به سرور محدود است.</p>
         </div>
     </div>
 
     <script>
-        // آدرس وب‌اپلیکیشن گوگل‌اسکریپت شما
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
 
         async function fetchOrders() {
@@ -65,15 +64,17 @@
             emptyState.classList.add('hidden');
 
             try {
-                // ارسال درخواست GET به گوگل اسکریپت برای گرفتن داده‌ها
-                const response = await fetch(SCRIPT_URL);
+                // استفاده از حالت استاندارد برای دور زدن محدودیت‌های مرورگر دسکتاپ
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
                 const data = await response.json();
-
                 loading.classList.add('hidden');
 
                 if (data.status === 'success' && data.orders && data.orders.length > 0) {
                     container.innerHTML = '';
-                    // نمایش از جدیدترین به قدیمی‌ترین
                     data.orders.reverse().forEach((order, index) => {
                         const card = document.createElement('div');
                         card.className = 'bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col justify-between hover:shadow-md transition';
@@ -122,12 +123,16 @@
                 }
             } catch (err) {
                 loading.classList.add('hidden');
-                errorBox.textContent = 'خطا در ارتباط با سرور یا دریافت اطلاعات. لطفا دوباره تلاش کنید.';
+                // اگر روی کامپیوتر محدودیت CORS اجازه نداد، یک راهکار جایگزین و لینک مستقیم گوگل شیت نمایش داده می‌شود
+                errorBox.innerHTML = `
+                    <p class="font-bold mb-2">⚠️ مرورگر کامپیوتر دسترسی مستقیم به اسکریپت را محدود کرد.</p>
+                    <p class="text-xs mb-3">برای مشاهده سریع سفارش‌ها در کامپیوتر می‌توانید مستقیماً از گوگل‌شیت استفاده کنید:</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1RuO05RJnXdxDkG4p5TPCS8RWaMn18bk5DtwgadU/edit?usp=sharing" target="_blank" class="inline-block bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">📊 باز کردن گوگل‌شیت مدیریت</a>
+                `;
                 errorBox.classList.remove('hidden');
             }
         }
 
-        // بارگذاری اولیه به محض باز شدن صفحه
         fetchOrders();
     </script>
 </body>
