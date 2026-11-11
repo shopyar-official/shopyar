@@ -91,7 +91,7 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-slate-500">محصول:</span>
-                                        <span class="font-bold text-slate-800">${order.product || '-'}</span>
+                                        <span class="font-bold text-indigo-600">${order.product || '-'}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-slate-500">تعداد:</span>
@@ -99,7 +99,7 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-slate-500">شهر:</span>
-                                        <span class="font-bold text-indigo-600">${order.city || '-'}</span>
+                                        <span class="font-bold text-slate-800">${order.city || '-'}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-slate-500">آدرس:</span>
@@ -108,7 +108,7 @@
                                 </div>
                             </div>
                             <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center">
-                                <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg text-xs font-bold">⏳ در انتظار بررسی</span>
+                                <span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg text-xs font-bold">⏳ ${order.status || 'در انتظار بررسی'}</span>
                                 <a href="https://wa.me/98${order.phone ? order.phone.replace(/^0/, '') : ''}" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
                                     💬 واتساپ مشتری
                                 </a>
