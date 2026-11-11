@@ -40,15 +40,31 @@
             <!-- آدرس پستی -->
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">آدرس کامل پستی</label>
-                <textarea id="address" rows="3" required placeholder="استان، شهر، خیابان، پلاک، واحد" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50"></textarea>
+                <textarea id="address" rows="2" required placeholder="استان، شهر، خیابان، پلاک، واحد" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50"></textarea>
             </div>
 
             <!-- انتخاب محصول -->
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">انتخاب محصول</label>
-                <select id="product" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50">
+                <select id="product" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50" onchange="calculateTotal()">
                     <option value="">در حال بارگذاری محصولات...</option>
                 </select>
+            </div>
+
+            <!-- نوع ارسال -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">نوع ارسال</label>
+                <select id="shipping" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50" onchange="calculateTotal()">
+                    <option value="پیشتاز|40000">پست پیشتاز (۴۰,۰۰۰ تومان)</option>
+                    <option value="تیپاکس|60000">تیپاکس (پس کرایه / ۶۰,۰۰۰ تومان)</option>
+                    <option value="پیک|50000">پیک موتوری (ویژه تهران - ۵۰,۰۰۰ تومان)</option>
+                </select>
+            </div>
+
+            <!-- کادر نمایش جمع کل فاکتور -->
+            <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-center justify-between">
+                <span class="text-sm font-medium text-slate-700">مجموع قابل پرداخت:</span>
+                <span id="totalPrice" class="text-base font-bold text-orange-600">۰ تومان</span>
             </div>
 
             <!-- دکمه ثبت -->
@@ -61,10 +77,10 @@
     </div>
 
     <script>
-        // 🚨 آدرس Web App گوگل اسکریپت خود را اینجا قرار دهید:
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+        let productsData = [];
 
-        // بارگذاری خودکار محصولات از گوگل شیت
+        // بارگذاری محصولات از گوگل شیت
         window.addEventListener('DOMContentLoaded', () => {
             fetch(`${SCRIPT_URL}?action=get_products`)
                 .then(res => res.json())
@@ -72,19 +88,40 @@
                     const productSelect = document.getElementById('product');
                     productSelect.innerHTML = '<option value="">انتخاب محصول...</option>';
                     if(data && data.length > 0) {
-                        data.forEach(item => {
+                        productsData = data;
+                        data.forEach((item, index) => {
                             let opt = document.createElement('option');
-                            opt.value = item.name + (item.price ? ` (${item.price} تومان)` : '');
-                            opt.textContent = item.name + (item.price ? ` - ${item.price} تومان` : '');
+                            opt.value = index; // ذخیره ایندکس محصول برای دسترسی به قیمت
+                            opt.textContent = `${item.name} (${Number(item.price || 0).toLocaleString()} تومان)`;
                             productSelect.appendChild(opt);
                         });
                     }
+                    calculateTotal();
                 })
                 .catch(err => {
                     console.error('خطا در دریافت محصولات:', err);
                     document.getElementById('product').innerHTML = '<option value="">خطا در بارگذاری محصولات</option>';
                 });
         });
+
+        // محاسبه خودکار جمع کل فاکتور
+        function calculateTotal() {
+            const productIndex = document.getElementById('product').value;
+            const shippingVal = document.getElementById('shipping').value;
+
+            let productPrice = 0;
+            if (productIndex !== "" && productsData[productIndex]) {
+                productPrice = Number(productsData[productIndex].price || 0);
+            }
+
+            let shippingPrice = 0;
+            if (shippingVal) {
+                shippingPrice = Number(shippingVal.split('|')[1]);
+            }
+
+            let total = productPrice + shippingPrice;
+            document.getElementById('totalPrice').textContent = total > 0 ? total.toLocaleString() + ' تومان' : '۰ تومان';
+        }
 
         // ارسال فرم سفارش به گوگل شیت
         document.getElementById('orderForm').addEventListener('submit', function(e) {
@@ -97,12 +134,25 @@
             btn.textContent = 'در حال ثبت سفارش...';
             msgBox.className = 'hidden mt-4 p-3 rounded-xl text-center text-sm font-medium';
 
+            const productIndex = document.getElementById('product').value;
+            const selectedProduct = productsData[productIndex];
+            const shippingOpt = document.getElementById('shipping').value.split('|');
+            
+            const productName = selectedProduct ? selectedProduct.name : '';
+            const productPrice = selectedProduct ? Number(selectedProduct.price || 0) : 0;
+            const shippingName = shippingOpt[0];
+            const shippingPrice = Number(shippingOpt[1]);
+            const totalAmount = productPrice + shippingPrice;
+
+            // ساخت رشته توضیحات محصول و ارسال شامل هزینه ارسال و جمع کل
+            const fullProductDescription = `${productName} (${productPrice.toLocaleString()} ت) + ارسال ${shippingName} (${shippingPrice.toLocaleString()} ت) | جمع کل: ${totalAmount.toLocaleString()} تومان`;
+
             const formData = new URLSearchParams({
                 name: document.getElementById('name').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 city: document.getElementById('city').value.trim(),
                 address: document.getElementById('address').value.trim(),
-                product: document.getElementById('product').value.trim()
+                product: fullProductDescription
             });
 
             fetch(SCRIPT_URL, {
@@ -115,6 +165,7 @@
                     msgBox.textContent = `✅ سفارش شما با موفقیت ثبت شد! کد پیگیری: ${data.orderId}`;
                     msgBox.className = 'mt-4 p-3 rounded-xl text-center text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-100';
                     document.getElementById('orderForm').reset();
+                    calculateTotal();
                 } else {
                     throw new Error(data.message || 'خطای ناشناخته');
                 }
