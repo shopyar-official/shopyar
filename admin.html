@@ -2,117 +2,135 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>پنل فروشنده | شاپ‌یار</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>شاپ‌یار | ثبت سفارش</title>
   <style>
-    body { font-family: 'Vazirmatn', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 14px;
+      background: linear-gradient(145deg, #eef2ff, #f8fafc);
+      color: #1e293b;
+      font-family: Tahoma, sans-serif;
+    }
+    .card {
+      max-width: 540px;
+      margin: 24px auto;
+      padding: 28px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(15, 23, 42, .08);
+    }
+    .icon { font-size: 42px; text-align: center; }
+    h1 { text-align: center; margin: 10px 0 6px; font-size: 24px; }
+    .intro { text-align: center; color: #64748b; line-height: 1.8; margin-bottom: 26px; }
+    label { display: block; font-weight: bold; font-size: 14px; margin: 17px 0 8px; }
+    input, textarea, select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      color: #1e293b;
+      font: inherit;
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px #e0e7ff;
+    }
+    textarea { min-height: 95px; resize: vertical; }
+    .hint { color: #64748b; font-size: 12px; line-height: 1.8; margin-top: 6px; }
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      border: 0;
+      border-radius: 13px;
+      background: #4f46e5;
+      color: white;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .65; cursor: wait; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-20">
+<body>
+  <main class="card">
+    <div class="icon">🛍️</div>
+    <h1>ثبت سفارش سریع</h1>
+    <p class="intro">مشخصاتتان را وارد کنید تا سفارشتان ثبت شود.</p>
 
-  <!-- هدر اپلیکیشن موبایل -->
-  <header class="bg-indigo-600 text-white p-4 sticky top-0 z-30 shadow-md flex justify-between items-center">
-    <div>
-      <h1 class="font-bold text-lg">شاپ‌یار 🛍️</h1>
-      <p class="text-xs text-indigo-200">داشبورد سفارشات آنلاین‌شاپ</p>
-    </div>
-    <button onclick="playNotificationSound()" class="bg-indigo-500 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
-      🔔 تست صدا
-    </button>
-  </header>
+    <form id="orderForm"
+          action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
+          method="post"
+          target="_self">
 
-  <!-- آمار سریع -->
-  <div class="p-4 grid grid-cols-2 gap-3 max-w-lg mx-auto">
-    <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
-      <span class="text-xs text-slate-500 font-medium">سفارش‌های جدید</span>
-      <p id="newOrdersCount" class="text-2xl font-black text-indigo-600 mt-1">۲</p>
-    </div>
-    <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm text-center">
-      <span class="text-xs text-slate-500 font-medium">فروش امروز</span>
-      <p class="text-2xl font-black text-emerald-600 mt-1">۱,۰۰۰,۰۰۰ <span class="text-xs font-normal">تومان</span></p>
-    </div>
-  </div>
+      <label for="name">نام و نام خانوادگی</label>
+      <input id="name" name="name" type="text" maxlength="100" required
+             autocomplete="name" placeholder="مثلاً علی نوری">
 
-  <!-- لیست سفارشات -->
-  <main class="px-4 max-w-lg mx-auto space-y-3">
-    <div class="flex justify-between items-center mb-1">
-      <h2 class="text-sm font-bold text-slate-700">آخرین سفارش‌ها</h2>
-      <span class="text-xs text-slate-400">به‌روزرسانی خودکار</span>
-    </div>
+      <label for="phone">شماره تماس</label>
+      <input id="phone" name="phone" type="tel" maxlength="20" required
+             dir="ltr" autocomplete="tel" placeholder="مثلاً 09123456789">
 
-    <!-- کارت سفارش ۱ -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-      <div class="flex justify-between items-start">
-        <div>
-          <span class="font-bold text-slate-800 text-sm">علی احمدی</span>
-          <span class="block text-xs text-slate-400 mt-0.5 dir-ltr text-right">09121234567</span>
-        </div>
-        <span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-1 rounded-md">در انتظار تایید</span>
-      </div>
+      <label for="city">شهر</label>
+      <input id="city" name="city" type="text" maxlength="100" required
+             placeholder="مثلاً تهران">
 
-      <div class="bg-slate-50 p-2.5 rounded-xl text-xs space-y-1 text-slate-600">
-        <div>📦 <strong class="text-slate-700">کالا:</strong> هودی اورسایز مشکی (سایز L)</div>
-        <div>📍 <strong class="text-slate-700">آدرس:</strong> تهران، خیابان آزادی، کوچه مروارید، پلاک ۱۲، واحد ۴</div>
-        <div>📮 <strong class="text-slate-700">کد پستی:</strong> ۱۳۱۴۵۶۷۸۹۰</div>
-        <div>💳 <strong class="text-slate-700">مبلغ:</strong> ۴۸۰,۰۰۰ تومان (کارت‌به‌کارت)</div>
-      </div>
+      <label for="address">آدرس کامل</label>
+      <textarea id="address" name="address" maxlength="500" required
+                placeholder="خیابان، کوچه، پلاک و واحد"></textarea>
 
-      <div class="flex gap-2 pt-1">
-        <button onclick="alert('فیش تایید و پیامک ارسال شد!')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-xl transition">
-          ✓ تایید فیش
-        </button>
-        <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
-          🖨️ چاپ لیبل پست
-        </button>
-      </div>
-    </div>
+      <label for="postalCode">کد پستی</label>
+      <input id="postalCode" name="postalCode" type="text" inputmode="numeric"
+             maxlength="10" pattern="[0-9]{10}" required dir="ltr"
+             autocomplete="postal-code" placeholder="کد پستی ۱۰ رقمی">
+      <div class="hint">برای ثبت دقیق‌تر مرسوله، کد پستی را وارد کنید.</div>
 
-    <!-- کارت سفارش ۲ -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-      <div class="flex justify-between items-start">
-        <div>
-          <span class="font-bold text-slate-800 text-sm">مریم رضایی</span>
-          <span class="block text-xs text-slate-400 mt-0.5 dir-ltr text-right">09359876543</span>
-        </div>
-        <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-1 rounded-md">پرداخت آنلاین شده</span>
-      </div>
+      <label for="product">محصول یا توضیحات سفارش</label>
+      <input id="product" name="product" type="text" maxlength="200" required
+             placeholder="مثلاً هودی مشکی سایز L">
 
-      <div class="bg-slate-50 p-2.5 rounded-xl text-xs space-y-1 text-slate-600">
-        <div>📦 <strong class="text-slate-700">کالا:</strong> شلوار کارگو زیتونی</div>
-        <div>📍 <strong class="text-slate-700">آدرس:</strong> اصفهان، چهارباغ بالا، ساختمان پارس، واحد ۳</div>
-        <div>📮 <strong class="text-slate-700">کد پستی:</strong> ۸۱۵۶۷۴۳۲۱۰</div>
-        <div>💳 <strong class="text-slate-700">مبلغ:</strong> ۵۲۰,۰۰۰ تومان (شاپرک)</div>
-      </div>
+      <label for="shippingMethod">روش ارسال دلخواه</label>
+      <select id="shippingMethod" name="shippingMethod" required>
+        <option value="" selected disabled>روش ارسال را انتخاب کنید</option>
+        <option value="پست پیشتاز">پست پیشتاز</option>
+        <option value="تیپاکس">تیپاکس</option>
+        <option value="پست سفارشی">پست سفارشی</option>
+        <option value="پیک شهری">پیک شهری، در صورت امکان</option>
+        <option value="تحویل حضوری">تحویل حضوری، با هماهنگی</option>
+      </select>
+      <div class="hint">هزینه و امکان نهاییِ ارسال پس از بررسی سفارش با شما هماهنگ می‌شود.</div>
 
-      <div class="flex gap-2 pt-1">
-        <button onclick="alert('وضعیت به آماده ارسال تغییر کرد')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2 rounded-xl transition">
-          آماده بسته‌بندی
-        </button>
-        <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
-          🖨️ چاپ لیبل پست
-        </button>
-      </div>
-    </div>
+      <button id="submitBtn" type="submit">ثبت سفارش</button>
+    </form>
   </main>
 
   <script>
-    function playNotificationSound() {
-      // ایجاد صدای بوق نوتیفیکیشن با وب آدیو
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // نت D5
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // نت A5
-      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.35);
-    }
+    const form = document.getElementById('orderForm');
+    const button = document.getElementById('submitBtn');
+    const postalInput = document.getElementById('postalCode');
+
+    postalInput.addEventListener('input', function () {
+      this.value = this.value
+        .replace(/[۰-۹]/g, ch => String(ch.charCodeAt(0) - 1776))
+        .replace(/[٠-٩]/g, ch => String(ch.charCodeAt(0) - 1632))
+        .replace(/\D/g, '')
+        .slice(0, 10);
+    });
+
+    window.addEventListener('pageshow', function () {
+      button.disabled = false;
+      button.textContent = 'ثبت سفارش';
+    });
+
+    form.addEventListener('submit', function () {
+      button.disabled = true;
+      button.textContent = 'در حال ارسال...';
+    });
   </script>
 </body>
 </html>
