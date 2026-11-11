@@ -31,17 +31,21 @@
     </header>
 
     <main class="max-w-4xl mx-auto p-4 space-y-4">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-3 gap-3">
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
-                <span class="text-[11px] text-gray-400 block mb-1">کل سفارش‌ها</span>
-                <span id="statTotal" class="text-lg font-bold text-gray-800">۰</span>
+        <!-- Stats Cards (4 Statuses) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div onclick="filterByStatus('all')" id="card-all" class="bg-white p-3.5 rounded-2xl border-2 border-indigo-500 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
+                <span class="text-[11px] text-gray-400 block mb-1">همه سفارش‌ها</span>
+                <span id="statAll" class="text-lg font-bold text-indigo-600">۰</span>
             </div>
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <div onclick="filterByStatus('در حال بررسی')" id="card-در حال بررسی" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
                 <span class="text-[11px] text-amber-500 block mb-1">در حال بررسی</span>
                 <span id="statPending" class="text-lg font-bold text-amber-600">۰</span>
             </div>
-            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
+            <div onclick="filterByStatus('در حال آماده‌سازی')" id="card-در حال آماده‌سازی" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
+                <span class="text-[11px] text-blue-500 block mb-1">در حال آماده‌سازی</span>
+                <span id="statPreparing" class="text-lg font-bold text-blue-600">۰</span>
+            </div>
+            <div onclick="filterByStatus('تکمیل شده')" id="card-تکمیل شده" class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
                 <span class="text-[11px] text-emerald-500 block mb-1">تکمیل شده</span>
                 <span id="statCompleted" class="text-lg font-bold text-emerald-600">۰</span>
             </div>
@@ -50,7 +54,7 @@
         <!-- Orders Table Card -->
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <h2 class="font-bold text-sm text-gray-800">لیست سفارشات ثبت شده</h2>
+                <h2 id="tableTitle" class="font-bold text-sm text-gray-800">لیست همه سفارشات</h2>
                 <span id="orderCountBadge" class="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-medium">در حال دریافت...</span>
             </div>
             <div class="overflow-x-auto">
@@ -78,6 +82,8 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+        let allOrders = [];
+        let currentFilter = 'all';
 
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
@@ -85,52 +91,10 @@
 
             try {
                 const response = await fetch(SCRIPT_URL + '?action=get_orders');
-                const orders = await response.json();
-
-                tbody.innerHTML = '';
-                document.getElementById('orderCountBadge').textContent = `${orders.length} سفارش`;
+                allOrders = await response.json();
                 
-                let total = orders.length;
-                let pending = 0;
-                let completed = 0;
-
-                if (total === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-400">هیچ سفارشی ثبت نشده است.</td></tr>`;
-                    document.getElementById('statTotal').textContent = '۰';
-                    document.getElementById('statPending').textContent = '۰';
-                    document.getElementById('statCompleted').textContent = '۰';
-                    return;
-                }
-
-                orders.forEach(o => {
-                    const statusText = (o.status || '').trim();
-                    if (statusText.includes('تکمیل')) {
-                        completed++;
-                    } else {
-                        pending++;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50/80 transition';
-                    tr.innerHTML = `
-                        <td class="p-3 font-bold text-gray-800">${o.orderId || '-'}</td>
-                        <td class="p-3 text-gray-600 font-mono">${o.date || '-'}</td>
-                        <td class="p-3 text-gray-600">${o.name || '-'}</td>
-                        <td class="p-3 font-medium text-indigo-600">${o.city || '-'}</td>
-                        <td class="p-3 max-w-xs truncate text-gray-500" title="${o.address}">${o.address || '-'}</td>
-                        <td class="p-3 text-gray-400 text-[11px]">${o.product || '-'}</td>
-                        <td class="p-3 text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-medium ${statusText.includes('تکمیل') ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
-                                ${statusText || 'در حال بررسی'}
-                            </span>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                document.getElementById('statTotal').textContent = total;
-                document.getElementById('statPending').textContent = pending;
-                document.getElementById('statCompleted').textContent = completed;
+                updateStats();
+                renderTable();
 
             } catch (err) {
                 console.error(err);
@@ -138,7 +102,51 @@
             }
         }
 
-        loadOrders();
-    </script>
-</body>
-</html>
+        function updateStats() {
+            let total = allOrders.length;
+            let pending = 0;
+            let preparing = 0;
+            let completed = 0;
+
+            allOrders.forEach(o => {
+                let s = (o.status || 'در حال بررسی').trim();
+                if (s.includes('آماده‌سازی')) preparing++;
+                else if (s.includes('تکمیل')) completed++;
+                else pending++; // پیش‌فرض یا در حال بررسی
+            });
+
+            document.getElementById('statAll').textContent = total;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statPreparing').textContent = preparing;
+            document.getElementById('statCompleted').textContent = completed;
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // استایل کارت‌ها
+            ['all', 'در حال بررسی', 'در حال آماده‌سازی', 'تکمیل شده'].forEach(s => {
+                const card = document.getElementById('card-' + s);
+                if (s === status) {
+                    card.className = 'bg-white p-3.5 rounded-2xl border-2 border-indigo-500 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
+                } else {
+                    card.className = 'bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
+                }
+            });
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            let filtered = allOrders;
+
+            if (currentFilter !== 'all') {
+                filtered = allOrders.filter(o => {
+                    let s = (o.status || 'در حال بررسی').trim();
+                    if (currentFilter === 'در حال بررسی') return s === 'در حال بررسی' || (!s.includes('آماده‌سازی') && !s.includes('تکمیل') && !s.includes('ارسال'));
+                    if (currentFilter === 'در حال آماده‌سازی') return s.includes('آماده‌سازی');
+                    if (currentFilter === 'تکمیل شده') return s.includes('تکمیل');
+                    return s === currentFilter;
+                });
+                document.getElementById('tableTitle').textContent = `سفارش‌های وضعیت: ${currentFilter}`;
