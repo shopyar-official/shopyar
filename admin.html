@@ -8,45 +8,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen pb-12">
+<body class="bg-gray-50 min-h-screen pb-16">
 
+    <!-- Header -->
     <header class="bg-white border-b border-gray-100 sticky top-0 z-30 px-4 py-3.5 shadow-sm">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-900 flex items-center justify-center text-amber-400 font-bold">ش</div>
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 font-bold text-lg">
+                    ش
+                </div>
                 <div>
-                    <h1 class="font-bold text-sm text-gray-800">پنل مدیریت سفارشات</h1>
-                    <p class="text-[10px] text-gray-400">سیستم مدیریت شاپ‌یار</p>
+                    <h1 class="font-bold text-sm text-gray-800">مدیریت سفارشات شاپ‌یار</h1>
+                    <p class="text-[10px] text-gray-400">پنل اختصاصی فروشگاه شما</p>
                 </div>
             </div>
-            <button onclick="loadOrders()" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition">
-                بروزرسانی لیست
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="loadOrders()" class="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-gray-200 transition flex items-center gap-1">
+                    <span>🔄</span> بروزرسانی
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto p-4 mt-2">
+    <main class="max-w-4xl mx-auto p-4 space-y-4">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
+                <span class="text-[11px] text-gray-400 block mb-1">کل سفارش‌ها</span>
+                <span id="statTotal" class="text-lg font-bold text-gray-800">۰</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
+                <span class="text-[11px] text-amber-500 block mb-1">در حال بررسی</span>
+                <span id="statPending" class="text-lg font-bold text-amber-600">۰</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm text-center">
+                <span class="text-[11px] text-emerald-500 block mb-1">تکمیل شده</span>
+                <span id="statCompleted" class="text-lg font-bold text-emerald-600">۰</span>
+            </div>
+        </div>
+
+        <!-- Orders Table Card -->
         <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <h2 class="font-bold text-sm text-gray-800">لیست سفارشات ثبت شده</h2>
-                <span id="orderCount" class="text-xs text-gray-400">در حال دریافت...</span>
+                <span id="orderCountBadge" class="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-medium">در حال دریافت...</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-right text-xs">
-                    <thead class="bg-gray-50 text-gray-500 border-b border-gray-100">
+                    <thead class="bg-gray-50 text-gray-400 border-b border-gray-100 text-[11px]">
                         <tr>
-                            <th class="p-3">نام مشتری</th>
-                            <th class="p-3">تلفن</th>
-                            <th class="p-3">شهر</th>
-                            <th class="p-3">محصول / جزئیات</th>
-                            <th class="p-3">آدرس</th>
-                            <th class="p-3">تاریخ ثبت</th>
-                            <th class="p-3">وضعیت</th>
+                            <th class="p-3 font-medium">مشتری</th>
+                            <th class="p-3 font-medium">تلفن</th>
+                            <th class="p-3 font-medium">شهر</th>
+                            <th class="p-3 font-medium">محصول</th>
+                            <th class="p-3 font-medium">آدرس</th>
+                            <th class="p-3 font-medium">تاریخ ثبت</th>
+                            <th class="p-3 font-medium text-center">وضعیت</th>
                         </tr>
                     </thead>
                     <tbody id="ordersTableBody" class="divide-y divide-gray-100 text-gray-700">
                         <tr>
-                            <td colspan="7" class="p-6 text-center text-gray-400">در حال بارگذاری اطلاعات از گوگل‌شیت...</td>
+                            <td colspan="7" class="p-8 text-center text-gray-400">در حال بارگذاری اطلاعات از گوگل‌شیت...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -59,37 +81,60 @@
 
         async function loadOrders() {
             const tbody = document.getElementById('ordersTableBody');
-            tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400">در حال دریافت اطلاعات...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-400">در حال دریافت اطلاعات...</td></tr>`;
 
             try {
                 const response = await fetch(SCRIPT_URL + '?action=get_orders');
                 const orders = await response.json();
 
                 tbody.innerHTML = '';
-                document.getElementById('orderCount').textContent = `تعداد کل: ${orders.length} سفارش`;
+                document.getElementById('orderCountBadge').textContent = `${orders.length} سفارش`;
+                
+                let total = orders.length;
+                let pending = 0;
+                let completed = 0;
 
-                if (orders.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400">هیچ سفارشی ثبت نشده است.</td></tr>`;
+                if (total === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-gray-400">هیچ سفارشی ثبت نشده است.</td></tr>`;
+                    document.getElementById('statTotal').textContent = '۰';
+                    document.getElementById('statPending').textContent = '۰';
+                    document.getElementById('statCompleted').textContent = '۰';
                     return;
                 }
 
                 orders.forEach(o => {
+                    const statusText = (o.status || '').trim();
+                    if (statusText.includes('تکمیل')) {
+                        completed++;
+                    } else {
+                        pending++;
+                    }
+
                     const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50 transition';
+                    tr.className = 'hover:bg-gray-50/80 transition';
                     tr.innerHTML = `
                         <td class="p-3 font-bold text-gray-800">${o.orderId || '-'}</td>
-                        <td class="p-3">${o.date || '-'}</td>
-                        <td class="p-3">${o.name || '-'}</td>
-                        <td class="p-3">${o.phone || '-'}</td>
-                        <td class="p-3">${o.city || '-'}</td>
-                        <td class="p-3 max-w-xs truncate" title="${o.address}">${o.address || '-'}</td>
-                        <td class="p-3">${o.product || '-'}</td>
+                        <td class="p-3 text-gray-600 font-mono">${o.date || '-'}</td>
+                        <td class="p-3 text-gray-600">${o.name || '-'}</td>
+                        <td class="p-3 font-medium text-indigo-600">${o.city || '-'}</td>
+                        <td class="p-3 max-w-xs truncate text-gray-500" title="${o.address}">${o.address || '-'}</td>
+                        <td class="p-3 text-gray-400 text-[11px]">${o.product || '-'}</td>
+                        <td class="p-3 text-center">
+                            <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-medium ${statusText.includes('تکمیل') ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
+                                ${statusText || 'در حال بررسی'}
+                            </span>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
+
+                document.getElementById('statTotal').textContent = total;
+                document.getElementById('statPending').textContent = pending;
+                document.getElementById('statCompleted').textContent = completed;
+
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">خطا در دریافت اطلاعات از سرور. لطفاً صفحه را رفرش کنید.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-500">خطا در دریافت اطلاعات از سرور. لطفاً صفحه را رفرش کنید.</td></tr>`;
             }
         }
 
