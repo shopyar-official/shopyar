@@ -4,161 +4,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شاپ‌یار | ثبت سفارش آنلاین</title>
-    <!-- Tailwind CSS برای طراحی سریع و زیبا -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 min-h-screen text-slate-800 py-6 px-4">
 
-    <!-- هدر سایت (بدون دکمه مدیریت برای حفظ حریم و تمیزی صفحه مشتری) -->
-    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 text-center">
-        <h1 class="text-xl font-bold">🛒 فروشگاه من (شاپ‌یار)</h1>
-    </header>
-
-    <!-- محتوای اصلی -->
-    <main class="max-w-md mx-auto w-full p-4 flex-grow">
-        
-        <!-- پیام لودینگ یا خطا -->
-        <div id="loading" class="text-center py-10">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-            <p class="mt-2 text-sm text-gray-600">در حال بارگذاری محصولات...</p>
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- هدر -->
+        <div class="bg-indigo-600 px-6 py-5 text-white text-center">
+            <h1 class="font-bold text-lg">فروشگاه من (شاپ‌یار)</h1>
+            <p class="text-xs text-indigo-100 mt-1">فرم ثبت سفارش سریع</p>
         </div>
 
-        <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm" role="alert">
-            <span id="error-text">خطایی رخ داد.</span>
-        </div>
-
-        <!-- فرم ثبت سفارش -->
-        <form id="orderForm" class="hidden bg-white shadow-sm rounded-xl p-5 border border-gray-100 space-y-4">
-            <h2 class="text-lg font-bold text-gray-900 border-b pb-2">فرم ثبت سفارش سریع</h2>
-
+        <!-- فرم -->
+        <form id="order-form" class="p-6 space-y-4">
+            
             <!-- انتخاب محصول -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">انتخاب محصول:</label>
-                <select id="productSelect" required class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">انتخاب محصول:</label>
+                <select id="product" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
                     <option value="">-- لطفاً محصولی انتخاب کنید --</option>
                 </select>
             </div>
 
             <!-- تعداد -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">تعداد:</label>
-                <input type="number" id="quantity" value="1" min="1" required class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">تعداد:</label>
+                <input type="number" id="quantity" min="1" value="1" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
             </div>
 
             <!-- نام و نام خانوادگی -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">نام و نام خانوادگی گیرنده:</label>
-                <input type="text" id="name" required placeholder="مثلاً علی رضایی" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">نام و نام خانوادگی گیرنده:</label>
+                <input type="text" id="name" placeholder="مثلاً علی رضایی" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
             </div>
 
-            <!-- شماره تماس -->
+            <!-- شماره موبایل -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">شماره موبایل:</label>
-                <input type="tel" id="phone" required placeholder="09123456789" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-left" dir="ltr">
+                <label class="block text-xs font-bold text-slate-600 mb-1">شماره موبایل:</label>
+                <input type="tel" id="phone" placeholder="09123456789" required dir="ltr" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm text-right focus:outline-none focus:border-indigo-600 transition">
             </div>
 
             <!-- شهر -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">شهر:</label>
-                <input type="text" id="city" required placeholder="مثلاً تهران" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 mb-1">شهر:</label>
+                <input type="text" id="city" placeholder="مثلاً تهران" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
             </div>
 
-            <!-- آدرس کامل -->
+            <!-- روش ارسال -->
             <div>
-                <label class="block text-xs font-medium text-gray-700 mb-1">آدرس پستی کامل:</label>
-                <textarea id="address" rows="2" required placeholder="خیابان، پلاک، واحد..." class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                <label class="block text-xs font-bold text-slate-600 mb-1">روش ارسال:</label>
+                <select id="shipping-method" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
+                    <option value="پیشتاز|35000">پست پیشتاز (۳۵,۰۰۰ تومان)</option>
+                    <option value="تیپاکس|50000">تیپاکس - پس کرایه (۵۰,۰۰۰ تومان)</option>
+                    <option value="پیک|40000">پیک موتوری (۴۰,۰۰۰ تومان)</option>
+                </select>
+            </div>
+
+            <!-- آدرس پستی کامل -->
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">آدرس پستی کامل:</label>
+                <textarea id="address" rows="3" placeholder="خیابان، پلاک، واحد..." required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition"></textarea>
             </div>
 
             <!-- دکمه ثبت -->
-            <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition text-sm">
+            <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-100 transition">
                 تایید و ثبت نهایی سفارش
             </button>
         </form>
+    </div>
 
-        <!-- پیام موفقیت ثبت سفارش -->
-        <div id="successBox" class="hidden bg-green-50 border border-green-200 text-green-800 p-6 rounded-xl text-center space-y-3">
-            <div class="text-3xl">✅</div>
-            <h3 class="font-bold text-base">سفارش شما با موفقیت ثبت شد!</h3>
-            <p class="text-xs text-green-600">به زودی برای هماهنگی ارسال با شما تماس خواهیم گرفت.</p>
-            <button onclick="location.reload()" class="bg-green-600 text-white text-xs px-4 py-2 rounded-lg hover:bg-green-700 transition">ثبت سفارش جدید</button>
-        </div>
-
-    </main>
-
-    <!-- فوتر -->
-    <footer class="text-center py-4 text-xs text-gray-400">
-        قدرت گرفته از سامانه شاپ‌یار
-    </footer>
-
-    <!-- جاوااسکریپت ارتباط با گوگل‌شیت -->
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
 
+        // بارگذاری محصولات از گوگل‌شیت
         async function loadProducts() {
             try {
-                const response = await fetch(SCRIPT_URL + "?action=get_products");
-                const result = await response.json();
+                const res = await fetch(SCRIPT_URL + '?action=get_products');
+                const data = await res.json();
+                const select = document.getElementById('product');
                 
-                if (result.status === "success" && result.products.length > 0) {
-                    const select = document.getElementById("productSelect");
-                    result.products.forEach(p => {
-                        const opt = document.createElement("option");
+                if (data.status === 'success' && data.products) {
+                    data.products.forEach(p => {
+                        const opt = document.createElement('option');
                         opt.value = p.name;
                         opt.textContent = `${p.name} - ${Number(p.price).toLocaleString()} تومان`;
+                        opt.dataset.price = p.price;
                         select.appendChild(opt);
                     });
-                    
-                    document.getElementById("loading").classList.add("hidden");
-                    document.getElementById("orderForm").classList.remove("hidden");
-                } else {
-                    throw new Error("محصولی در جدول یافت نشد.");
                 }
             } catch (err) {
-                console.error(err);
-                document.getElementById("loading").classList.add("hidden");
-                document.getElementById("error-text").textContent = "فهرست محصولات بارگذاری نشد.";
-                document.getElementById("error-box").classList.remove("hidden");
+                console.error("خطا در بارگذاری محصولات", err);
             }
         }
 
-        document.getElementById("orderForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById("submitBtn");
-            btn.disabled = true;
-            btn.textContent = "در حال ثبت سفارش...";
+        loadProducts();
 
-            const orderData = {
-                action: "submit_order",
-                name: document.getElementById("name").value,
-                phone: document.getElementById("phone").value,
-                city: document.getElementById("city").value,
-                address: document.getElementById("address").value,
-                product: document.getElementById("productSelect").value,
-                quantity: document.getElementById("quantity").value
+        // ثبت سفارش
+        document.getElementById('order-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'در حال ثبت سفارش...';
+
+            const shippingData = document.getElementById('shipping-method').value.split('|');
+            const shippingMethod = shippingData[0];
+            const shippingCost = shippingData[1];
+
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                city: document.getElementById('city').value,
+                address: document.getElementById('address').value,
+                product: document.getElementById('product').value,
+                quantity: document.getElementById('quantity').value,
+                shippingMethod: shippingMethod,
+                shippingCost: shippingCost
             };
 
             try {
+                // ارسال به گوگل‌شیت (از طریق اکشن ثبت)
                 await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(orderData)
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(formData)
                 });
-
-                document.getElementById("orderForm").classList.add("hidden");
-                document.getElementById("successBox").classList.remove("hidden");
+                
+                alert('سفارش شما با موفقیت ثبت شد!');
+                document.getElementById('order-form').reset();
             } catch (err) {
-                alert("خطا در ثبت سفارش.");
+                alert('خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.');
+            } finally {
                 btn.disabled = false;
-                btn.textContent = "تایید و ثبت نهایی سفارش";
+                btn.textContent = 'تایید و ثبت نهایی سفارش';
             }
         });
-
-        loadProducts();
     </script>
 </body>
 </html>
