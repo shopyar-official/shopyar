@@ -3,198 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت شاپ‌یار</title>
+    <title>پنل مدیریت سفارشات - شاپ‌یار</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 pb-12">
+<body class="bg-gray-50 min-h-screen pb-12">
 
-    <!-- هدر پنل با لوگوی داخلی و دائمی -->
-    <header class="bg-white border-b border-slate-100 sticky top-0 z-30 px-4 py-3 shadow-sm flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-indigo-900 flex items-center justify-center shadow-sm border border-indigo-100 text-amber-400">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-30 px-4 py-3.5 shadow-sm">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-900 flex items-center justify-center text-amber-400 font-bold">ش</div>
+                <div>
+                    <h1 class="font-bold text-sm text-gray-800">پنل مدیریت سفارشات</h1>
+                    <p class="text-[10px] text-gray-400">سیستم مدیریت شاپ‌یار</p>
+                </div>
             </div>
-            <div>
-                <h1 class="font-bold text-sm">پنل مدیریت شاپ‌یار</h1>
-                <p class="text-[10px] text-slate-400">مدیریت هوشمند سفارشات فروشگاه</p>
-            </div>
+            <button onclick="loadOrders()" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-100 transition">
+                بروزرسانی لیست
+            </button>
         </div>
-        <button onclick="loadOrders()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
-            🔄 بروزرسانی
-        </button>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
-        <!-- کارت‌های فیلتر وضعیت -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <button onclick="filterOrders('همه', this)" class="filter-btn active-filter bg-indigo-600 text-white p-3 rounded-2xl shadow-sm text-center transition">
-                <span class="text-[10px] block opacity-80 mb-1">همه سفارش‌ها</span>
-                <span id="count-all" class="text-base font-bold">0</span>
-            </button>
-            <button onclick="filterOrders('در حال بررسی', this)" class="filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50">
-                <span class="text-[10px] block text-slate-400 mb-1">⏳ در حال بررسی</span>
-                <span id="count-pending" class="text-base font-bold text-amber-500">0</span>
-            </button>
-            <button onclick="filterOrders('در حال آماده‌سازی', this)" class="filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50">
-                <span class="text-[10px] block text-slate-400 mb-1">📦 آماده‌سازی</span>
-                <span id="count-preparing" class="text-base font-bold text-blue-500">0</span>
-            </button>
-            <button onclick="filterOrders('در حال ارسال', this)" class="filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50">
-                <span class="text-[10px] block text-slate-400 mb-1">🚚 در حال ارسال</span>
-                <span id="count-shipping" class="text-base font-bold text-purple-500">0</span>
-            </button>
-            <button onclick="filterOrders('تکمیل شده', this)" class="filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50 col-span-2 sm:col-span-1">
-                <span class="text-[10px] block text-slate-400 mb-1">✅ تکمیل شده</span>
-                <span id="count-completed" class="text-base font-bold text-emerald-500">0</span>
-            </button>
-        </div>
-
-        <div>
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="current-filter-title" class="font-bold text-sm text-slate-700">فهرست همه سفارش‌ها</h2>
-                <span id="last-update" class="text-[10px] text-slate-400">آخرین بروزرسانی: -</span>
+    <main class="max-w-4xl mx-auto p-4 mt-2">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="font-bold text-sm text-gray-800">لیست سفارشات ثبت شده</h2>
+                <span id="orderCount" class="text-xs text-gray-400">در حال دریافت...</span>
             </div>
-
-            <div id="loading" class="text-center py-12 text-slate-400 text-sm">در حال دریافت اطلاعات از سرور...</div>
-            <div id="error-box" class="hidden bg-rose-50 border border-rose-100 text-rose-600 p-6 rounded-2xl text-center text-sm space-y-3">
-                <p id="error-text">خطا در دریافت اطلاعات!</p>
-                <button onclick="loadOrders()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold">تلاش مجدد</button>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs">
+                    <thead class="bg-gray-50 text-gray-500 border-b border-gray-100">
+                        <tr>
+                            <th class="p-3">نام مشتری</th>
+                            <th class="p-3">تلفن</th>
+                            <th class="p-3">شهر</th>
+                            <th class="p-3">محصول / جزئیات</th>
+                            <th class="p-3">آدرس</th>
+                            <th class="p-3">تاریخ ثبت</th>
+                            <th class="p-3">وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-gray-100 text-gray-700">
+                        <tr>
+                            <td colspan="7" class="p-6 text-center text-gray-400">در حال بارگذاری اطلاعات از گوگل‌شیت...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div id="orders-container" class="space-y-4"></div>
         </div>
     </main>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        let allOrdersData = [];
-        let currentFilter = 'همه';
 
         async function loadOrders() {
-            const container = document.getElementById('orders-container');
-            const loading = document.getElementById('loading');
-            const errorBox = document.getElementById('error-box');
-            
-            loading.classList.remove('hidden');
-            errorBox.classList.add('hidden');
-            container.innerHTML = '';
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400">در حال دریافت اطلاعات...</td></tr>`;
 
             try {
-                const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-                loading.classList.add('hidden');
+                const response = await fetch(SCRIPT_URL + '?action=get_orders');
+                const orders = await response.json();
 
-                if (data.status === 'success' && data.orders) {
-                    allOrdersData = data.orders;
-                    updateCounts(allOrdersData);
-                    renderOrders();
-                    document.getElementById('last-update').textContent = 'آخرین بروزرسانی: ' + new Date().toLocaleTimeString('fa-IR');
-                } else {
-                    throw new Error('پاسخ نامعتبر از سرور');
+                tbody.innerHTML = '';
+                document.getElementById('orderCount').textContent = `تعداد کل: ${orders.length} سفارش`;
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400">هیچ سفارشی ثبت نشده است.</td></tr>`;
+                    return;
                 }
-            } catch (err) {
-                loading.classList.add('hidden');
-                errorBox.classList.remove('hidden');
-            }
-        }
 
-        function updateCounts(orders) {
-            document.getElementById('count-all').textContent = orders.length;
-            document.getElementById('count-pending').textContent = orders.filter(o => o.status === 'در حال بررسی').length;
-            document.getElementById('count-preparing').textContent = orders.filter(o => o.status === 'در حال آماده‌سازی').length;
-            document.getElementById('count-shipping').textContent = orders.filter(o => o.status === 'در حال ارسال').length;
-            document.getElementById('count-completed').textContent = orders.filter(o => o.status === 'تکمیل شده').length;
-        }
-
-        function filterOrders(status, btn) {
-            currentFilter = status;
-            document.getElementById('current-filter-title').textContent = status === 'همه' ? 'فهرست همه سفارش‌ها' : `سفارش‌های ${status}`;
-            
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.className = 'filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50';
-            });
-            btn.className = 'filter-btn bg-indigo-600 text-white p-3 rounded-2xl shadow-sm text-center transition';
-
-            renderOrders();
-        }
-
-        async function updateStatus(row, newStatus) {
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'update_status', row: row, status: newStatus })
+                orders.forEach(o => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 transition';
+                    tr.innerHTML = `
+                        <td class="p-3 font-bold text-gray-800">${o.orderId || '-'}</td>
+                        <td class="p-3">${o.date || '-'}</td>
+                        <td class="p-3">${o.name || '-'}</td>
+                        <td class="p-3">${o.phone || '-'}</td>
+                        <td class="p-3">${o.city || '-'}</td>
+                        <td class="p-3 max-w-xs truncate" title="${o.address}">${o.address || '-'}</td>
+                        <td class="p-3">${o.product || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
                 });
-                const order = allOrdersData.find(o => o.row === row);
-                if (order) order.status = newStatus;
-                updateCounts(allOrdersData);
-                renderOrders();
             } catch (err) {
-                alert('خطا در بروزرسانی وضعیت');
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">خطا در دریافت اطلاعات از سرور. لطفاً صفحه را رفرش کنید.</td></tr>`;
             }
-        }
-
-        function renderOrders() {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '';
-
-            let filtered = allOrdersData;
-            if (currentFilter !== 'همه') {
-                filtered = allOrdersData.filter(o => o.status === currentFilter);
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="text-center py-12 bg-white rounded-2xl border border-slate-100 text-slate-400 text-sm">هیچ سفارشی در این وضعیت وجود ندارد.</div>';
-                return;
-            }
-
-            [...filtered].reverse().forEach(order => {
-                const phoneStr = String(order.phone || '');
-                const card = document.createElement('div');
-                card.className = 'bg-white p-5 rounded-3xl border border-slate-100 shadow-sm space-y-4';
-                
-                card.innerHTML = `
-                    <div class="flex justify-between items-start border-b border-slate-50 pb-3">
-                        <div>
-                            <span class="text-xs font-bold text-indigo-600 block mb-0.5">${order.orderId || 'بدون کد'}</span>
-                            <h3 class="font-bold text-slate-800 text-sm">${order.name}</h3>
-                        </div>
-                        <select onchange="updateStatus(${order.row}, this.value)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-indigo-600">
-                            <option value="در حال بررسی" ${order.status === 'در حال بررسی' ? 'selected' : ''}>⏳ در حال بررسی</option>
-                            <option value="در حال آماده‌سازی" ${order.status === 'در حال آماده‌سازی' ? 'selected' : ''}>📦 در حال آماده‌سازی</option>
-                            <option value="در حال ارسال" ${order.status === 'در حال ارسال' ? 'selected' : ''}>🚚 در حال ارسال</option>
-                            <option value="تکمیل شده" ${order.status === 'تکمیل شده' ? 'selected' : ''}>✅ تکمیل شده</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
-                        <div><strong class="text-slate-400 font-normal">محصول:</strong> ${order.product} (تعداد: ${order.quantity})</div>
-                        <div><strong class="text-slate-400 font-normal">مبلغ کل:</strong> ${Number(order.totalPrice || 0).toLocaleString()} تومان</div>
-                        <div><strong class="text-slate-400 font-normal">شهر:</strong> ${order.city}</div>
-                        <div><strong class="text-slate-400 font-normal">روش ارسال:</strong> ${order.shippingMethod || 'پیشتاز'} (${Number(order.shippingCost || 0).toLocaleString()} ت)</div>
-                    </div>
-
-                    <div class="text-xs text-slate-500 bg-slate-50 p-3 rounded-2xl">
-                        <strong>آدرس:</strong> ${order.address}
-                    </div>
-
-                    <div class="flex gap-2 pt-1">
-                        <a href="tel:${phoneStr}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-center py-2.5 rounded-xl text-xs font-bold transition">
-                            📞 تماس (${phoneStr})
-                        </a>
-                        <a href="https://wa.me/98${phoneStr.replace(/^0/, '')}" target="_blank" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 text-center py-2.5 rounded-xl text-xs font-bold transition">
-                            💬 واتس‌اپ
-                        </a>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
         }
 
         loadOrders();
