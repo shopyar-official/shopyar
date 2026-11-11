@@ -136,8 +136,7 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    // بروزرسانی محلی در آرایه برای واکنش سریع
-                    const target = allOrders.find(o => o.orderId == orderId);
+                    const target = allOrders.find(o => o.orderId == orderId || o.id == orderId);
                     if (target) target.status = newStatus;
                     updateStats();
                     renderCards();
@@ -174,15 +173,27 @@
             filtered.forEach(o => {
                 const statusText = (o.status || 'در حال بررسی').trim();
                 
+                // مپ کردن دقیق فیلدها بر اساس ستون‌های گوگل‌شیت شما
+                const orderId = o.orderId || o.id || 'بدون شناسه';
+                const customerName = o.name || o.customerName || '-';
+                const phoneNum = o.phone || o.phoneNum || o.date || '-';
+                const cityName = o.city || '-';
+                const addressText = o.address || '-';
+                const productInfo = o.product || '-';
+                const dateReg = o.date || o.createdAt || '-';
+
                 const cardDiv = document.createElement('div');
                 cardDiv.className = 'bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3 hover:shadow-md transition';
                 cardDiv.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-50 pb-2.5">
                         <div class="flex items-center gap-2">
                             <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center">🛍️</span>
-                            <span class="font-bold text-gray-800 text-xs">${o.orderId || 'بدون نام'}</span>
+                            <div>
+                                <span class="font-bold text-gray-800 text-xs block">مشتری: ${customerName}</span>
+                                <span class="text-[10px] text-gray-400">کد سفارش: ${orderId}</span>
+                            </div>
                         </div>
-                        <select onchange="updateOrderStatus('${o.orderId}', this.value)" class="text-[11px] font-medium px-2.5 py-1 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-indigo-500 transition">
+                        <select onchange="updateOrderStatus('${orderId}', this.value)" class="text-[11px] font-medium px-2.5 py-1 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-indigo-500 transition">
                             <option value="در حال بررسی" ${statusText === 'در حال بررسی' ? 'selected' : ''}>در حال بررسی</option>
                             <option value="در حال آماده‌سازی" ${statusText.includes('آماده‌سازی') ? 'selected' : ''}>در حال آماده‌سازی</option>
                             <option value="تکمیل شده" ${statusText.includes('تکمیل') ? 'selected' : ''}>تکمیل شده</option>
@@ -190,17 +201,17 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600 bg-gray-50/50 p-2.5 rounded-xl">
-                        <div><span class="text-gray-400 ml-1">تلفن:</span><span class="font-mono">${o.date || '-'}</span></div>
-                        <div><span class="text-gray-400 ml-1">شهر:</span><span class="font-medium text-gray-800">${o.name || '-'}</span></div>
-                        <div class="col-span-2"><span class="text-gray-400 ml-1">محصول:</span><span class="font-semibold text-indigo-600">${o.city || '-'}</span></div>
+                        <div><span class="text-gray-400 ml-1">تلفن:</span><span class="font-mono font-bold text-gray-800">${phoneNum}</span></div>
+                        <div><span class="text-gray-400 ml-1">شهر:</span><span class="font-medium text-gray-800">${cityName}</span></div>
+                        <div class="col-span-2"><span class="text-gray-400 ml-1">محصول:</span><span class="font-semibold text-indigo-600">${productInfo}</span></div>
                     </div>
 
                     <div class="text-[11px] text-gray-500">
-                        <span class="text-gray-400 ml-1">آدرس:</span>${o.address || '-'}
+                        <span class="text-gray-400 ml-1">آدرس:</span>${addressText}
                     </div>
 
                     <div class="flex justify-between items-center pt-2 border-t border-gray-50 text-[10px] text-gray-400">
-                        <span>تاریخ ثبت: ${o.product || '-'}</span>
+                        <span>تاریخ ثبت: ${dateReg}</span>
                     </div>
                 `;
                 container.appendChild(cardDiv);
