@@ -3,138 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت سفارشات - شاپ یار</title>
+    <title>پنل مدیریت سفارشات - شاپ‌یار</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Vazirmatn', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-12">
+<body class="bg-slate-50 min-h-screen p-4 md:p-8">
 
-    <!-- هدر پنل -->
-    <header class="bg-white shadow-sm sticky top-0 z-50 px-4 py-3 flex justify-between items-center border-b">
-        <div class="flex items-center gap-3">
-            <div class="bg-orange-500 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-md">ش</div>
+    <div class="max-w-6xl mx-auto">
+        <!-- هدر صفحه -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div>
-                <h1 class="font-bold text-gray-800 text-base">مدیریت سفارشات شاپ‌یار</h1>
-                <p class="text-xs text-gray-500">پنل اختصاصی فروشگاه شما</p>
+                <h1 class="text-2xl font-bold text-slate-800">📦 مدیریت سفارشات شاپ‌یار</h1>
+                <p class="text-sm text-slate-500 mt-1">مدیریت و پیگیری سفارشات ثبت شده مشتریان</p>
             </div>
+            <button onclick="loadOrders()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm flex items-center gap-2">
+                🔄 به‌روزرسانی لیست
+            </button>
         </div>
-        <button onclick="loadOrders()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs px-3 py-2 rounded-lg flex items-center gap-1 transition">
-            🔄 بروزرسانی
-        </button>
-    </header>
 
-    <main class="max-w-md mx-auto p-4 space-y-4">
-        <!-- دکمه‌های فیلتر وضعیت -->
-        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <button onclick="filterOrders('همه', this)" class="filter-btn bg-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shadow-sm transition">همه</button>
-            <button onclick="filterOrders('در حال بررسی', this)" class="filter-btn bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition">در حال بررسی</button>
-            <button onclick="filterOrders('در حال آماده‌سازی', this)" class="filter-btn bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition">در حال آماده‌سازی</button>
-            <button onclick="filterOrders('ارسال شده', this)" class="filter-btn bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition">ارسال شده</button>
-            <button onclick="filterOrders('تکمیل شده', this)" class="filter-btn bg-white text-gray-600 px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition">تکمیل شده</button>
+        <!-- کارت‌های وضعیت بالا (تب‌های فیلتر پویا) -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            <div onclick="filterOrders('همه')" id="card-all" class="cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-slate-500 font-medium">همه سفارش‌ها</div>
+                <div id="count-all" class="text-xl font-bold text-slate-800 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('در حال بررسی')" id="card-pending" class="cursor-pointer bg-white border-2 border-transparent hover:border-amber-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-amber-600 font-medium">در حال بررسی</div>
+                <div id="count-pending" class="text-xl font-bold text-amber-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('در حال آماده‌سازی')" id="card-prep" class="cursor-pointer bg-white border-2 border-transparent hover:border-blue-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-blue-600 font-medium">در حال آماده‌سازی</div>
+                <div id="count-prep" class="text-xl font-bold text-blue-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('ارسال شده')" id="card-sent" class="cursor-pointer bg-white border-2 border-transparent hover:border-purple-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-purple-600 font-medium">ارسال شده</div>
+                <div id="count-sent" class="text-xl font-bold text-purple-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('تکمیل شده')" id="card-completed" class="cursor-pointer bg-white border-2 border-transparent hover:border-emerald-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center col-span-2 md:col-span-1">
+                <div class="text-xs text-emerald-600 font-medium">تکمیل شده</div>
+                <div id="count-completed" class="text-xl font-bold text-emerald-600 mt-1">۰</div>
+            </div>
         </div>
 
         <!-- لیست سفارشات -->
-        <div id="orders-container" class="space-y-3">
-            <div class="text-center py-10 text-gray-400 text-sm">در حال بارگذاری سفارش‌ها...</div>
+        <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>
         </div>
-    </main>
+    </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         let allOrders = [];
+        let currentFilter = 'همه';
 
-        async function loadOrders() {
-            const container = document.getElementById('orders-container');
-            container.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">در حال دریافت اطلاعات...</div>';
-            
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=get_orders`);
-                const data = await response.json();
-                allOrders = data;
-                renderOrders(allOrders);
-            } catch (error) {
-                container.innerHTML = '<div class="text-center py-10 text-red-500 text-sm">خطا در دریافت اطلاعات از سرور!</div>';
-            }
+        window.addEventListener('DOMContentLoaded', loadOrders);
+
+        function loadOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری...</div>';
+
+            fetch(`${SCRIPT_URL}?action=get_orders`)
+                .then(res => res.json())
+                .then(data => {
+                    if(Array.isArray(data)) {
+                        allOrders = data;
+                        updateCounts();
+                        renderOrders();
+                    } else {
+                        container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">خطا در دریافت اطلاعات از سرور</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">خطا در اتصال به سرور</div>';
+                });
         }
 
-        function renderOrders(orders) {
-            const container = document.getElementById('orders-container');
-            if (!orders || orders.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm">هیچ سفارشی ثبت نشده است.</div>';
+        function updateCounts() {
+            const counts = {
+                'همه': allOrders.length,
+                'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
+                'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
+                'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
+                'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length,
+            };
+
+            document.getElementById('count-all').textContent = counts['همه'];
+            document.getElementById('count-pending').textContent = counts['در حال بررسی'];
+            document.getElementById('count-prep').textContent = counts['در حال آماده‌سازی'];
+            document.getElementById('count-sent').textContent = counts['ارسال شده'];
+            document.getElementById('count-completed').textContent = counts['تکمیل شده'];
+        }
+
+        function filterOrders(status) {
+            currentFilter = status;
+            
+            // استایل فعال برای کارت‌های بالا
+            const cards = {
+                'همه': 'card-all',
+                'در حال بررسی': 'card-pending',
+                'در حال آماده‌سازی': 'card-prep',
+                'ارسال شده': 'card-sent',
+                'تکمیل شده': 'card-completed'
+            };
+
+            for (const [key, id] of Object.entries(cards)) {
+                const el = document.getElementById(id);
+                if (key === status) {
+                    el.className = 'cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
+                } else {
+                    el.className = 'cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
+                }
+            }
+
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('ordersContainer');
+            
+            let filtered = allOrders;
+            if (currentFilter !== 'همه') {
+                filtered = allOrders.filter(o => (o.status || 'در حال بررسی') === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">هیچ سفارشی در این وضعیت وجود ندارد</div>';
                 return;
             }
 
-            container.innerHTML = orders.map(order => `
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-mono">${order.orderId || '---'}</span>
-                            <h3 class="font-bold text-gray-800 mt-2 text-base">${order.name || 'بدون نام'}</h3>
+            container.innerHTML = '';
+            filtered.forEach(order => {
+                const status = order.status || 'در حال بررسی';
+                
+                let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                if (status === 'در حال آماده‌سازی') badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                if (status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
+                if (status === 'تکمیل شده') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">${order.orderId}</span>
+                            <span class="text-xs px-2.5 py-1 rounded-lg border font-medium ${badgeColor}">${status}</span>
                         </div>
-                        <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-orange-500 font-medium">
-                            <option value="در حال بررسی" ${order.status === 'در حال بررسی' ? 'selected' : ''}>در حال بررسی</option>
-                            <option value="در حال آماده‌سازی" ${order.status === 'در حال آماده‌سازی' ? 'selected' : ''}>در حال آماده‌سازی</option>
-                            <option value="ارسال شده" ${order.status === 'ارسال شده' ? 'selected' : ''}>ارسال شده</option>
-                            <option value="تکمیل شده" ${order.status === 'تکمیل شده' ? 'selected' : ''}>تکمیل شده</option>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">${order.name || 'بدون نام'}</h3>
+                        <p class="text-xs text-slate-500 mb-3 flex items-center gap-1">📞 <a href="tel:${order.phone}" class="hover:text-orange-600">${order.phone}</a></p>
+                        
+                        <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
+                            <div><strong class="text-slate-700">شهر:</strong> ${order.city}</div>
+                            <div><strong class="text-slate-700">آدرس:</strong> ${order.address}</div>
+                            <div><strong class="text-slate-700">خرید:</strong> ${order.product}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
+                        <span class="text-[11px] text-slate-400">${order.date}</span>
+                        <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
+                            <option value="" disabled selected>تغییر وضعیت...</option>
+                            <option value="در حال بررسی">در حال بررسی</option>
+                            <option value="در حال آماده‌سازی">در حال آماده‌سازی</option>
+                            <option value="ارسال شده">ارسال شده</option>
+                            <option value="تکمیل شده">تکمیل شده</option>
                         </select>
                     </div>
-
-                    <div class="text-xs text-gray-600 space-y-1.5 bg-gray-50 p-2.5 rounded-xl">
-                        <div>📞 تلفن: <span class="font-medium text-gray-800">${order.phone || '---'}</span></div>
-                        <div>🏙️ شهر: <span class="font-medium text-gray-800">${order.city || '---'}</span></div>
-                        <div>📦 محصول: <span class="font-medium text-gray-800">${order.product || '---'}</span></div>
-                        <div>📍 آدرس: <span class="font-medium text-gray-800">${order.address || '---'}</span></div>
-                    </div>
-
-                    <div class="text-[11px] text-gray-400 pt-1 border-t border-gray-100 flex justify-between">
-                        <span>تاریخ ثبت:</span>
-                        <span>${order.date || '---'}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterOrders(status, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('bg-orange-500', 'text-white', 'shadow-sm');
-                b.classList.add('bg-white', 'text-gray-600', 'border');
+                `;
+                container.appendChild(card);
             });
-            btn.classList.remove('bg-white', 'text-gray-600', 'border');
-            btn.classList.add('bg-orange-500', 'text-white', 'shadow-sm');
-
-            if (status === 'همه') {
-                renderOrders(allOrders);
-            } else {
-                const filtered = allOrders.filter(o => o.status === status);
-                renderOrders(filtered);
-            }
         }
 
-        async function updateStatus(orderId, newStatus) {
-            try {
-                const formData = new URLSearchParams();
-                formData.append('action', 'update_status');
-                formData.append('orderId', orderId);
-                formData.append('status', newStatus);
+        function updateStatus(orderId, newStatus) {
+            const formData = new URLSearchParams({
+                action: 'update_status',
+                orderId: orderId,
+                status: newStatus
+            });
 
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                // به‌روزرسانی محلی مقدار وضعیت در آرایه
-                const order = allOrders.find(o => o.orderId === orderId);
-                if (order) order.status = newStatus;
-            } catch (error) {
-                alert('خطا در به‌روزرسانی وضعیت!');
-            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // به‌روزرسانی محلی و بازرندر کردن بدون نیاز به رفرش کامل
+                    const order = allOrders.find(o => o.orderId === orderId);
+                    if(order) order.status = newStatus;
+                    updateCounts();
+                    renderOrders();
+                } else {
+                    alert('خطا در به‌روزرسانی وضعیت');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('خطا در اتصال به سرور');
+            });
         }
-
-        // بارگذاری اولیه هنگام ورود به صفحه
-        loadOrders();
     </script>
 </body>
 </html>
