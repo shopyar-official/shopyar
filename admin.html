@@ -10,11 +10,15 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 pb-12">
 
-    <!-- هدر پنل با لوگو -->
+    <!-- هدر پنل با لوگوی داخلی و دائمی -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-30 px-4 py-3 shadow-sm flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-indigo-900 flex items-center justify-center p-1 shadow-sm border border-indigo-100 overflow-hidden">
-                <img src="logo.webp" alt="شاپ‌یار" class="w-full h-full object-contain">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-900 flex items-center justify-center shadow-sm border border-indigo-100 text-amber-400">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
             </div>
             <div>
                 <h1 class="font-bold text-sm">پنل مدیریت شاپ‌یار</h1>
@@ -112,7 +116,6 @@
             currentFilter = status;
             document.getElementById('current-filter-title').textContent = status === 'همه' ? 'فهرست همه سفارش‌ها' : `سفارش‌های ${status}`;
             
-            // مدیریت استایل دکمه‌ها
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.className = 'filter-btn bg-white text-slate-700 border border-slate-100 p-3 rounded-2xl shadow-sm text-center transition hover:bg-slate-50';
             });
@@ -128,7 +131,6 @@
                     mode: 'no-cors',
                     body: JSON.stringify({ action: 'update_status', row: row, status: newStatus })
                 });
-                // بروزرسانی محلی داده‌ها برای سرعت بیشتر
                 const order = allOrdersData.find(o => o.row === row);
                 if (order) order.status = newStatus;
                 updateCounts(allOrdersData);
