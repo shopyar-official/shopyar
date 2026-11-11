@@ -13,10 +13,9 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
 
-    <!-- هدر سایت -->
-    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 flex justify-between items-center">
+    <!-- هدر سایت (بدون دکمه مدیریت برای حفظ حریم و تمیزی صفحه مشتری) -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 text-center">
         <h1 class="text-xl font-bold">🛒 فروشگاه من (شاپ‌یار)</h1>
-        <a href="admin.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded-lg transition">پنل مدیریت</a>
     </header>
 
     <!-- محتوای اصلی -->
@@ -97,7 +96,6 @@
 
     <!-- جاوااسکریپت ارتباط با گوگل‌شیت -->
     <script>
-        // لینک وب‌اپ گوگل‌اسکریپت شما
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
 
         async function loadProducts() {
@@ -117,17 +115,16 @@
                     document.getElementById("loading").classList.add("hidden");
                     document.getElementById("orderForm").classList.remove("hidden");
                 } else {
-                    throw new Error("محصولی در جدول یافت نشد یا ساختار تب Products اشکال دارد.");
+                    throw new Error("محصولی در جدول یافت نشد.");
                 }
             } catch (err) {
                 console.error(err);
                 document.getElementById("loading").classList.add("hidden");
-                document.getElementById("error-text").textContent = "فهرست محصولات بارگذاری نشد. لطفاً اتصال اینترنت یا تب Products را بررسی کنید.";
+                document.getElementById("error-text").textContent = "فهرست محصولات بارگذاری نشد.";
                 document.getElementById("error-box").classList.remove("hidden");
             }
         }
 
-        // ارسال سفارش به گوگل‌اسکریپت
         document.getElementById("orderForm").addEventListener("submit", async function(e) {
             e.preventDefault();
             const btn = document.getElementById("submitBtn");
@@ -152,17 +149,15 @@
                     body: JSON.stringify(orderData)
                 });
 
-                // چون حالت no-cors است پاسخ مستقیماً خوانده نمیشود اما ثبت انجام میشود
                 document.getElementById("orderForm").classList.add("hidden");
                 document.getElementById("successBox").classList.remove("hidden");
             } catch (err) {
-                alert("خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.");
+                alert("خطا در ثبت سفارش.");
                 btn.disabled = false;
                 btn.textContent = "تایید و ثبت نهایی سفارش";
             }
         });
 
-        // لود اولیه محصولات هنگام باز شدن صفحه
         loadProducts();
     </script>
 </body>
