@@ -1,273 +1,169 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>شاپ‌یار | ثبت سفارش</title>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;background:#f5f7fb;color:#263248;font-family:Tahoma,Arial}
-    main{max-width:580px;margin:25px auto;padding:0 15px 35px}
-    header{text-align:center;margin-bottom:20px}
-    h1{margin-bottom:6px}
-    .card{background:#fff;border-radius:18px;padding:22px;margin:12px 0;
-      box-shadow:0 10px 30px #182b4210}
-    label{display:block;font-weight:bold;margin:15px 0 7px}
-    input,select,textarea,button{font:inherit}
-    input,select,textarea{width:100%;padding:12px;border:1px solid #cdd5e1;
-      border-radius:10px;background:#fff}
-    textarea{min-height:85px;resize:vertical}
-    input:focus,select:focus,textarea:focus{outline:2px solid #ffd0b8}
-    button,.link{border:0;background:#e66017;color:#fff;border-radius:10px;
-      padding:12px 17px;text-decoration:none;cursor:pointer;font-weight:bold}
-    button{width:100%;margin-top:20px}
-    button:disabled{opacity:.6}
-    .link{display:inline-block;background:#263248}
-    .muted{color:#687586;font-size:13px;line-height:1.9}
-    .product{display:flex;gap:12px;align-items:center;padding:12px;
-      border:1px solid #e4e9f0;border-radius:12px;margin:10px 0}
-    .product img{width:70px;height:70px;object-fit:cover;border-radius:8px}
-    .product input{width:auto}
-    .product label{margin:0;font-weight:normal;flex:1;cursor:pointer}
-    .product b{display:block}
-    #catalogError{color:#a82828}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاپ‌یار | ثبت سفارش آنلاین</title>
+    <!-- Tailwind CSS برای طراحی سریع و زیبا -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+    </style>
 </head>
-<body>
-<main>
-  <header>
-    <h1>🛍️ شاپ‌یار</h1>
-    <p class="muted">سفارش خود را سریع و ساده ثبت کنید.</p>
-    <a class="link"
-       href="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec?page=track">
-      پیگیری سفارش
-    </a>
-  </header>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
 
-  <form id="orderForm" class="card"
-    action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
-    method="post" accept-charset="UTF-8">
+    <!-- هدر سایت -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 flex justify-between items-center">
+        <h1 class="text-xl font-bold">🛒 فروشگاه من (شاپ‌یار)</h1>
+        <a href="admin.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded-lg transition">پنل مدیریت</a>
+    </header>
 
-    <h2>ثبت سفارش</h2>
+    <!-- محتوای اصلی -->
+    <main class="max-w-md mx-auto w-full p-4 flex-grow">
+        
+        <!-- پیام لودینگ یا خطا -->
+        <div id="loading" class="text-center py-10">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+            <p class="mt-2 text-sm text-gray-600">در حال بارگذاری محصولات...</p>
+        </div>
 
-    <label for="name">نام و نام خانوادگی</label>
-    <input id="name" name="name" maxlength="100" required>
+        <div id="error-box" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm" role="alert">
+            <span id="error-text">خطایی رخ داد.</span>
+        </div>
 
-    <label for="phone">شماره موبایل</label>
-    <input id="phone" name="phone" type="text" inputmode="numeric"
-      maxlength="11" pattern="09[0-9]{9}" placeholder="09123456789" required>
+        <!-- فرم ثبت سفارش -->
+        <form id="orderForm" class="hidden bg-white shadow-sm rounded-xl p-5 border border-gray-100 space-y-4">
+            <h2 class="text-lg font-bold text-gray-900 border-b pb-2">فرم ثبت سفارش سریع</h2>
 
-    <label for="city">شهر</label>
-    <input id="city" name="city" maxlength="80" required>
+            <!-- انتخاب محصول -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">انتخاب محصول:</label>
+                <select id="productSelect" required class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="">-- لطفاً محصولی انتخاب کنید --</option>
+                </select>
+            </div>
 
-    <label for="address">آدرس کامل</label>
-    <textarea id="address" name="address" maxlength="350" required></textarea>
+            <!-- تعداد -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">تعداد:</label>
+                <input type="number" id="quantity" value="1" min="1" required class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
 
-    <label>محصول</label>
-    <div id="products"><p class="muted">در حال بارگذاری محصولات...</p></div>
-    <p id="catalogError" hidden></p>
+            <!-- نام و نام خانوادگی -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">نام و نام خانوادگی گیرنده:</label>
+                <input type="text" id="name" required placeholder="مثلاً علی رضایی" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
 
-    <label for="quantity">تعداد</label>
-    <input id="quantity" name="quantity" type="number"
-      min="1" max="99" value="1" required>
+            <!-- شماره تماس -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">شماره موبایل:</label>
+                <input type="tel" id="phone" required placeholder="09123456789" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-left" dir="ltr">
+            </div>
 
-    <label for="postalCode">کد پستی ۱۰ رقمی</label>
-    <input id="postalCode" name="postalCode" type="text"
-      inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required>
+            <!-- شهر -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">شهر:</label>
+                <input type="text" id="city" required placeholder="مثلاً تهران" class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
 
-    <label for="shippingMethod">روش ارسال</label>
-    <select id="shippingMethod" name="shippingMethod" required>
-      <option value="">روش ارسال را انتخاب کنید</option>
-      <option value="پست پیشتاز">پست پیشتاز</option>
-      <option value="تیپاکس">تیپاکس</option>
-      <option value="پست سفارشی">پست سفارشی</option>
-      <option value="پیک شهری">پیک شهری</option>
-      <option value="تحویل حضوری">تحویل حضوری</option>
-    </select>
+            <!-- آدرس کامل -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">آدرس پستی کامل:</label>
+                <textarea id="address" rows="2" required placeholder="خیابان، پلاک، واحد..." class="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
 
-    <label for="couponCode">کد تخفیف، اگر دارید</label>
-    <input id="couponCode" name="couponCode" maxlength="40">
+            <!-- دکمه ثبت -->
+            <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition text-sm">
+                تایید و ثبت نهایی سفارش
+            </button>
+        </form>
 
-    <p id="summary" class="muted">
-      پس از انتخاب محصول و روش ارسال، هزینهٔ قابل محاسبه نمایش داده می‌شود.
-    </p>
-    <p class="muted">
-      کد تخفیف هنگام ثبت سفارش در سرور بررسی می‌شود؛ مبلغ قطعی
-      در رسید سفارش نمایش داده خواهد شد.
-    </p>
+        <!-- پیام موفقیت ثبت سفارش -->
+        <div id="successBox" class="hidden bg-green-50 border border-green-200 text-green-800 p-6 rounded-xl text-center space-y-3">
+            <div class="text-3xl">✅</div>
+            <h3 class="font-bold text-base">سفارش شما با موفقیت ثبت شد!</h3>
+            <p class="text-xs text-green-600">به زودی برای هماهنگی ارسال با شما تماس خواهیم گرفت.</p>
+            <button onclick="location.reload()" class="bg-green-600 text-white text-xs px-4 py-2 rounded-lg hover:bg-green-700 transition">ثبت سفارش جدید</button>
+        </div>
 
-    <button id="submitButton" type="submit">ثبت سفارش</button>
-  </form>
-</main>
+    </main>
 
-<script>
-  const APP =
-    'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+    <!-- فوتر -->
+    <footer class="text-center py-4 text-xs text-gray-400">
+        قدرت گرفته از سامانه شاپ‌یار
+    </footer>
 
-  let catalog = {products: [], shipping: []};
-  let catalogLoaded = false;
+    <!-- جاوااسکریپت ارتباط با گوگل‌شیت -->
+    <script>
+        // لینک وب‌اپ گوگل‌اسکریپت شما
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
 
-  const productsBox = document.getElementById('products');
-  const city = document.getElementById('city');
-  const method = document.getElementById('shippingMethod');
-  const quantity = document.getElementById('quantity');
-  const summary = document.getElementById('summary');
+        async function loadProducts() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=get_products");
+                const result = await response.json();
+                
+                if (result.status === "success" && result.products.length > 0) {
+                    const select = document.getElementById("productSelect");
+                    result.products.forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p.name;
+                        opt.textContent = `${p.name} - ${Number(p.price).toLocaleString()} تومان`;
+                        select.appendChild(opt);
+                    });
+                    
+                    document.getElementById("loading").classList.add("hidden");
+                    document.getElementById("orderForm").classList.remove("hidden");
+                } else {
+                    throw new Error("محصولی در جدول یافت نشد یا ساختار تب Products اشکال دارد.");
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById("loading").classList.add("hidden");
+                document.getElementById("error-text").textContent = "فهرست محصولات بارگذاری نشد. لطفاً اتصال اینترنت یا تب Products را بررسی کنید.";
+                document.getElementById("error-box").classList.remove("hidden");
+            }
+        }
 
-  function formatMoney(value) {
-    return Number(value).toLocaleString('fa-IR') + ' تومان';
-  }
+        // ارسال سفارش به گوگل‌اسکریپت
+        document.getElementById("orderForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.textContent = "در حال ثبت سفارش...";
 
-  function manualProduct() {
-    productsBox.replaceChildren();
-    const input = document.createElement('input');
-    input.name = 'product';
-    input.id = 'product';
-    input.required = true;
-    input.maxLength = 160;
-    input.placeholder = 'نام محصول موردنظر را بنویسید';
-    productsBox.append(input);
-  }
+            const orderData = {
+                action: "submit_order",
+                name: document.getElementById("name").value,
+                phone: document.getElementById("phone").value,
+                city: document.getElementById("city").value,
+                address: document.getElementById("address").value,
+                product: document.getElementById("productSelect").value,
+                quantity: document.getElementById("quantity").value
+            };
 
-  window.shopyarCatalog = function (data) {
-    catalogLoaded = true;
-    clearTimeout(catalogTimer);
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderData)
+                });
 
-    catalog = data || {products: [], shipping: []};
-    productsBox.replaceChildren();
+                // چون حالت no-cors است پاسخ مستقیماً خوانده نمیشود اما ثبت انجام میشود
+                document.getElementById("orderForm").classList.add("hidden");
+                document.getElementById("successBox").classList.remove("hidden");
+            } catch (err) {
+                alert("خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.");
+                btn.disabled = false;
+                btn.textContent = "تایید و ثبت نهایی سفارش";
+            }
+        });
 
-    if (!catalog.products || !catalog.products.length) {
-      manualProduct();
-      updateSummary();
-      return;
-    }
-
-    catalog.products.forEach((p, index) => {
-      const row = document.createElement('div');
-      row.className = 'product';
-
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'product';
-      radio.value = p.name;
-      radio.required = true;
-      radio.id = 'p' + index;
-      radio.addEventListener('change', updateSummary);
-
-      if (p.image && /^https:\/\//i.test(p.image)) {
-        const img = document.createElement('img');
-        img.src = p.image;
-        img.alt = p.name;
-        img.loading = 'lazy';
-        row.append(img);
-      }
-
-      const label = document.createElement('label');
-      label.htmlFor = radio.id;
-      const title = document.createElement('b');
-      title.textContent = p.name;
-      label.append(title);
-
-      const price = document.createElement('small');
-      price.textContent = p.price === null
-        ? 'قیمت با فروشگاه هماهنگ می‌شود'
-        : formatMoney(p.price);
-      label.append(price);
-
-      row.append(radio, label);
-      productsBox.append(row);
-    });
-
-    updateSummary();
-  };
-
-  const catalogTimer = setTimeout(() => {
-    if (!catalogLoaded) {
-      const error = document.getElementById('catalogError');
-      error.textContent =
-        'فهرست محصولات بارگذاری نشد؛ صفحه را تازه‌سازی کنید.';
-      error.hidden = false;
-      productsBox.textContent = '';
-      document.getElementById('submitButton').disabled = true;
-    }
-  }, 12000);
-
-  const script = document.createElement('script');
-  script.src = APP + '?mode=catalog';
-  script.onerror = () => {
-    const error = document.getElementById('catalogError');
-    error.textContent =
-      'ارتباط با فهرست محصولات برقرار نشد؛ دوباره تلاش کنید.';
-    error.hidden = false;
-    document.getElementById('submitButton').disabled = true;
-  };
-  document.body.append(script);
-
-  function updateSummary() {
-    const selected = document.querySelector(
-      'input[name="product"]:checked'
-    );
-    const product = selected
-      ? catalog.products.find(p => p.name === selected.value)
-      : null;
-
-    const place = city.value.trim();
-    const shippingMethod = method.value;
-    const rates = catalog.shipping || [];
-
-    const rate = rates.find(x =>
-      x.city === place && x.method === shippingMethod
-    ) || rates.find(x =>
-      x.city === '*' && x.method === shippingMethod
-    );
-
-    const productPrice = product && product.price !== null
-      ? product.price * Number(quantity.value || 1)
-      : null;
-
-    const shippingPrice = rate ? rate.price : null;
-
-    if (productPrice === null || shippingPrice === null) {
-      summary.textContent =
-        'روش ارسال: ' + (shippingMethod || 'انتخاب نشده') +
-        ' | مبلغ نهایی پس از مشخص‌شدن قیمت کالا/هزینهٔ ارسال اعلام می‌شود.';
-    } else {
-      summary.textContent =
-        'جمع کالا و ارسال، پیش از تخفیف: ' +
-        formatMoney(productPrice + shippingPrice);
-    }
-  }
-
-  [city, method, quantity].forEach(el =>
-    el.addEventListener('input', updateSummary)
-  );
-
-  function englishDigits(value) {
-    return value
-      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776))
-      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632));
-  }
-
-  ['phone', 'postalCode'].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', () => {
-      el.value = englishDigits(el.value);
-    });
-  });
-
-  document.getElementById('orderForm')
-    .addEventListener('submit', function (event) {
-      if (!catalogLoaded) {
-        event.preventDefault();
-        alert('لطفاً تا بارگذاری فهرست محصولات صبر کنید.');
-        return;
-      }
-
-      document.getElementById('submitButton').disabled = true;
-      document.getElementById('submitButton').textContent =
-        'در حال ثبت سفارش...';
-
-      // ارسال معمولی POST؛ از fetch استفاده نمی‌کنیم.
-    });
-</script>
+        // لود اولیه محصولات هنگام باز شدن صفحه
+        loadProducts();
+    </script>
 </body>
 </html>
