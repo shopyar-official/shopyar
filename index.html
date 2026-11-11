@@ -1,315 +1,273 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>شاپ‌یار | ثبت سفارش</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      padding: 24px 16px;
-      min-height: 100vh;
-      font-family: Tahoma, Arial, sans-serif;
-      background: #f4f6fb;
-      color: #1e293b;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 12px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: #fff0e5;
-      font-size: 32px;
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 25px;
-    }
-
-    .subtitle {
-      margin: 0;
-      color: #64748b;
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .card {
-      padding: 24px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
-    }
-
-    .field {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    input,
-    select,
-    textarea {
-      display: block;
-      width: 100%;
-      min-height: 46px;
-      padding: 11px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 11px;
-      background: #fff;
-      color: #1e293b;
-      font: inherit;
-      font-size: 15px;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 95px;
-      resize: vertical;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #ea580c;
-      box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: #94a3b8;
-    }
-
-    .hint {
-      display: block;
-      margin-top: 7px;
-      color: #64748b;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .selected-shipping {
-      margin: 9px 0 0;
-      color: #475569;
-      font-size: 13px;
-    }
-
-    .selected-shipping strong {
-      color: #c2410c;
-    }
-
-    button {
-      display: block;
-      width: 100%;
-      min-height: 49px;
-      margin-top: 23px;
-      border: 0;
-      border-radius: 11px;
-      background: #ea580c;
-      color: #fff;
-      font: inherit;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #c2410c;
-    }
-
-    button:disabled {
-      opacity: 0.65;
-      cursor: wait;
-    }
-
-    .footer {
-      margin-top: 16px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 12px;
-    }
-
-    @media (max-width: 420px) {
-      .card {
-        padding: 19px;
-      }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;background:#f5f7fb;color:#263248;font-family:Tahoma,Arial}
+    main{max-width:580px;margin:25px auto;padding:0 15px 35px}
+    header{text-align:center;margin-bottom:20px}
+    h1{margin-bottom:6px}
+    .card{background:#fff;border-radius:18px;padding:22px;margin:12px 0;
+      box-shadow:0 10px 30px #182b4210}
+    label{display:block;font-weight:bold;margin:15px 0 7px}
+    input,select,textarea,button{font:inherit}
+    input,select,textarea{width:100%;padding:12px;border:1px solid #cdd5e1;
+      border-radius:10px;background:#fff}
+    textarea{min-height:85px;resize:vertical}
+    input:focus,select:focus,textarea:focus{outline:2px solid #ffd0b8}
+    button,.link{border:0;background:#e66017;color:#fff;border-radius:10px;
+      padding:12px 17px;text-decoration:none;cursor:pointer;font-weight:bold}
+    button{width:100%;margin-top:20px}
+    button:disabled{opacity:.6}
+    .link{display:inline-block;background:#263248}
+    .muted{color:#687586;font-size:13px;line-height:1.9}
+    .product{display:flex;gap:12px;align-items:center;padding:12px;
+      border:1px solid #e4e9f0;border-radius:12px;margin:10px 0}
+    .product img{width:70px;height:70px;object-fit:cover;border-radius:8px}
+    .product input{width:auto}
+    .product label{margin:0;font-weight:normal;flex:1;cursor:pointer}
+    .product b{display:block}
+    #catalogError{color:#a82828}
   </style>
 </head>
 <body>
-  <main class="container">
-    <header class="header">
-      <div class="logo" aria-hidden="true">🛍️</div>
-      <h1>ثبت سفارش در شاپ‌یار</h1>
-      <p class="subtitle">اطلاعات زیر را تکمیل کنید تا سفارش شما ثبت شود.</p>
-    </header>
+<main>
+  <header>
+    <h1>🛍️ شاپ‌یار</h1>
+    <p class="muted">سفارش خود را سریع و ساده ثبت کنید.</p>
+    <a class="link"
+       href="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec?page=track">
+      پیگیری سفارش
+    </a>
+  </header>
 
-    <div class="card">
-      <form
-        id="orderForm"
-        action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
-        method="POST"
-        accept-charset="UTF-8"
-      >
-        <div class="field">
-          <label for="name">نام و نام خانوادگی</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            autocomplete="name"
-            placeholder="نام خود را وارد کنید"
-            required
-          >
-        </div>
+  <form id="orderForm" class="card"
+    action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
+    method="post" accept-charset="UTF-8">
 
-        <div class="field">
-          <label for="phone">شماره موبایل</label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            inputmode="numeric"
-            autocomplete="tel"
-            maxlength="11"
-            pattern="09[0-9]{9}"
-            title="شماره موبایل را به صورت ۱۱ رقم و با ۰۹ وارد کنید"
-            placeholder="مثلاً 09123456789"
-            required
-          >
-        </div>
+    <h2>ثبت سفارش</h2>
 
-        <div class="field">
-          <label for="city">شهر</label>
-          <input
-            id="city"
-            name="city"
-            type="text"
-            autocomplete="address-level2"
-            placeholder="شهر مقصد"
-            required
-          >
-        </div>
+    <label for="name">نام و نام خانوادگی</label>
+    <input id="name" name="name" maxlength="100" required>
 
-        <div class="field">
-          <label for="address">آدرس کامل</label>
-          <textarea
-            id="address"
-            name="address"
-            autocomplete="street-address"
-            placeholder="محله، خیابان، پلاک و واحد"
-            required
-          ></textarea>
-        </div>
+    <label for="phone">شماره موبایل</label>
+    <input id="phone" name="phone" type="text" inputmode="numeric"
+      maxlength="11" pattern="09[0-9]{9}" placeholder="09123456789" required>
 
-        <div class="field">
-          <label for="product">محصول موردنظر</label>
-          <input
-            id="product"
-            name="product"
-            type="text"
-            placeholder="نام محصول یا توضیح سفارش"
-            required
-          >
-        </div>
+    <label for="city">شهر</label>
+    <input id="city" name="city" maxlength="80" required>
 
-        <div class="field">
-          <label for="postalCode">کد پستی</label>
-          <input
-            id="postalCode"
-            name="postalCode"
-            type="text"
-            inputmode="numeric"
-            autocomplete="postal-code"
-            maxlength="10"
-            pattern="[0-9]{10}"
-            title="کد پستی باید دقیقاً ۱۰ رقم باشد"
-            placeholder="کد پستی ۱۰ رقمی"
-            required
-          >
-          <small class="hint">ارقام فارسی و انگلیسی هر دو قابل وارد کردن‌اند.</small>
-        </div>
+    <label for="address">آدرس کامل</label>
+    <textarea id="address" name="address" maxlength="350" required></textarea>
 
-        <div class="field">
-          <label for="shippingMethod">روش ارسال</label>
-          <select id="shippingMethod" name="shippingMethod" required>
-            <option value="" selected disabled>روش ارسال را انتخاب کنید</option>
-            <option value="پست پیشتاز">پست پیشتاز</option>
-            <option value="تیپاکس">تیپاکس</option>
-            <option value="پست سفارشی">پست سفارشی</option>
-            <option value="پیک شهری">پیک شهری</option>
-            <option value="تحویل حضوری">تحویل حضوری</option>
-          </select>
-          <p class="selected-shipping" aria-live="polite">
-            روش ارسال انتخاب‌شده: <strong id="shippingPreview">هنوز انتخاب نشده</strong>
-          </p>
-        </div>
+    <label>محصول</label>
+    <div id="products"><p class="muted">در حال بارگذاری محصولات...</p></div>
+    <p id="catalogError" hidden></p>
 
-        <button id="submitButton" type="submit">ثبت سفارش</button>
-      </form>
-    </div>
+    <label for="quantity">تعداد</label>
+    <input id="quantity" name="quantity" type="number"
+      min="1" max="99" value="1" required>
 
-    <p class="footer">شاپ‌یار | ثبت سریع و آسان سفارش</p>
-  </main>
+    <label for="postalCode">کد پستی ۱۰ رقمی</label>
+    <input id="postalCode" name="postalCode" type="text"
+      inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required>
 
-  <script>
-    const shippingSelect = document.getElementById('shippingMethod');
-    const shippingPreview = document.getElementById('shippingPreview');
+    <label for="shippingMethod">روش ارسال</label>
+    <select id="shippingMethod" name="shippingMethod" required>
+      <option value="">روش ارسال را انتخاب کنید</option>
+      <option value="پست پیشتاز">پست پیشتاز</option>
+      <option value="تیپاکس">تیپاکس</option>
+      <option value="پست سفارشی">پست سفارشی</option>
+      <option value="پیک شهری">پیک شهری</option>
+      <option value="تحویل حضوری">تحویل حضوری</option>
+    </select>
 
-    shippingSelect.addEventListener('change', function () {
-      shippingPreview.textContent =
-        shippingSelect.value || 'هنوز انتخاب نشده';
-    });
+    <label for="couponCode">کد تخفیف، اگر دارید</label>
+    <input id="couponCode" name="couponCode" maxlength="40">
 
-    function toEnglishDigits(value) {
-      return value
-        .replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 1776))
-        .replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 1632));
+    <p id="summary" class="muted">
+      پس از انتخاب محصول و روش ارسال، هزینهٔ قابل محاسبه نمایش داده می‌شود.
+    </p>
+    <p class="muted">
+      کد تخفیف هنگام ثبت سفارش در سرور بررسی می‌شود؛ مبلغ قطعی
+      در رسید سفارش نمایش داده خواهد شد.
+    </p>
+
+    <button id="submitButton" type="submit">ثبت سفارش</button>
+  </form>
+</main>
+
+<script>
+  const APP =
+    'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+
+  let catalog = {products: [], shipping: []};
+  let catalogLoaded = false;
+
+  const productsBox = document.getElementById('products');
+  const city = document.getElementById('city');
+  const method = document.getElementById('shippingMethod');
+  const quantity = document.getElementById('quantity');
+  const summary = document.getElementById('summary');
+
+  function formatMoney(value) {
+    return Number(value).toLocaleString('fa-IR') + ' تومان';
+  }
+
+  function manualProduct() {
+    productsBox.replaceChildren();
+    const input = document.createElement('input');
+    input.name = 'product';
+    input.id = 'product';
+    input.required = true;
+    input.maxLength = 160;
+    input.placeholder = 'نام محصول موردنظر را بنویسید';
+    productsBox.append(input);
+  }
+
+  window.shopyarCatalog = function (data) {
+    catalogLoaded = true;
+    clearTimeout(catalogTimer);
+
+    catalog = data || {products: [], shipping: []};
+    productsBox.replaceChildren();
+
+    if (!catalog.products || !catalog.products.length) {
+      manualProduct();
+      updateSummary();
+      return;
     }
 
-    const phoneInput = document.getElementById('phone');
-    const postalInput = document.getElementById('postalCode');
+    catalog.products.forEach((p, index) => {
+      const row = document.createElement('div');
+      row.className = 'product';
 
-    [phoneInput, postalInput].forEach(function (input) {
-      input.addEventListener('input', function () {
-        input.value = toEnglishDigits(input.value);
-      });
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'product';
+      radio.value = p.name;
+      radio.required = true;
+      radio.id = 'p' + index;
+      radio.addEventListener('change', updateSummary);
+
+      if (p.image && /^https:\/\//i.test(p.image)) {
+        const img = document.createElement('img');
+        img.src = p.image;
+        img.alt = p.name;
+        img.loading = 'lazy';
+        row.append(img);
+      }
+
+      const label = document.createElement('label');
+      label.htmlFor = radio.id;
+      const title = document.createElement('b');
+      title.textContent = p.name;
+      label.append(title);
+
+      const price = document.createElement('small');
+      price.textContent = p.price === null
+        ? 'قیمت با فروشگاه هماهنگ می‌شود'
+        : formatMoney(p.price);
+      label.append(price);
+
+      row.append(radio, label);
+      productsBox.append(row);
     });
 
-    document.getElementById('orderForm').addEventListener('submit', function () {
-      phoneInput.value = toEnglishDigits(phoneInput.value);
-      postalInput.value = toEnglishDigits(postalInput.value);
+    updateSummary();
+  };
 
-      const button = document.getElementById('submitButton');
-      button.disabled = true;
-      button.textContent = 'در حال ثبت سفارش...';
+  const catalogTimer = setTimeout(() => {
+    if (!catalogLoaded) {
+      const error = document.getElementById('catalogError');
+      error.textContent =
+        'فهرست محصولات بارگذاری نشد؛ صفحه را تازه‌سازی کنید.';
+      error.hidden = false;
+      productsBox.textContent = '';
+      document.getElementById('submitButton').disabled = true;
+    }
+  }, 12000);
 
-      // عمداً preventDefault نداریم:
-      // فرم باید با POST به doPost گوگل‌اسکریپت ارسال شود.
+  const script = document.createElement('script');
+  script.src = APP + '?mode=catalog';
+  script.onerror = () => {
+    const error = document.getElementById('catalogError');
+    error.textContent =
+      'ارتباط با فهرست محصولات برقرار نشد؛ دوباره تلاش کنید.';
+    error.hidden = false;
+    document.getElementById('submitButton').disabled = true;
+  };
+  document.body.append(script);
+
+  function updateSummary() {
+    const selected = document.querySelector(
+      'input[name="product"]:checked'
+    );
+    const product = selected
+      ? catalog.products.find(p => p.name === selected.value)
+      : null;
+
+    const place = city.value.trim();
+    const shippingMethod = method.value;
+    const rates = catalog.shipping || [];
+
+    const rate = rates.find(x =>
+      x.city === place && x.method === shippingMethod
+    ) || rates.find(x =>
+      x.city === '*' && x.method === shippingMethod
+    );
+
+    const productPrice = product && product.price !== null
+      ? product.price * Number(quantity.value || 1)
+      : null;
+
+    const shippingPrice = rate ? rate.price : null;
+
+    if (productPrice === null || shippingPrice === null) {
+      summary.textContent =
+        'روش ارسال: ' + (shippingMethod || 'انتخاب نشده') +
+        ' | مبلغ نهایی پس از مشخص‌شدن قیمت کالا/هزینهٔ ارسال اعلام می‌شود.';
+    } else {
+      summary.textContent =
+        'جمع کالا و ارسال، پیش از تخفیف: ' +
+        formatMoney(productPrice + shippingPrice);
+    }
+  }
+
+  [city, method, quantity].forEach(el =>
+    el.addEventListener('input', updateSummary)
+  );
+
+  function englishDigits(value) {
+    return value
+      .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 1776))
+      .replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 1632));
+  }
+
+  ['phone', 'postalCode'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      el.value = englishDigits(el.value);
     });
-  </script>
+  });
+
+  document.getElementById('orderForm')
+    .addEventListener('submit', function (event) {
+      if (!catalogLoaded) {
+        event.preventDefault();
+        alert('لطفاً تا بارگذاری فهرست محصولات صبر کنید.');
+        return;
+      }
+
+      document.getElementById('submitButton').disabled = true;
+      document.getElementById('submitButton').textContent =
+        'در حال ثبت سفارش...';
+
+      // ارسال معمولی POST؛ از fetch استفاده نمی‌کنیم.
+    });
+</script>
 </body>
 </html>
