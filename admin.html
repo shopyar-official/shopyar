@@ -10,7 +10,6 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 pb-12">
 
-    <!-- هدر پنل -->
     <header class="bg-white border-b border-slate-100 sticky top-0 z-30 px-4 py-4 shadow-sm flex justify-between items-center">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">ش</div>
@@ -25,8 +24,6 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
-        
-        <!-- آمار کلی -->
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-center">
                 <span class="text-xs text-slate-400 block mb-1">کل سفارش‌ها</span>
@@ -42,7 +39,6 @@
             </div>
         </div>
 
-        <!-- لیست سفارش‌ها -->
         <div>
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-sm text-slate-700">فهرست سفارش‌های ثبت شده</h2>
@@ -74,7 +70,6 @@
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-                
                 loading.classList.add('hidden');
 
                 if (data.status === 'success' && data.orders) {
@@ -86,13 +81,24 @@
             } catch (err) {
                 loading.classList.add('hidden');
                 errorBox.classList.remove('hidden');
-                document.getElementById('error-text').textContent = 'خطا در ارتباط با سرور: ' + err.message;
+            }
+        }
+
+        async function updateStatus(row, newStatus) {
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: 'update_status', row: row, status: newStatus })
+                });
+                alert('وضعیت سفارش با موفقیت بروز شد.');
+            } catch (err) {
+                alert('خطا در بروزرسانی وضعیت');
             }
         }
 
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
-            
             document.getElementById('total-count').textContent = orders.length;
             document.getElementById('pending-count').textContent = orders.filter(o => o.status === 'در حال بررسی').length;
             document.getElementById('completed-count').textContent = orders.filter(o => o.status === 'تکمیل شده').length;
@@ -102,7 +108,6 @@
                 return;
             }
 
-            // نمایش به ترتیب جدیدترین در بالا
             orders.reverse().forEach(order => {
                 const phoneStr = String(order.phone || '');
                 const card = document.createElement('div');
@@ -114,7 +119,12 @@
                             <span class="text-xs font-bold text-indigo-600 block mb-0.5">${order.orderId || 'بدون کد'}</span>
                             <h3 class="font-bold text-slate-800 text-sm">${order.name}</h3>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold ${order.status === 'تکمیل شده' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${order.status || 'در حال بررسی'}</span>
+                        <select onchange="updateStatus(${order.row}, this.value)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:border-indigo-600">
+                            <option value="در حال بررسی" ${order.status === 'در حال بررسی' ? 'selected' : ''}>⏳ در حال بررسی</option>
+                            <option value="در حال آماده‌سازی" ${order.status === 'در حال آماده‌سازی' ? 'selected' : ''}>📦 در حال آماده‌سازی</option>
+                            <option value="در حال ارسال" ${order.status === 'در حال ارسال' ? 'selected' : ''}>🚚 در حال ارسال</option>
+                            <option value="تکمیل شده" ${order.status === 'تکمیل شده' ? 'selected' : ''}>✅ تکمیل شده</option>
+                        </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-xs text-slate-600">
