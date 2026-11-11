@@ -1,35 +1,32 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>شاپ‌یار | هدایت به پنل مدیریت</title>
-  <style>
-    body {
-      margin: 0; padding: 40px 20px;
-      background: #f1f5f9; font-family: Tahoma, sans-serif;
-      display: flex; justify-content: center; align-items: center; min-height: 100vh;
-      color: #1e293b; text-align: center;
-    }
-    .card {
-      background: #fff; padding: 35px; border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.08); max-width: 420px; width: 100%;
-    }
-    h1 { font-size: 22px; margin-bottom: 10px; }
-    p { color: #64748b; font-size: 14px; line-height: 1.8; margin-bottom: 25px; }
-    a.btn {
-      display: inline-block; background: #4f46e5; color: #fff;
-      text-decoration: none; padding: 14px 28px; border-radius: 12px;
-      font-weight: bold; width: 100%; box-sizing: border-box;
-    }
-    a.btn:hover { background: #4338ca; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاپ‌یار | پنل مدیریت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style> body { font-family: 'Vazirmatn', sans-serif; } </style>
 </head>
-<body>
-  <div class="card">
-    <h1>👨‍💼 پنل مدیریت شاپ‌یار</h1>
-    <p>برای امنیت بیشتر و اتصال پایدار به دیتابیس، پنل مدیریت روی بستر امن گوگل‌اسکریپت میزبانی می‌شود.</p>
-    <a class="btn" href="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec?page=admin" target="_blank">ورود به پنل مدیریت اصلی</a>
-  </div>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-4">
+
+    <div class="max-w-xl mx-auto bg-white rounded-xl shadow-md p-6">
+        <h1 class="text-xl font-bold text-indigo-600 mb-4 border-b pb-2">📦 پنل مدیریت سفارش‌های شاپ‌یار</h1>
+        
+        <p class="text-sm text-gray-600 mb-4">
+            برای مشاهده سفارش‌ها، می‌توانید مستقیماً به گوگل‌شیت خود (تب <b>Shopyar-DB</b>) مراجعه کنید یا از طریق دکمه زیر جدول سفارش‌ها را بررسی نمایید.
+        </p>
+
+        <div class="flex gap-3">
+            <a href="https://docs.google.com/spreadsheets/d/1RuO05RJnXdxDkG4p5TPCS8RWaMn18bk5DtwgadU/edit" target="_blank" 
+               class="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2.5 rounded-lg transition font-medium">
+                📊 ورود به گوگل‌شیت (مدیریت سفارش‌ها)
+            </a>
+            <a href="index.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm px-4 py-2.5 rounded-lg transition">
+                بازگشت به سایت فروشگاه
+            </a>
+        </div>
+    </div>
+
 </body>
 </html>
