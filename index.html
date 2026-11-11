@@ -65,10 +65,7 @@
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">انتخاب محصول</label>
                         <select id="product" class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-3 text-xs focus:outline-none focus:border-indigo-600" onchange="updatePrice()">
-                            <!-- لیست محصولات فروشگاه شما -->
-                            <option value="لباس زیر زنانه" data-price="550000">لباس زیر زنانه - ۵۵۰,۰۰۰ تومان</option>
-                            <option value="شرت نخی" data-price="390000">شرت نخی - ۳۹۰,۰۰۰ تومان</option>
-                            <option value="ست کامل لباس زیر" data-price="890000">ست کامل لباس زیر - ۸۹۰,۰۰۰ تومان</option>
+                            <option value="">در حال بارگذاری محصولات...</option>
                         </select>
                     </div>
                     <div>
@@ -98,7 +95,7 @@
                 <div class="bg-gray-50 p-3.5 rounded-2xl space-y-1.5 text-xs">
                     <div class="flex justify-between text-gray-500">
                         <span>مبلغ محصول:</span>
-                        <span id="productPriceDisplay">550,000 تومان</span>
+                        <span id="productPriceDisplay">0 تومان</span>
                     </div>
                     <div class="flex justify-between text-gray-500">
                         <span>هزینه ارسال:</span>
@@ -110,7 +107,7 @@
                     </div>
                     <div class="flex justify-between font-bold text-gray-800 pt-1.5 border-t border-gray-200 text-sm">
                         <span>مبلغ کل قابل پرداخت:</span>
-                        <span id="totalPriceDisplay" class="text-indigo-600">600,000 تومان</span>
+                        <span id="totalPriceDisplay" class="text-indigo-600">0 تومان</span>
                     </div>
                 </div>
 
@@ -137,6 +134,34 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         let discountAmount = 0;
+
+        // بارگذاری محصولات از گوگل‌شیت تب Products
+        async function loadProducts() {
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=get_products');
+                const products = await response.json();
+                const select = document.getElementById('product');
+                select.innerHTML = '';
+
+                if (products.length === 0) {
+                    select.innerHTML = '<option value="">محصولی یافت نشد</option>';
+                    return;
+                }
+
+                products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.name;
+                    opt.setAttribute('data-price', p.price);
+                    opt.textContent = `${p.name} - ${Number(p.price).toLocaleString()} تومان`;
+                    select.appendChild(opt);
+                });
+
+                updatePrice();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('product').innerHTML = '<option value="">خطا در بارگذاری محصولات</option>';
+            }
+        }
 
         function updatePrice() {
             const productSelect = document.getElementById('product');
@@ -219,7 +244,8 @@
             }
         });
 
-        updatePrice();
+        // اجرای اولیه بارگذاری محصولات
+        loadProducts();
     </script>
 </body>
 </html>
