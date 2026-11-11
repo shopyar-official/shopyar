@@ -31,23 +31,27 @@
     </header>
 
     <main class="max-w-2xl mx-auto p-4 space-y-4">
-        <!-- Stats Cards (4 Statuses) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+        <!-- Stats Cards (5 Statuses) -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <div onclick="filterByStatus('all')" id="card-all" class="bg-white p-3 rounded-2xl border-2 border-indigo-500 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
-                <span class="text-[10px] text-gray-400 block mb-1">همه سفارش‌ها</span>
-                <span id="statAll" class="text-base font-bold text-indigo-600">۰</span>
+                <span class="text-[10px] text-gray-400 block mb-1">همه</span>
+                <span id="statAll" class="text-sm font-bold text-indigo-600">۰</span>
             </div>
             <div onclick="filterByStatus('در حال بررسی')" id="card-در حال بررسی" class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
-                <span class="text-[10px] text-amber-500 block mb-1">در حال بررسی</span>
-                <span id="statPending" class="text-base font-bold text-amber-600">۰</span>
+                <span class="text-[10px] text-amber-500 block mb-1">بررسی</span>
+                <span id="statPending" class="text-sm font-bold text-amber-600">۰</span>
             </div>
             <div onclick="filterByStatus('در حال آماده‌سازی')" id="card-در حال آماده‌سازی" class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
-                <span class="text-[10px] text-blue-500 block mb-1">در حال آماده‌سازی</span>
-                <span id="statPreparing" class="text-base font-bold text-blue-600">۰</span>
+                <span class="text-[10px] text-blue-500 block mb-1">آماده‌سازی</span>
+                <span id="statPreparing" class="text-sm font-bold text-blue-600">۰</span>
+            </div>
+            <div onclick="filterByStatus('ارسال شده')" id="card-ارسال شده" class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
+                <span class="text-[10px] text-purple-500 block mb-1">ارسال شده</span>
+                <span id="statShipped" class="text-sm font-bold text-purple-600">۰</span>
             </div>
             <div onclick="filterByStatus('تکمیل شده')" id="card-تکمیل شده" class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]">
                 <span class="text-[10px] text-emerald-500 block mb-1">تکمیل شده</span>
-                <span id="statCompleted" class="text-base font-bold text-emerald-600">۰</span>
+                <span id="statCompleted" class="text-sm font-bold text-emerald-600">۰</span>
             </div>
         </div>
 
@@ -100,11 +104,13 @@
             let total = allOrders.length;
             let pending = 0;
             let preparing = 0;
+            let shipped = 0;
             let completed = 0;
 
             allOrders.forEach(o => {
                 let s = (o.status || 'در حال بررسی').trim();
                 if (s.includes('آماده‌سازی')) preparing++;
+                else if (s.includes('ارسال شده')) shipped++;
                 else if (s.includes('تکمیل')) completed++;
                 else pending++;
             });
@@ -112,18 +118,21 @@
             document.getElementById('statAll').textContent = total;
             document.getElementById('statPending').textContent = pending;
             document.getElementById('statPreparing').textContent = preparing;
+            document.getElementById('statShipped').textContent = shipped;
             document.getElementById('statCompleted').textContent = completed;
         }
 
         function filterByStatus(status) {
             currentFilter = status;
             
-            ['all', 'در حال بررسی', 'در حال آماده‌سازی', 'تکمیل شده'].forEach(s => {
+            ['all', 'در حال بررسی', 'در حال آماده‌سازی', 'ارسال شده', 'تکمیل شده'].forEach(s => {
                 const card = document.getElementById('card-' + s);
-                if (s === status) {
-                    card.className = 'bg-white p-3 rounded-2xl border-2 border-indigo-500 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
-                } else {
-                    card.className = 'bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
+                if (card) {
+                    if (s === status) {
+                        card.className = 'bg-white p-3 rounded-2xl border-2 border-indigo-500 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
+                    } else {
+                        card.className = 'bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center cursor-pointer transition hover:scale-[1.02]';
+                    }
                 }
             });
 
@@ -152,8 +161,9 @@
             if (currentFilter !== 'all') {
                 filtered = allOrders.filter(o => {
                     let s = (o.status || 'در حال بررسی').trim();
-                    if (currentFilter === 'در حال بررسی') return s === 'در حال بررسی' || (!s.includes('آماده‌سازی') && !s.includes('تکمیل') && !s.includes('ارسال'));
+                    if (currentFilter === 'در حال بررسی') return s === 'در حال بررسی' || (!s.includes('آماده‌سازی') && !s.includes('ارسال') && !s.includes('تکمیل'));
                     if (currentFilter === 'در حال آماده‌سازی') return s.includes('آماده‌سازی');
+                    if (currentFilter === 'ارسال شده') return s.includes('ارسال شده');
                     if (currentFilter === 'تکمیل شده') return s.includes('تکمیل');
                     return s === currentFilter;
                 });
@@ -173,7 +183,6 @@
             filtered.forEach(o => {
                 const statusText = (o.status || 'در حال بررسی').trim();
                 
-                // مپ کردن دقیق فیلدها بر اساس ستون‌های گوگل‌شیت شما
                 const orderId = o.orderId || o.id || 'بدون شناسه';
                 const customerName = o.name || o.customerName || '-';
                 const phoneNum = o.phone || o.phoneNum || o.date || '-';
@@ -196,6 +205,7 @@
                         <select onchange="updateOrderStatus('${orderId}', this.value)" class="text-[11px] font-medium px-2.5 py-1 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-indigo-500 transition">
                             <option value="در حال بررسی" ${statusText === 'در حال بررسی' ? 'selected' : ''}>در حال بررسی</option>
                             <option value="در حال آماده‌سازی" ${statusText.includes('آماده‌سازی') ? 'selected' : ''}>در حال آماده‌سازی</option>
+                            <option value="ارسال شده" ${statusText.includes('ارسال شده') ? 'selected' : ''}>ارسال شده</option>
                             <option value="تکمیل شده" ${statusText.includes('تکمیل') ? 'selected' : ''}>تکمیل شده</option>
                         </select>
                     </div>
