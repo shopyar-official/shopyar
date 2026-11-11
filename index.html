@@ -8,126 +8,121 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
-      padding: 24px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f1f5f9;
+      padding: 24px 14px;
+      background: linear-gradient(145deg, #eef2ff, #f8fafc);
       color: #1e293b;
       font-family: Tahoma, sans-serif;
     }
-    main {
-      width: 100%;
-      max-width: 460px;
-      padding: 28px 24px;
+    .card {
+      max-width: 540px;
+      margin: 24px auto;
+      padding: 28px;
+      background: white;
       border: 1px solid #e2e8f0;
-      border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, .08);
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(15, 23, 42, .08);
     }
-    .logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 14px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: #f59e0b;
-      font-size: 28px;
-    }
-    h1 { margin: 0; text-align: center; font-size: 22px; }
-    .subtitle {
-      margin: 9px 0 22px;
-      color: #64748b;
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.9;
-    }
-    label {
-      display: block;
-      margin: 15px 0 7px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-    input, textarea {
-      display: block;
+    .icon { font-size: 42px; text-align: center; }
+    h1 { text-align: center; margin: 10px 0 6px; font-size: 24px; }
+    .intro { text-align: center; color: #64748b; line-height: 1.8; margin-bottom: 26px; }
+    label { display: block; font-weight: bold; font-size: 14px; margin: 17px 0 8px; }
+    input, textarea, select {
       width: 100%;
-      padding: 13px;
+      padding: 13px 14px;
       border: 1px solid #cbd5e1;
-      border-radius: 11px;
-      background: #f8fafc;
+      border-radius: 12px;
+      background: #fff;
+      color: #1e293b;
       font: inherit;
-      font-size: 14px;
       outline: none;
     }
-    input:focus, textarea:focus { border-color: #f59e0b; }
-    textarea { min-height: 82px; resize: vertical; }
+    input:focus, textarea:focus, select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px #e0e7ff;
+    }
+    textarea { min-height: 95px; resize: vertical; }
+    .hint { color: #64748b; font-size: 12px; line-height: 1.8; margin-top: 6px; }
     button {
       width: 100%;
-      margin-top: 22px;
-      padding: 14px;
+      margin-top: 25px;
+      padding: 15px;
       border: 0;
-      border-radius: 12px;
-      background: #f59e0b;
-      color: #172033;
+      border-radius: 13px;
+      background: #4f46e5;
+      color: white;
       font: inherit;
       font-weight: bold;
       cursor: pointer;
     }
     button:disabled { opacity: .65; cursor: wait; }
-    .hint {
-      margin: 14px 0 0;
-      color: #64748b;
-      text-align: center;
-      font-size: 11px;
-      line-height: 1.8;
-    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="logo">🛍️</div>
+  <main class="card">
+    <div class="icon">🛍️</div>
     <h1>ثبت سفارش سریع</h1>
-    <p class="subtitle">مشخصاتتان را وارد کنید تا سفارشتان ثبت شود.</p>
+    <p class="intro">مشخصاتتان را وارد کنید تا سفارشتان ثبت شود.</p>
 
-    <form
-      id="orderForm"
-      action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
-      method="post"
-      target="_self">
+    <form id="orderForm"
+          action="https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec"
+          method="post"
+          target="_self">
 
       <label for="name">نام و نام خانوادگی</label>
-      <input id="name" name="name" type="text" required maxlength="100"
-        autocomplete="name" placeholder="مثلاً علی نوری">
+      <input id="name" name="name" type="text" maxlength="100" required
+             autocomplete="name" placeholder="مثلاً علی نوری">
 
       <label for="phone">شماره تماس</label>
-      <input id="phone" name="phone" type="tel" required maxlength="20"
-        autocomplete="tel" placeholder="مثلاً 09123456789" dir="ltr">
+      <input id="phone" name="phone" type="tel" maxlength="20" required
+             dir="ltr" autocomplete="tel" placeholder="مثلاً 09123456789">
 
       <label for="city">شهر</label>
-      <input id="city" name="city" type="text" required maxlength="100"
-        placeholder="مثلاً تهران">
+      <input id="city" name="city" type="text" maxlength="100" required
+             placeholder="مثلاً تهران">
 
       <label for="address">آدرس کامل</label>
-      <textarea id="address" name="address" required maxlength="500"
-        placeholder="خیابان، کوچه، پلاک، واحد..."></textarea>
+      <textarea id="address" name="address" maxlength="500" required
+                placeholder="خیابان، کوچه، پلاک و واحد"></textarea>
+
+      <label for="postalCode">کد پستی</label>
+      <input id="postalCode" name="postalCode" type="text" inputmode="numeric"
+             maxlength="10" pattern="[0-9]{10}" required dir="ltr"
+             autocomplete="postal-code" placeholder="کد پستی ۱۰ رقمی">
+      <div class="hint">برای ثبت دقیق‌تر مرسوله، کد پستی را وارد کنید.</div>
 
       <label for="product">محصول یا توضیحات سفارش</label>
-      <input id="product" name="product" type="text" required maxlength="200"
-        placeholder="مثلاً هودی مشکی سایز L">
+      <input id="product" name="product" type="text" maxlength="200" required
+             placeholder="مثلاً هودی مشکی سایز L">
+
+      <label for="shippingMethod">روش ارسال دلخواه</label>
+      <select id="shippingMethod" name="shippingMethod" required>
+        <option value="" selected disabled>روش ارسال را انتخاب کنید</option>
+        <option value="پست پیشتاز">پست پیشتاز</option>
+        <option value="تیپاکس">تیپاکس</option>
+        <option value="پست سفارشی">پست سفارشی</option>
+        <option value="پیک شهری">پیک شهری، در صورت امکان</option>
+        <option value="تحویل حضوری">تحویل حضوری، با هماهنگی</option>
+      </select>
+      <div class="hint">هزینه و امکان نهاییِ ارسال پس از بررسی سفارش با شما هماهنگ می‌شود.</div>
 
       <button id="submitBtn" type="submit">ثبت سفارش</button>
-      <p class="hint">بعد از ثبت موفق، سفارش در گوگل‌شیت ذخیره می‌شود.</p>
     </form>
   </main>
 
   <script>
     const form = document.getElementById('orderForm');
     const button = document.getElementById('submitBtn');
+    const postalInput = document.getElementById('postalCode');
+
+    postalInput.addEventListener('input', function () {
+      this.value = this.value
+        .replace(/[۰-۹]/g, ch => String(ch.charCodeAt(0) - 1776))
+        .replace(/[٠-٩]/g, ch => String(ch.charCodeAt(0) - 1632))
+        .replace(/\D/g, '')
+        .slice(0, 10);
+    });
 
     window.addEventListener('pageshow', function () {
-      form.reset();
       button.disabled = false;
       button.textContent = 'ثبت سفارش';
     });
