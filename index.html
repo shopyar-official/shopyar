@@ -3,110 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت سفارش سریع | شاپ‌یار</title>
+    <title>شاپ‌یار | ثبت سفارش آنلاین</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 pb-12">
+<body class="bg-slate-50 min-h-screen text-slate-800 py-6 px-4">
 
-    <!-- هدر / پروفایل شیک فروشگاه -->
-    <header class="bg-white border-b border-slate-100 sticky top-0 z-30 px-4 py-4 shadow-sm">
-        <div class="max-w-md mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-indigo-900 flex items-center justify-center shadow-sm border border-indigo-100 text-amber-400">
-                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="font-bold text-sm text-slate-800">فروشگاه آنلاین</h1>
-                    <p class="text-[11px] text-slate-400">فرم ثبت سفارش سریع و امن</p>
-                </div>
-            </div>
-            <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                آماده ثبت سفارش
-            </span>
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- هدر -->
+        <div class="bg-indigo-600 px-6 py-5 text-white text-center">
+            <h1 class="font-bold text-lg">فروشگاه من (شاپ‌یار)</h1>
+            <p class="text-xs text-indigo-100 mt-1">فرم ثبت سفارش سریع</p>
         </div>
-    </header>
 
-    <main class="max-w-md mx-auto px-4 mt-6">
-        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-5">
-            <div class="text-center pb-2 border-b border-slate-50">
-                <h2 class="font-bold text-base text-slate-800">مشخصات تحویل گیرنده</h2>
-                <p class="text-xs text-slate-400 mt-1">لطفاً اطلاعات زیر را با دقت تکمیل کنید</p>
+        <!-- فرم -->
+        <form id="order-form" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">انتخاب محصول:</label>
+                <select id="product" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
+                    <option value="">-- لطفاً محصولی انتخاب کنید --</option>
+                </select>
             </div>
 
-            <form id="order-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1.5">نام و نام خانوادگی</label>
-                    <input type="text" id="name" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition" placeholder="مثال: علی احمدی">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1.5">شماره موبایل</label>
-                    <input type="tel" id="phone" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition" placeholder="مثال: 09123456789">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1.5">شهر</label>
-                        <input type="text" id="city" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition" placeholder="مثال: تهران">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1.5">کد پستی (اختیاری)</label>
-                        <input type="text" id="postal" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition" placeholder="۱۰ رقم">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1.5">آدرس پستی کامل</label>
-                    <textarea id="address" rows="2" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition resize-none" placeholder="استان، شهر، خیابان، کوچه، پلاک، واحد"></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1.5">انتخاب محصول</label>
-                        <select id="product" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition">
-                            <option value="محصول پیش‌فرض">محصول پیش‌فرض (۵۵۰,۰۰۰ تومان)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1.5">تعداد</label>
-                        <input type="number" id="quantity" value="1" min="1" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-600 transition">
-                    </div>
-                </div>
-
-                <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl text-xs transition shadow-lg shadow-indigo-100 mt-2">
-                    تایید و ثبت نهایی سفارش
-                </button>
-            </form>
-        </div>
-    </main>
-
-    <!-- مودال موفقیت ثبت سفارش -->
-    <div id="success-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-xl animate-scale">
-            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-                ✓
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">تعداد:</label>
+                <input type="number" id="quantity" min="1" value="1" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
             </div>
-            <h3 class="font-bold text-slate-800 text-base">سفارش شما با موفقیت ثبت شد!</h3>
-            <p id="success-order-id" class="text-xs text-indigo-600 font-bold"></p>
-            <p class="text-xs text-slate-500">از خرید شما سپاسگزاریم. سفارش شما جهت پردازش و ارسال ثبت گردید.</p>
-            
-            <div class="pt-2 flex flex-col gap-2">
-                <a href="https://amirhosseinishop.com/" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-2xl text-xs font-bold transition block text-center">
-                    بازگشت به فروشگاه اصلی
-                </a>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">نام و نام خانوادگی گیرنده:</label>
+                <input type="text" id="name" placeholder="مثلاً علی رضایی" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
             </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">شماره موبایل:</label>
+                <input type="tel" id="phone" placeholder="09123456789" required dir="ltr" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm text-right focus:outline-none focus:border-indigo-600 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">شهر:</label>
+                <input type="text" id="city" placeholder="مثلاً تهران" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">روش ارسال:</label>
+                <select id="shipping-method" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition">
+                    <option value="پیشتاز|35000">پست پیشتاز (۳۵,۰۰۰ تومان)</option>
+                    <option value="تیپاکس|50000">تیپاکس - پس کرایه (۵۰,۰۰۰ تومان)</option>
+                    <option value="پیک|40000">پیک موتوری (۴۰,۰۰۰ تومان)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">آدرس پستی کامل:</label>
+                <textarea id="address" rows="3" placeholder="خیابان، پلاک، واحد..." required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-600 transition"></textarea>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-100 transition">
+                تایید و ثبت نهایی سفارش
+            </button>
+        </form>
+
+        <!-- پیام موفقیت (مخفی به طور پیش‌فرض) -->
+        <div id="success-box" class="hidden p-8 text-center space-y-4">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
+            <h2 class="font-bold text-lg text-slate-800">سفارش شما با موفقیت ثبت شد!</h2>
+            <p id="order-code-text" class="text-xs text-slate-500"></p>
+            <a href="https://amirhosseinishop.com/" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-indigo-100 transition text-sm">
+                بازگشت به فروشگاه
+            </a>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(SCRIPT_URL + '?action=get_products');
+                const data = await res.json();
+                const select = document.getElementById('product');
+                if (data.status === 'success' && data.products) {
+                    data.products.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.name;
+                        opt.textContent = `${p.name} - ${Number(p.price).toLocaleString()} تومان`;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (err) { console.error(err); }
+        }
+        loadProducts();
 
         document.getElementById('order-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -114,29 +102,27 @@
             btn.disabled = true;
             btn.textContent = 'در حال ثبت سفارش...';
 
-            const orderData = {
-                action: 'create_order',
+            const shippingData = document.getElementById('shipping-method').value.split('|');
+            const formData = {
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
                 address: document.getElementById('address').value,
-                postal: document.getElementById('postal').value,
                 product: document.getElementById('product').value,
                 quantity: document.getElementById('quantity').value,
-                shippingMethod: 'پیشتاز',
-                shippingCost: 50000,
-                totalPrice: 550000
+                shippingMethod: shippingData[0],
+                shippingCost: shippingData[1]
             };
 
             try {
-                await fetch(SCRIPT_URL, {
+                const res = await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify(orderData)
+                    body: JSON.stringify(formData)
                 });
-
-                document.getElementById('success-order-id').textContent = 'کد پیگیری: SHP-' + Math.floor(100000 + Math.random() * 900000);
-                document.getElementById('success-modal').classList.remove('hidden');
+                
+                document.getElementById('order-form').classList.add('hidden');
+                document.getElementById('success-box').classList.remove('hidden');
             } catch (err) {
                 alert('خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.');
                 btn.disabled = false;
