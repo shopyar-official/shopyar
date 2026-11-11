@@ -3,156 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ثبت سفارش سریع - شاپ‌یار</title>
+    <title>ثبت سفارش - شاپ‌یار</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
 
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-6 md:p-8 border border-slate-100">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-8">
+        
+        <!-- هدر فرم -->
         <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-slate-800">🛍️ شاپ‌یار</h1>
-            <p class="text-sm text-slate-500 mt-1">لطفاً اطلاعات سفارش خود را وارد کنید</p>
+            <h1 class="text-xl font-bold text-slate-800">🛍️ ثبت سفارش در شاپ‌یار</h1>
+            <p class="text-xs text-slate-500 mt-1">لطفاً مشخصات خود را جهت ارسال سفارش وارد کنید</p>
         </div>
 
-        <form id="orderForm" class="space-y-4">
-            <!-- نام مشتری -->
+        <!-- فرم ثبت سفارش -->
+        <form id="orderForm" onsubmit="submitOrder(event)" class="space-y-4">
+            
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">نام و نام خانوادگی</label>
-                <input type="text" id="name" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50">
+                <label class="block text-xs font-medium text-slate-700 mb-1">نام و نام خانوادگی</label>
+                <input type="text" id="name" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
             </div>
 
-            <!-- شماره تلفن -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">شماره تماس</label>
-                <input type="tel" id="phone" required placeholder="09123456789" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50 text-left" dir="ltr">
+                <label class="block text-xs font-medium text-slate-700 mb-1">شماره موبایل</label>
+                <input type="tel" id="phone" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium" placeholder="09123456789">
             </div>
 
-            <!-- شهر -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">شهر</label>
-                <input type="text" id="city" required placeholder="مثلا: تهران" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50">
+                <label class="block text-xs font-medium text-slate-700 mb-1">شهر</label>
+                <input type="text" id="city" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
             </div>
 
-            <!-- آدرس پستی -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">آدرس کامل پستی</label>
-                <textarea id="address" rows="2" required placeholder="استان، شهر، خیابان، پلاک، واحد" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50"></textarea>
+                <label class="block text-xs font-medium text-slate-700 mb-1">آدرس پستی کامل</label>
+                <textarea id="address" required rows="2" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"></textarea>
             </div>
 
-            <!-- انتخاب محصول -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">انتخاب محصول</label>
-                <select id="product" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50" onchange="calculateTotal()">
-                    <option value="">در حال بارگذاری محصولات...</option>
+                <label class="block text-xs font-medium text-slate-700 mb-1">انتخاب محصول</label>
+                <select id="productSelect" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
+                    <option value="" disabled selected>در حال بارگذاری محصولات...</option>
                 </select>
             </div>
 
-            <!-- نوع ارسال -->
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">نوع ارسال</label>
-                <select id="shipping" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-orange-500 focus:outline-none text-sm bg-slate-50" onchange="calculateTotal()">
-                    <option value="پیشتاز|40000">پست پیشتاز (۴۰,۰۰۰ تومان)</option>
-                    <option value="تیپاکس|60000">تیپاکس (پس کرایه / ۶۰,۰۰۰ تومان)</option>
-                    <option value="پیک|50000">پیک موتوری (ویژه تهران - ۵۰,۰۰۰ تومان)</option>
+                <label class="block text-xs font-medium text-slate-700 mb-1">نوع ارسال</label>
+                <select id="shippingSelect" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
+                    <option value="0" selected>انتخاب نوع ارسال...</option>
+                    <option value="50000">پست پیشتاز (۵۰,۰۰۰ تومان)</option>
+                    <option value="80000">تیپاکس (۸۰,۰۰۰ تومان)</option>
+                    <option value="30000">پیک موتوری (۳۰,۰۰۰ تومان)</option>
                 </select>
             </div>
 
-            <!-- کادر نمایش جمع کل فاکتور -->
-            <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-center justify-between">
-                <span class="text-sm font-medium text-slate-700">مجموع قابل پرداخت:</span>
-                <span id="totalPrice" class="text-base font-bold text-orange-600">۰ تومان</span>
+            <!-- جمع فاکتور -->
+            <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-slate-700 space-y-1 text-xs">
+                <div class="flex justify-between">
+                    <span>قیمت محصول:</span>
+                    <span id="productPriceText">۰ تومان</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>هزینه ارسال:</span>
+                    <span id="shippingPriceText">۰ تومان</span>
+                </div>
+                <div class="border-t border-orange-200 pt-2 flex justify-between font-bold text-sm text-orange-800">
+                    <span>مبلغ کل قابل پرداخت:</span>
+                    <span id="totalPriceText">۰ تومان</span>
+                </div>
             </div>
 
-            <!-- دکمه ثبت -->
-            <button type="submit" id="submitBtn" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-orange-600/20 text-sm">
+            <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
                 ثبت نهایی سفارش
             </button>
         </form>
 
-        <div id="resultMessage" class="hidden mt-4 p-3 rounded-xl text-center text-sm font-medium"></div>
+        <div id="responseMessage" class="mt-4 text-center text-xs"></div>
+
+        <!-- بخش پیگیری سفارش مشتری (اضافه شده به انتهای صفحه بدون تغییر بخش‌های بالا) -->
+        <div class="mt-8 pt-6 border-t border-slate-100">
+            <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1">🔍 پیگیری وضعیت سفارش با کد رهگیری</h3>
+            <div class="flex gap-2">
+                <input type="text" id="trackOrderId" placeholder="مثلا SHP-17100" class="flex-1 text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
+                <button onclick="trackOrder()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium px-3 py-2 rounded-xl transition">پیگیری</button>
+            </div>
+            <div id="trackResult" class="mt-3 text-xs"></div>
+        </div>
+
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         let productsData = [];
 
-        // بارگذاری محصولات از گوگل شیت
         window.addEventListener('DOMContentLoaded', () => {
+            fetchProducts();
+        });
+
+        function fetchProducts() {
             fetch(`${SCRIPT_URL}?action=get_products`)
                 .then(res => res.json())
                 .then(data => {
-                    const productSelect = document.getElementById('product');
-                    productSelect.innerHTML = '<option value="">انتخاب محصول...</option>';
-                    if(data && data.length > 0) {
+                    const select = document.getElementById('productSelect');
+                    select.innerHTML = '<option value="" disabled selected>انتخاب محصول...</option>';
+                    if(Array.isArray(data) && data.length > 0) {
                         productsData = data;
-                        data.forEach((item, index) => {
-                            let opt = document.createElement('option');
-                            opt.value = index; // ذخیره ایندکس محصول برای دسترسی به قیمت
-                            opt.textContent = `${item.name} (${Number(item.price || 0).toLocaleString()} تومان)`;
-                            productSelect.appendChild(opt);
+                        data.forEach((p, index) => {
+                            const opt = document.createElement('option');
+                            opt.value = index;
+                            opt.textContent = `${p.name} - ${Number(p.price || 0).toLocaleString()} تومان`;
+                            select.appendChild(opt);
                         });
+                    } else {
+                        select.innerHTML = '<option value="" disabled>محصولی یافت نشد</option>';
                     }
-                    calculateTotal();
                 })
                 .catch(err => {
-                    console.error('خطا در دریافت محصولات:', err);
-                    document.getElementById('product').innerHTML = '<option value="">خطا در بارگذاری محصولات</option>';
+                    console.error(err);
+                    document.getElementById('productSelect').innerHTML = '<option value="" disabled>خطا در بارگذاری محصولات</option>';
                 });
-        });
+        }
 
-        // محاسبه خودکار جمع کل فاکتور
-        function calculateTotal() {
-            const productIndex = document.getElementById('product').value;
-            const shippingVal = document.getElementById('shipping').value;
-
+        function updateTotal() {
+            const productIndex = document.getElementById('productSelect').value;
+            const shippingVal = Number(document.getElementById('shippingSelect').value) || 0;
+            
             let productPrice = 0;
-            if (productIndex !== "" && productsData[productIndex]) {
+            if(productIndex !== "" && productsData[productIndex]) {
                 productPrice = Number(productsData[productIndex].price || 0);
             }
 
-            let shippingPrice = 0;
-            if (shippingVal) {
-                shippingPrice = Number(shippingVal.split('|')[1]);
-            }
+            const total = productPrice + shippingVal;
 
-            let total = productPrice + shippingPrice;
-            document.getElementById('totalPrice').textContent = total > 0 ? total.toLocaleString() + ' تومان' : '۰ تومان';
+            document.getElementById('productPriceText').textContent = productPrice.toLocaleString() + ' تومان';
+            document.getElementById('shippingPriceText').textContent = shippingVal.toLocaleString() + ' تومان';
+            document.getElementById('totalPriceText').textContent = total.toLocaleString() + ' تومان';
         }
 
-        // ارسال فرم سفارش به گوگل شیت
-        document.getElementById('orderForm').addEventListener('submit', function(e) {
+        function submitOrder(e) {
             e.preventDefault();
-            
             const btn = document.getElementById('submitBtn');
-            const msgBox = document.getElementById('resultMessage');
+            const resp = document.getElementById('responseMessage');
             
             btn.disabled = true;
             btn.textContent = 'در حال ثبت سفارش...';
-            msgBox.className = 'hidden mt-4 p-3 rounded-xl text-center text-sm font-medium';
+            resp.innerHTML = '';
 
-            const productIndex = document.getElementById('product').value;
-            const selectedProduct = productsData[productIndex];
-            const shippingOpt = document.getElementById('shipping').value.split('|');
-            
-            const productName = selectedProduct ? selectedProduct.name : '';
-            const productPrice = selectedProduct ? Number(selectedProduct.price || 0) : 0;
-            const shippingName = shippingOpt[0];
-            const shippingPrice = Number(shippingOpt[1]);
-            const totalAmount = productPrice + shippingPrice;
+            const productIndex = document.getElementById('productSelect').value;
+            const selectedProduct = productsData[productIndex] ? productsData[productIndex].name : '';
+            const shippingText = document.getElementById('shippingSelect').selectedOptions[0].text;
+            const productPrice = productsData[productIndex] ? Number(productsData[productIndex].price || 0) : 0;
+            const shippingVal = Number(document.getElementById('shippingSelect').value) || 0;
+            const totalAmount = productPrice + shippingVal;
 
-            // ساخت رشته توضیحات محصول و ارسال شامل هزینه ارسال و جمع کل
-            const fullProductDescription = `${productName} (${productPrice.toLocaleString()} ت) + ارسال ${shippingName} (${shippingPrice.toLocaleString()} ت) | جمع کل: ${totalAmount.toLocaleString()} تومان`;
+            const fullProductDetails = `${selectedProduct} | ارسال: ${shippingText} | مبلغ کل: ${totalAmount.toLocaleString()} تومان`;
 
             const formData = new URLSearchParams({
-                name: document.getElementById('name').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                city: document.getElementById('city').value.trim(),
-                address: document.getElementById('address').value.trim(),
-                product: fullProductDescription
+                action: 'add_order',
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                city: document.getElementById('city').value,
+                address: document.getElementById('address').value,
+                product: fullProductDetails
             });
 
             fetch(SCRIPT_URL, {
@@ -162,23 +177,62 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') {
-                    msgBox.textContent = `✅ سفارش شما با موفقیت ثبت شد! کد پیگیری: ${data.orderId}`;
-                    msgBox.className = 'mt-4 p-3 rounded-xl text-center text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-100';
+                    resp.innerHTML = `<span class="text-emerald-600 font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری: ${data.orderId}</span>`;
                     document.getElementById('orderForm').reset();
-                    calculateTotal();
+                    document.getElementById('productPriceText').textContent = '۰ تومان';
+                    document.getElementById('shippingPriceText').textContent = '۰ تومان';
+                    document.getElementById('totalPriceText').textContent = '۰ تومان';
                 } else {
-                    throw new Error(data.message || 'خطای ناشناخته');
+                    resp.innerHTML = '<span class="text-rose-500">خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.</span>';
                 }
+                btn.disabled = false;
+                btn.textContent = 'ثبت نهایی سفارش';
             })
             .catch(err => {
-                msgBox.textContent = '❌ خطا در ثبت سفارش. لطفاً دوباره تلاش کنید.';
-                msgBox.className = 'mt-4 p-3 rounded-xl text-center text-sm font-medium bg-rose-50 text-rose-700 border border-rose-100';
-            })
-            .finally(() => {
+                console.error(err);
+                resp.innerHTML = '<span class="text-rose-500">خطا در اتصال به سرور.</span>';
                 btn.disabled = false;
                 btn.textContent = 'ثبت نهایی سفارش';
             });
-        });
+        }
+
+        // تابع پیگیری سفارش مشتری
+        function trackOrder() {
+            const orderId = document.getElementById('trackOrderId').value.trim();
+            const resultDiv = document.getElementById('trackResult');
+            
+            if (!orderId) {
+                resultDiv.innerHTML = '<span class="text-rose-500">لطفاً کد سفارش را وارد کنید.</span>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<span class="text-slate-400">در حال جستجو...</span>';
+
+            fetch(`${SCRIPT_URL}?action=get_orders`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        const order = data.find(o => o.orderId.toLowerCase() === orderId.toLowerCase());
+                        if (order) {
+                            resultDiv.innerHTML = `
+                                <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-slate-700 space-y-1">
+                                    <div><strong>نام:</strong> ${order.name}</div>
+                                    <div><strong>محصول:</strong> ${order.product}</div>
+                                    <div><strong>وضعیت:</strong> <span class="text-orange-600 font-bold">${order.status || 'در حال بررسی'}</span></div>
+                                    <div><strong>تاریخ ثبت:</strong> ${order.date}</div>
+                                </div>
+                            `;
+                        } else {
+                            resultDiv.innerHTML = '<span class="text-rose-500">سفارشی با این کد پیدا نشد!</span>';
+                        }
+                    } else {
+                        resultDiv.innerHTML = '<span class="text-rose-500">خطا در دریافت اطلاعات.</span>';
+                    }
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<span class="text-rose-500">خطا در اتصال به سرور.</span>';
+                });
+        }
     </script>
 </body>
 </html>
