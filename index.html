@@ -50,6 +50,12 @@
                 </select>
             </div>
 
+            <!-- انتخاب تعداد -->
+            <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">تعداد</label>
+                <input type="number" id="quantity" min="1" value="1" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
+            </div>
+
             <div>
                 <label class="block text-xs font-medium text-slate-700 mb-1">نوع ارسال</label>
                 <select id="shippingSelect" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
@@ -63,7 +69,7 @@
             <!-- جمع فاکتور -->
             <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-slate-700 space-y-1 text-xs">
                 <div class="flex justify-between">
-                    <span>قیمت محصول:</span>
+                    <span>قیمت کل محصولات:</span>
                     <span id="productPriceText">۰ تومان</span>
                 </div>
                 <div class="flex justify-between">
@@ -83,7 +89,7 @@
 
         <div id="responseMessage" class="mt-4 text-center text-xs"></div>
 
-        <!-- بخش پیگیری سفارش مشتری (اضافه شده به انتهای صفحه بدون تغییر بخش‌های بالا) -->
+        <!-- بخش پیگیری سفارش مشتری -->
         <div class="mt-8 pt-6 border-t border-slate-100">
             <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1">🔍 پیگیری وضعیت سفارش با کد رهگیری</h3>
             <div class="flex gap-2">
@@ -129,16 +135,18 @@
 
         function updateTotal() {
             const productIndex = document.getElementById('productSelect').value;
+            const quantity = Number(document.getElementById('quantity').value) || 1;
             const shippingVal = Number(document.getElementById('shippingSelect').value) || 0;
             
-            let productPrice = 0;
+            let unitPrice = 0;
             if(productIndex !== "" && productsData[productIndex]) {
-                productPrice = Number(productsData[productIndex].price || 0);
+                unitPrice = Number(productsData[productIndex].price || 0);
             }
 
-            const total = productPrice + shippingVal;
+            const productTotalPrice = unitPrice * quantity;
+            const total = productTotalPrice + shippingVal;
 
-            document.getElementById('productPriceText').textContent = productPrice.toLocaleString() + ' تومان';
+            document.getElementById('productPriceText').textContent = productTotalPrice.toLocaleString() + ' تومان';
             document.getElementById('shippingPriceText').textContent = shippingVal.toLocaleString() + ' تومان';
             document.getElementById('totalPriceText').textContent = total.toLocaleString() + ' تومان';
         }
@@ -154,12 +162,13 @@
 
             const productIndex = document.getElementById('productSelect').value;
             const selectedProduct = productsData[productIndex] ? productsData[productIndex].name : '';
+            const quantity = document.getElementById('quantity').value;
             const shippingText = document.getElementById('shippingSelect').selectedOptions[0].text;
-            const productPrice = productsData[productIndex] ? Number(productsData[productIndex].price || 0) : 0;
+            const unitPrice = productsData[productIndex] ? Number(productsData[productIndex].price || 0) : 0;
             const shippingVal = Number(document.getElementById('shippingSelect').value) || 0;
-            const totalAmount = productPrice + shippingVal;
+            const totalAmount = (unitPrice * Number(quantity)) + shippingVal;
 
-            const fullProductDetails = `${selectedProduct} | ارسال: ${shippingText} | مبلغ کل: ${totalAmount.toLocaleString()} تومان`;
+            const fullProductDetails = `${selectedProduct} (تعداد: ${quantity}) | ارسال: ${shippingText} | مبلغ کل: ${totalAmount.toLocaleString()} تومان`;
 
             const formData = new URLSearchParams({
                 action: 'add_order',
@@ -179,6 +188,7 @@
                 if(data.status === 'success') {
                     resp.innerHTML = `<span class="text-emerald-600 font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری: ${data.orderId}</span>`;
                     document.getElementById('orderForm').reset();
+                    document.getElementById('quantity').value = '1';
                     document.getElementById('productPriceText').textContent = '۰ تومان';
                     document.getElementById('shippingPriceText').textContent = '۰ تومان';
                     document.getElementById('totalPriceText').textContent = '۰ تومان';
@@ -196,7 +206,6 @@
             });
         }
 
-        // تابع پیگیری سفارش مشتری
         function trackOrder() {
             const orderId = document.getElementById('trackOrderId').value.trim();
             const resultDiv = document.getElementById('trackResult');
