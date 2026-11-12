@@ -271,8 +271,25 @@
         }
 
         // تأیید سفارش (از "منتظر تأیید" به "در حال بررسی")
+               let pendingApproveOrderId = null;
+
+        // باز کردن پاپ‌آپ شیک به جای confirm مرورگر
         function approveOrder(orderId) {
-            if (!confirm('این سفارش را تأیید می‌کنید؟ پس از تأیید وارد بخش «در حال بررسی» می‌شود.')) return;
+            pendingApproveOrderId = orderId;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        // بستن پاپ‌آپ
+        function closeConfirmModal() {
+            pendingApproveOrderId = null;
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        // اجرای عملیات تأیید بعد از کلیک روی دکمه مودال
+        document.getElementById('confirmModalBtn').addEventListener('click', function() {
+            if (!pendingApproveOrderId) return;
+            const orderId = pendingApproveOrderId;
+            closeConfirmModal();
 
             const formData = new URLSearchParams({
                 action: 'approve_order',
@@ -298,7 +315,8 @@
                 console.error(err);
                 alert('خطا در اتصال به سرور');
             });
-        }
+        });
+}
 
         function updateStatus(orderId, newStatus) {
             const formData = new URLSearchParams({
@@ -328,5 +346,23 @@
             });
         }
     </script>
+<!-- مودال شیک تأیید سفارش -->
+<div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center animate-in fade-in zoom-in duration-200">
+        <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+            ✨
+        </div>
+        <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
+        <p id="confirmModalText" class="text-xs text-slate-500 mb-6 leading-relaxed">آیا از تأیید این سفارش اطمینان دارید؟ پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.</p>
+        <div class="flex gap-2">
+            <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
+                انصراف
+            </button>
+            <button id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
+                تأیید و انتقال
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
