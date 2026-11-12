@@ -207,7 +207,7 @@
 
             container.innerHTML = '';
             filtered.forEach(order => {
-                const status = order.status || 'در حال بررسی';
+                const status = order.status || 'منتظر تأیید';
                 
                 let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
                 if (status === 'منتظر تأیید') badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
