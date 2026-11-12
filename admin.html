@@ -54,6 +54,10 @@
                 <div class="text-xs text-slate-500 font-medium">همه سفارش‌ها</div>
                 <div id="count-all" class="text-xl font-bold text-slate-800 mt-1">۰</div>
             </div>
+            <div onclick="filterOrders('منتظر تأیید')" id="card-waiting" class="cursor-pointer bg-white border-2 border-transparent hover:border-rose-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-rose-600 font-medium">منتظر تأیید</div>
+                <div id="count-waiting" class="text-xl font-bold text-rose-600 mt-1">۰</div>
+            </div>
             <div onclick="filterOrders('در حال بررسی')" id="card-pending" class="cursor-pointer bg-white border-2 border-transparent hover:border-amber-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
                 <div class="text-xs text-amber-600 font-medium">در حال بررسی</div>
                 <div id="count-pending" class="text-xl font-bold text-amber-600 mt-1">۰</div>
@@ -80,7 +84,7 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        const ADMIN_PASS = '1234'; // رمز عبور پنل مدیریت (می‌توانید همین جا تغییر دهید)
+        const ADMIN_PASS = '1234'; // رمز عبور پنل مدیریت
         let allOrders = [];
         let currentFilter = 'همه';
 
@@ -138,6 +142,7 @@
         function updateCounts() {
             const counts = {
                 'همه': allOrders.length,
+                'منتظر تأیید': allOrders.filter(o => (o.status || '') === 'منتظر تأیید').length,
                 'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
                 'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
                 'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
@@ -145,6 +150,7 @@
             };
 
             document.getElementById('count-all').textContent = counts['همه'];
+            document.getElementById('count-waiting').textContent = counts['منتظر تأیید'];
             document.getElementById('count-pending').textContent = counts['در حال بررسی'];
             document.getElementById('count-prep').textContent = counts['در حال آماده‌سازی'];
             document.getElementById('count-sent').textContent = counts['ارسال شده'];
@@ -156,6 +162,7 @@
             
             const cards = {
                 'همه': 'card-all',
+                'منتظر تأیید': 'card-waiting',
                 'در حال بررسی': 'card-pending',
                 'در حال آماده‌سازی': 'card-prep',
                 'ارسال شده': 'card-sent',
@@ -203,6 +210,7 @@
                 const status = order.status || 'در حال بررسی';
                 
                 let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                if (status === 'منتظر تأیید') badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
                 if (status === 'در حال آماده‌سازی') badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
                 if (status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
                 if (status === 'تکمیل شده') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
@@ -216,6 +224,10 @@
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
                 
+                // دکمه تأیید فقط برای سفارش‌های "منتظر تأیید"
+                const approveButton = status === 'منتظر تأیید' ?
+                    `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition">✅ تأیید سفارش</button>` : '';
+
                 card.innerHTML = `
                     <div>
                         <div class="flex justify-between items-center mb-3">
@@ -239,6 +251,8 @@
                             <div><strong class="text-slate-700">آدرس:</strong> ${order.address}</div>
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product}</div>
                         </div>
+
+                        ${approveButton}
                     </div>
 
                     <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
@@ -253,6 +267,36 @@
                     </div>
                 `;
                 container.appendChild(card);
+            });
+        }
+
+        // تأیید سفارش (از "منتظر تأیید" به "در حال بررسی")
+        function approveOrder(orderId) {
+            if (!confirm('این سفارش را تأیید می‌کنید؟ پس از تأیید وارد بخش «در حال بررسی» می‌شود.')) return;
+
+            const formData = new URLSearchParams({
+                action: 'approve_order',
+                orderId: orderId
+            });
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const order = allOrders.find(o => o.orderId === orderId);
+                    if(order) order.status = 'در حال بررسی';
+                    updateCounts();
+                    renderOrders();
+                } else {
+                    alert(data.message || 'خطا در تأیید سفارش');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('خطا در اتصال به سرور');
             });
         }
 
@@ -275,7 +319,7 @@
                     updateCounts();
                     renderOrders();
                 } else {
-                    alert('خطا در به‌روزرسانی وضعیت');
+                    alert(data.message || 'خطا در به‌روزرسانی وضعیت');
                 }
             })
             .catch(err => {
@@ -284,79 +328,5 @@
             });
         }
     </script>
-<!-- ================= شاپ‌یار | صفحه ورود ================= -->
-<script>
-(function () {
-  'use strict';
-
-  var LOGIN_USER = 'admin';   // نام کاربری
-  var LOGIN_PASS = '1234';    // رمز عبور
-
-  // اگر قبلاً لاگین شده، کاری نکن و بگذار پنل کار کند
-  if (sessionStorage.getItem('shopyar_logged_in') === 'yes') return;
-
-  // قفل کردن کلیک‌ها روی پنل تا زمان ورود
-  document.addEventListener('DOMContentLoaded', showLoginForm);
-
-  function showLoginForm() {
-    var style = document.createElement('style');
-    style.textContent = [
-      '.shopyar-login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;',
-      'background:#f7f7f9;z-index:9999;display:flex;align-items:center;',
-      'justify-content:center;padding:16px;box-sizing:border-box;}',
-      '.shopyar-login-box{background:#fff;border-radius:16px;padding:32px;',
-      'width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,.12);',
-      'text-align:center;font-family:inherit;}',
-      '.shopyar-login-box h2{margin:0 0 6px;font-size:22px;}',
-      '.shopyar-login-box p{margin:0 0 20px;font-size:14px;color:#666;}',
-      '.shopyar-login-box input{width:100%;padding:12px;margin:8px 0;',
-      'border:1px solid #ddd;border-radius:8px;font-family:inherit;',
-      'font-size:15px;box-sizing:border-box;outline:none;}',
-      '.shopyar-login-box input:focus{border-color:#ea580c;}',
-      '.shopyar-login-box button{width:100%;padding:12px;margin-top:12px;',
-      'background:#ea580c;color:#fff;border:none;border-radius:8px;',
-      'font-size:16px;font-family:inherit;cursor:pointer;}',
-      '.shopyar-login-box button:hover{background:#c2410c;}',
-      '.shopyar-login-error{color:#dc2626;font-size:13px;min-height:18px;margin-top:10px;}'
-    ].join('');
-    document.head.appendChild(style);
-
-    var overlay = document.createElement('div');
-    overlay.className = 'shopyar-login-overlay';
-    overlay.innerHTML =
-      '<div class="shopyar-login-box">' +
-        '<h2>ورود به پنل مدیریت</h2>' +
-        '<p>شاپ‌یار</p>' +
-        '<input type="text" id="shopyar-user" placeholder="نام کاربری" autocomplete="username">' +
-        '<input type="password" id="shopyar-pass" placeholder="رمز عبور" autocomplete="current-password">' +
-        '<button type="button" id="shopyar-login-btn">ورود</button>' +
-        '<div class="shopyar-login-error" id="shopyar-login-error"></div>' +
-      '</div>';
-    document.body.appendChild(overlay);
-
-    var userEl = document.getElementById('shopyar-user');
-    var passEl = document.getElementById('shopyar-pass');
-    var errEl  = document.getElementById('shopyar-login-error');
-
-    function tryLogin() {
-      var u = (userEl.value || '').trim();
-      var p = passEl.value || '';
-      if (u === LOGIN_USER && p === LOGIN_PASS) {
-        sessionStorage.setItem('shopyar_logged_in', 'yes');
-        overlay.remove();
-      } else {
-        errEl.textContent = 'نام کاربری یا رمز عبور اشتباه است';
-      }
-    }
-
-    document.getElementById('shopyar-login-btn').addEventListener('click', tryLogin);
-    passEl.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter') tryLogin();
-    });
-    userEl.focus();
-  }
-})();
-</script>
-<!-- ================ پایان صفحه ورود ================ -->
 </body>
 </html>
