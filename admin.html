@@ -88,7 +88,6 @@
         let allOrders = [];
         let currentFilter = 'همه';
 
-        // بررسی لاگین اولیه
         window.onload = function() {
             if (localStorage.getItem('shopyar_admin_logged') === 'true') {
                 document.getElementById('login-modal').style.display = 'none';
@@ -123,17 +122,20 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
-                    if (data && data.orders) {
-                        // نمایش سفارش‌های جدید در صدر (اول) لیست با reverse کردن آرایه
-                        allOrders = data.orders.reverse();
-                        updateStats(allOrders);
-                        filterOrders(currentFilter);
-                    } else if (Array.isArray(data)) {
-                        allOrders = data.reverse();
+                    let ordersArray = [];
+                    if (Array.isArray(data)) {
+                        ordersArray = data;
+                    } else if (data && data.orders && Array.isArray(data.orders)) {
+                        ordersArray = data.orders;
+                    }
+
+                    if (ordersArray.length > 0) {
+                        // معکوس کردن آرایه برای نمایش سفارش‌های جدید در صدر لیست
+                        allOrders = ordersArray.reverse();
                         updateStats(allOrders);
                         filterOrders(currentFilter);
                     } else {
-                        document.getElementById('error-msg').classList.remove('hidden');
+                        document.getElementById('no-orders').classList.remove('hidden');
                     }
                 })
                 .catch(err => {
@@ -144,7 +146,7 @@
 
         function updateStats(orders) {
             document.getElementById('count-all').innerText = orders.length;
-            document.getElementById('count-review').innerText = orders.filter(o => o.status === 'در انتظار بررسی').length;
+            document.getElementById('count-review').innerText = orders.filter(o => o.status === 'در انتظار بررسی' || o.status === 'در حال بررسی' || o.status === '-').length;
             document.getElementById('count-prep').innerText = orders.filter(o => o.status === 'در حال آماده‌سازی').length;
             document.getElementById('count-sent').innerText = orders.filter(o => o.status === 'ارسال شده').length;
             document.getElementById('count-done').innerText = orders.filter(o => o.status === 'تکمیل شده').length;
@@ -153,7 +155,6 @@
         function filterOrders(status) {
             currentFilter = status;
             
-            // استایل دکمه‌های وضعیت
             document.querySelectorAll('.status-card').forEach(btn => {
                 if (btn.dataset.status === status) {
                     btn.classList.add('border-orange-500', 'ring-2', 'ring-orange-500/20');
@@ -164,10 +165,13 @@
 
             let filtered = allOrders;
             if (status !== 'همه') {
-                filtered = allOrders.filter(o => o.status === status);
+                if (status === 'در انتظار بررسی') {
+                    filtered = allOrders.filter(o => o.status === 'در انتظار بررسی' || o.status === 'در حال بررسی' || o.status === '-');
+                } else {
+                    filtered = allOrders.filter(o => o.status === status);
+                }
             }
 
-            // فیلتر جستجو
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             if (searchTerm) {
                 filtered = filtered.filter(o => 
@@ -197,10 +201,11 @@
 
             orders.forEach((order, index) => {
                 let badgeColor = 'bg-gray-100 text-gray-700';
-                if (order.status === 'در انتظار بررسی') badgeColor = 'bg-amber-50 text-amber-600 border border-amber-200';
-                else if (order.status === 'در حال آماده‌سازی') badgeColor = 'bg-blue-50 text-blue-600 border border-blue-200';
-                else if (order.status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-600 border border-purple-200';
-                else if (order.status === 'تکمیل شده') badgeColor = 'bg-green-50 text-green-600 border border-green-200';
+                let currentStat = order.status || 'در انتظار بررسی';
+                if (currentStat === 'در انتظار بررسی' || currentStat === 'در حال بررسی' || currentStat === '-') badgeColor = 'bg-amber-50 text-amber-600 border border-amber-200';
+                else if (currentStat === 'در حال آماده‌سازی') badgeColor = 'bg-blue-50 text-blue-600 border border-blue-200';
+                else if (currentStat === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-600 border border-purple-200';
+                else if (currentStat === 'تکمیل شده') badgeColor = 'bg-green-50 text-green-600 border border-green-200';
 
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl p-5 shadow-sm border border-gray-200 flex flex-col justify-between space-y-4 hover:shadow-md transition';
@@ -211,7 +216,7 @@
                                 <span class="text-xs text-gray-400">مشتری:</span>
                                 <h3 class="font-bold text-gray-800 text-base">${order.name || 'بدون نام'}</h3>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-medium ${badgeColor}">${order.status || 'در انتظار بررسی'}</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${badgeColor}">${currentStat}</span>
                         </div>
                         <div class="space-y-1.5 text-xs text-gray-600 bg-gray-50 p-3 rounded-xl">
                             <div class="flex justify-between"><span>تلفن:</span> <strong class="text-gray-800">${order.phone || '-'}</strong></div>
@@ -226,7 +231,7 @@
                             <a href="tel:${order.phone}" class="w-9 h-9 bg-green-50 text-green-600 hover:bg-green-100 rounded-xl flex items-center justify-center transition" title="تماس مستقیم">📞</a>
                             <a href="https://wa.me/98${order.phone ? order.phone.replace(/^0/, '') : ''}" target="_blank" class="w-9 h-9 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-xl flex items-center justify-center transition" title="واتس‌اپ">💬</a>
                         </div>
-                        <select onchange="updateOrderStatus('${order.orderId || order.row || index}', this.value)" class="text-xs border border-gray-300 rounded-xl px-2 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <select onchange="updateOrderStatus('${order.orderId || index}', this.value)" class="text-xs border border-gray-300 rounded-xl px-2 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <option value="" disabled selected>تغییر وضعیت...</option>
                             <option value="در انتظار بررسی">در انتظار بررسی</option>
                             <option value="در حال آماده‌سازی">در حال آماده‌سازی</option>
