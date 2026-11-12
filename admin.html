@@ -25,9 +25,8 @@
         <div id="loginError" class="mt-3 text-xs text-rose-500"></div>
     </div>
 
-    <!-- محتوای اصلی پنل مدیریت (در ابتدا مخفی است) -->
+    <!-- محتوای اصلی پنل مدیریت -->
     <div id="adminPanel" class="max-w-6xl w-full mx-auto hidden">
-        <!-- هدر صفحه -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">📦 مدیریت سفارشات شاپ‌یار</h1>
@@ -43,12 +42,12 @@
             </div>
         </div>
 
-        <!-- کادر جستجو بر اساس نام و موبایل -->
+        <!-- جستجو -->
         <div class="mb-6">
             <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری، شماره موبایل یا کد سفارش..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
         </div>
 
-        <!-- کارت‌های وضعیت بالا (تب‌های فیلتر پویا) -->
+        <!-- کارت‌های فیلتر وضعیت -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
             <div onclick="filterOrders('همه')" id="card-all" class="cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
                 <div class="text-xs text-slate-500 font-medium">همه سفارش‌ها</div>
@@ -76,20 +75,44 @@
             </div>
         </div>
 
-        <!-- لیست سفارشات -->
+        <!-- سفارش‌ها -->
         <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>
         </div>
     </div>
 
+    <!-- مودال تأیید سفارش -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center">
+            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+                ✨
+            </div>
+            <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+                آیا از تأیید این سفارش اطمینان دارید؟ پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.
+            </p>
+            <div class="flex gap-2">
+                <button type="button" onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
+                    انصراف
+                </button>
+                <button type="button" id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
+                    تأیید و انتقال
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        const ADMIN_PASS = '1234'; // رمز عبور پنل مدیریت
+        const ADMIN_PASS = '1234';
         let allOrders = [];
         let currentFilter = 'همه';
+        let pendingApproveOrderId = null;
 
-        // بررسی لاگین بودن قبلی در حافظه مرورگر
         window.addEventListener('DOMContentLoaded', () => {
+            // دکمه مودال بعد از ساخته‌شدن عناصر صفحه متصل می‌شود
+            document.getElementById('confirmModalBtn').addEventListener('click', confirmApproveOrder);
+
             if (localStorage.getItem('shopyar_admin_logged') === 'true') {
                 showAdminPanel();
             }
@@ -98,6 +121,7 @@
         function handleLogin(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassword').value;
+
             if (pass === ADMIN_PASS) {
                 localStorage.setItem('shopyar_admin_logged', 'true');
                 showAdminPanel();
@@ -125,7 +149,7 @@
             fetch(`${SCRIPT_URL}?action=get_orders`)
                 .then(res => res.json())
                 .then(data => {
-                    if(Array.isArray(data)) {
+                    if (Array.isArray(data)) {
                         allOrders = data;
                         updateCounts();
                         renderOrders();
@@ -146,7 +170,7 @@
                 'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
                 'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
                 'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
-                'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length,
+                'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length
             };
 
             document.getElementById('count-all').textContent = counts['همه'];
@@ -159,7 +183,7 @@
 
         function filterOrders(status) {
             currentFilter = status;
-            
+
             const cards = {
                 'همه': 'card-all',
                 'منتظر تأیید': 'card-waiting',
@@ -184,9 +208,9 @@
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
             const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-            
+
             let filtered = allOrders;
-            
+
             if (currentFilter !== 'همه') {
                 filtered = filtered.filter(o => (o.status || 'در حال بررسی') === currentFilter);
             }
@@ -196,7 +220,9 @@
                     const name = String(o.name || '').toLowerCase();
                     const phone = String(o.phone || '').toLowerCase();
                     const orderId = String(o.orderId || '').toLowerCase();
-                    return name.includes(searchQuery) || phone.includes(searchQuery) || orderId.includes(searchQuery);
+                    return name.includes(searchQuery) ||
+                           phone.includes(searchQuery) ||
+                           orderId.includes(searchQuery);
                 });
             }
 
@@ -206,9 +232,10 @@
             }
 
             container.innerHTML = '';
+
             filtered.forEach(order => {
                 const status = order.status || 'منتظر تأیید';
-                
+
                 let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
                 if (status === 'منتظر تأیید') badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
                 if (status === 'در حال آماده‌سازی') badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
@@ -219,14 +246,14 @@
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '98' + cleanPhone.substring(1);
                 }
-                const whatsappMsg = encodeURIComponent(`سلام ${order.name || ''} عزیز، بابت سفارش شما (${order.orderId}) در شاپ‌یار...`);
 
+                const whatsappMsg = encodeURIComponent(`سلام ${order.name || ''} عزیز، بابت سفارش شما (${order.orderId}) در شاپ‌یار...`);
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
-                
-                // دکمه تأیید فقط برای سفارش‌های "منتظر تأیید"
-                const approveButton = status === 'منتظر تأیید' ?
-                    `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition">✅ تأیید سفارش</button>` : '';
+
+                const approveButton = status === 'منتظر تأیید'
+                    ? `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition">✅ تأیید سفارش</button>`
+                    : '';
 
                 card.innerHTML = `
                     <div>
@@ -235,7 +262,7 @@
                             <span class="text-xs px-2.5 py-1 rounded-lg border font-medium ${badgeColor}">${status}</span>
                         </div>
                         <h3 class="text-base font-bold text-slate-800 mb-1">${order.name || 'بدون نام'}</h3>
-                        
+
                         <div class="flex items-center gap-2 mb-3">
                             <a href="tel:${order.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-lg text-center transition flex items-center justify-center gap-1">
                                 📞 تماس
@@ -244,19 +271,19 @@
                                 💬 واتس‌اپ
                             </a>
                         </div>
-                        
+
                         <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
-                            <div><strong class="text-slate-700">تلفن:</strong> ${order.phone}</div>
-                            <div><strong class="text-slate-700">شهر:</strong> ${order.city}</div>
-                            <div><strong class="text-slate-700">آدرس:</strong> ${order.address}</div>
-                            <div><strong class="text-slate-700">خرید:</strong> ${order.product}</div>
+                            <div><strong class="text-slate-700">تلفن:</strong> ${order.phone || ''}</div>
+                            <div><strong class="text-slate-700">شهر:</strong> ${order.city || ''}</div>
+                            <div><strong class="text-slate-700">آدرس:</strong> ${order.address || ''}</div>
+                            <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
                         </div>
 
                         ${approveButton}
                     </div>
 
                     <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
-                        <span class="text-[11px] text-slate-400">${order.date}</span>
+                        <span class="text-[11px] text-slate-400">${order.date || ''}</span>
                         <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
                             <option value="" disabled selected>تغییر وضعیت...</option>
                             <option value="در حال بررسی">در حال بررسی</option>
@@ -266,30 +293,35 @@
                         </select>
                     </div>
                 `;
+
                 container.appendChild(card);
             });
         }
 
-        // تأیید سفارش (از "منتظر تأیید" به "در حال بررسی")
-               let pendingApproveOrderId = null;
-
-        // باز کردن پاپ‌آپ شیک به جای confirm مرورگر
+        // باز کردن مودال تأیید
         function approveOrder(orderId) {
             pendingApproveOrderId = orderId;
-            document.getElementById('confirmModal').classList.remove('hidden');
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        // بستن پاپ‌آپ
+        // بستن مودال
         function closeConfirmModal() {
             pendingApproveOrderId = null;
-            document.getElementById('confirmModal').classList.add('hidden');
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
-        // اجرای عملیات تأیید بعد از کلیک روی دکمه مودال
-        document.getElementById('confirmModalBtn').addEventListener('click', function() {
-            if (!pendingApproveOrderId) return;
+        // ارسال تأیید سفارش به سرور
+        function confirmApproveOrder() {
+            if (pendingApproveOrderId === null) return;
+
             const orderId = pendingApproveOrderId;
-            closeConfirmModal();
+            const button = document.getElementById('confirmModalBtn');
+            button.disabled = true;
+            button.textContent = 'در حال ثبت...';
 
             const formData = new URLSearchParams({
                 action: 'approve_order',
@@ -302,9 +334,11 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.status === 'success') {
-                    const order = allOrders.find(o => o.orderId === orderId);
-                    if(order) order.status = 'در حال بررسی';
+                if (data.status === 'success') {
+                    const order = allOrders.find(o => String(o.orderId) === String(orderId));
+                    if (order) order.status = 'در حال بررسی';
+
+                    closeConfirmModal();
                     updateCounts();
                     renderOrders();
                 } else {
@@ -314,9 +348,12 @@
             .catch(err => {
                 console.error(err);
                 alert('خطا در اتصال به سرور');
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.textContent = 'تأیید و انتقال';
             });
-        });
-}
+        }
 
         function updateStatus(orderId, newStatus) {
             const formData = new URLSearchParams({
@@ -331,9 +368,9 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.status === 'success') {
-                    const order = allOrders.find(o => o.orderId === orderId);
-                    if(order) order.status = newStatus;
+                if (data.status === 'success') {
+                    const order = allOrders.find(o => String(o.orderId) === String(orderId));
+                    if (order) order.status = newStatus;
                     updateCounts();
                     renderOrders();
                 } else {
@@ -346,23 +383,5 @@
             });
         }
     </script>
-<!-- مودال شیک تأیید سفارش -->
-<div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center animate-in fade-in zoom-in duration-200">
-        <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-            ✨
-        </div>
-        <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
-        <p id="confirmModalText" class="text-xs text-slate-500 mb-6 leading-relaxed">آیا از تأیید این سفارش اطمینان دارید؟ پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.</p>
-        <div class="flex gap-2">
-            <button onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
-                انصراف
-            </button>
-            <button id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
-                تأیید و انتقال
-            </button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
