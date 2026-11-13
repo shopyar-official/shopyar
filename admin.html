@@ -1,131 +1,3 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت سفارشات - شاپ‌یار</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
-    <style>
-        body { font-family: 'Vazirmatn', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-8 flex items-center justify-center">
-
-    <!-- صفحه ورود به مدیریت -->
-    <div id="loginScreen" class="max-w-md w-full bg-white rounded-3xl shadow-sm border border-slate-100 p-8 text-center">
-        <h1 class="text-xl font-bold text-slate-800 mb-2">🔐 ورود به پنل مدیریت</h1>
-        <p class="text-xs text-slate-500 mb-6">لطفاً نام کاربری و رمز عبور را وارد کنید</p>
-        <form id="adminLoginForm" onsubmit="return handleLogin(event)" class="space-y-4">
-            <input type="text" id="adminUsername" required placeholder="نام کاربری..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-center">
-            <input type="password" id="adminPassword" required placeholder="رمز عبور..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-center">
-            <button type="submit" id="loginBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer">
-                ورود به پنل
-            </button>
-        </form>
-        <div id="loginError" class="mt-3 text-xs text-rose-500 font-medium"></div>
-    </div>
-
-    <!-- محتوای اصلی پنل مدیریت -->
-    <div id="adminPanel" class="max-w-6xl w-full mx-auto hidden">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800">📦 مدیریت سفارشات شاپ‌یار</h1>
-                <p class="text-sm text-slate-500 mt-1">مدیریت و پیگیری سفارشات ثبت شده مشتریان</p>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="loadOrders()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm flex items-center gap-2">
-                    🔄 به‌روزرسانی لیست
-                </button>
-                <button onclick="logout()" class="bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 px-4 py-2 rounded-xl text-sm font-medium transition">
-                    خروج
-                </button>
-            </div>
-        </div>
-
-        <!-- جستجو -->
-        <div class="mb-6">
-            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری، شماره موبایل یا کد سفارش..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
-        </div>
-
-        <!-- کارت‌های فیلتر وضعیت -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-            <div onclick="filterOrders('همه')" id="card-all" class="cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <div class="text-xs text-slate-500 font-medium">همه سفارش‌ها</div>
-                <div id="count-all" class="text-xl font-bold text-slate-800 mt-1">۰</div>
-            </div>
-            <div onclick="filterOrders('منتظر تأیید')" id="card-waiting" class="cursor-pointer bg-white border-2 border-transparent hover:border-rose-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <div class="text-xs text-rose-600 font-medium">منتظر تأیید</div>
-                <div id="count-waiting" class="text-xl font-bold text-rose-600 mt-1">۰</div>
-            </div>
-            <div onclick="filterOrders('در حال بررسی')" id="card-pending" class="cursor-pointer bg-white border-2 border-transparent hover:border-amber-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <div class="text-xs text-amber-600 font-medium">در حال بررسی</div>
-                <div id="count-pending" class="text-xl font-bold text-amber-600 mt-1">۰</div>
-            </div>
-            <div onclick="filterOrders('در حال آماده‌سازی')" id="card-prep" class="cursor-pointer bg-white border-2 border-transparent hover:border-blue-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <div class="text-xs text-blue-600 font-medium">در حال آماده‌سازی</div>
-                <div id="count-prep" class="text-xl font-bold text-blue-600 mt-1">۰</div>
-            </div>
-            <div onclick="filterOrders('ارسال شده')" id="card-sent" class="cursor-pointer bg-white border-2 border-transparent hover:border-purple-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <div class="text-xs text-purple-600 font-medium">ارسال شده</div>
-                <div id="count-sent" class="text-xl font-bold text-purple-600 mt-1">۰</div>
-            </div>
-            <div onclick="filterOrders('تکمیل شده')" id="card-completed" class="cursor-pointer bg-white border-2 border-transparent hover:border-emerald-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center col-span-2 md:col-span-1">
-                <div class="text-xs text-emerald-600 font-medium">تکمیل شده</div>
-                <div id="count-completed" class="text-xl font-bold text-emerald-600 mt-1">۰</div>
-            </div>
-        </div>
-
-        <!-- سفارش‌ها -->
-        <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>
-        </div>
-    </div>
-
-    <!-- مودال تأیید سفارش -->
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center">
-            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-                ✨
-            </div>
-            <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
-            <p class="text-xs text-slate-500 mb-6 leading-relaxed">
-                آیا از تأیید این سفارش اطمینان دارید؟ پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.
-            </p>
-            <div class="flex gap-2">
-                <button type="button" onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
-                    انصراف
-                </button>
-                <button type="button" id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
-                    تأیید و انتقال
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال مشاهده تصویر فیش -->
-    <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-5 shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1">
-                    🧾 تصویر فیش واریزی سفارش
-                </h3>
-                <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 p-1 text-lg">✕</button>
-            </div>
-            <div class="overflow-y-auto flex-1 text-center bg-slate-50 rounded-2xl p-2 border border-slate-200">
-                <img id="receiptModalImg" src="" alt="فیش واریزی" class="max-w-full h-auto mx-auto rounded-xl">
-            </div>
-            <div class="mt-4 flex gap-2">
-                <a id="receiptModalLink" href="#" target="_blank" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1">
-                    🔗 باز کردن در تب جدید
-                </a>
-                <button onclick="closeReceiptModal()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition text-center">
-                    بستن
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         const ADMIN_USER = 'admin';
@@ -134,36 +6,28 @@
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
 
-        // تابع ورود
         function handleLogin(e) {
             if (e) e.preventDefault();
-            const username = (document.getElementById('adminUsername').value || '').trim();
-            const password = (document.getElementById('adminPassword').value || '').trim();
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
             const errorEl = document.getElementById('loginError');
 
             if (username === ADMIN_USER && password === ADMIN_PASS) {
                 errorEl.textContent = '';
                 try {
                     localStorage.setItem('shopyar_admin_logged', 'true');
-                } catch(err) {
-                    console.log('localStorage restricted');
-                }
+                } catch(err) {}
                 showAdminPanel();
-                return false;
             } else {
                 errorEl.textContent = 'نام کاربری یا رمز عبور اشتباه است!';
-                return false;
             }
+            return false;
         }
 
         function showAdminPanel() {
-            const loginScreen = document.getElementById('loginScreen');
-            const adminPanel = document.getElementById('adminPanel');
-
-            if (loginScreen) loginScreen.classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
             document.body.classList.remove('flex', 'items-center', 'justify-center');
-            if (adminPanel) adminPanel.classList.remove('hidden');
-
+            document.getElementById('adminPanel').classList.remove('hidden');
             loadOrders();
         }
 
@@ -177,7 +41,7 @@
         function loadOrders() {
             const container = document.getElementById('ordersContainer');
             if (!container) return;
-            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری...</div>';
 
             fetch(`${SCRIPT_URL}?action=get_orders`)
                 .then(res => res.json())
@@ -206,12 +70,12 @@
                 'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length
             };
 
-            if (document.getElementById('count-all')) document.getElementById('count-all').textContent = counts['همه'];
-            if (document.getElementById('count-waiting')) document.getElementById('count-waiting').textContent = counts['منتظر تأیید'];
-            if (document.getElementById('count-pending')) document.getElementById('count-pending').textContent = counts['در حال بررسی'];
-            if (document.getElementById('count-prep')) document.getElementById('count-prep').textContent = counts['در حال آماده‌سازی'];
-            if (document.getElementById('count-sent')) document.getElementById('count-sent').textContent = counts['ارسال شده'];
-            if (document.getElementById('count-completed')) document.getElementById('count-completed').textContent = counts['تکمیل شده'];
+            document.getElementById('count-all').textContent = counts['همه'];
+            document.getElementById('count-waiting').textContent = counts['منتظر تأیید'];
+            document.getElementById('count-pending').textContent = counts['در حال بررسی'];
+            document.getElementById('count-prep').textContent = counts['در حال آماده‌سازی'];
+            document.getElementById('count-sent').textContent = counts['ارسال شده'];
+            document.getElementById('count-completed').textContent = counts['تکمیل شده'];
         }
 
         function filterOrders(status) {
@@ -228,12 +92,10 @@
 
             for (const [key, id] of Object.entries(cards)) {
                 const el = document.getElementById(id);
-                if (el) {
-                    if (key === status) {
-                        el.className = 'cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
-                    } else {
-                        el.className = 'cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
-                    }
+                if (key === status) {
+                    el.className = 'cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
+                } else {
+                    el.className = 'cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
                 }
             }
 
@@ -243,8 +105,7 @@
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
             if (!container) return;
-            const searchInput = document.getElementById('searchInput');
-            const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
             let filtered = allOrders;
 
@@ -440,7 +301,6 @@
             });
         }
 
-        // راه‌اندازی اولیه
         window.addEventListener('DOMContentLoaded', () => {
             const confirmBtn = document.getElementById('confirmModalBtn');
             if (confirmBtn) {
@@ -451,10 +311,6 @@
                 if (localStorage.getItem('shopyar_admin_logged') === 'true') {
                     showAdminPanel();
                 }
-            } catch(e) {
-                console.log(e);
-            }
+            } catch(e) {}
         });
     </script>
-</body>
-</html>
