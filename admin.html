@@ -116,27 +116,6 @@
         </div>
     </div>
 
-    <!-- مودال نمایش فیش واریز -->
-    <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-100 text-center flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-bold text-slate-800">تصویر فیش واریز</h3>
-                <button type="button" onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1">✕</button>
-            </div>
-            <div class="flex-1 overflow-auto rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center mb-4">
-                <img id="receiptModalImg" src="" alt="فیش واریز" class="max-w-full max-h-[60vh] object-contain rounded-lg">
-            </div>
-            <div class="flex items-center gap-2">
-                <a id="receiptModalLink" href="#" target="_blank" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 px-4 rounded-xl transition">
-                    باز کردن در برگه جدید
-                </a>
-                <button type="button" onclick="closeReceiptModal()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition">
-                    بستن
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         const ADMIN_USER = 'admin';
@@ -145,7 +124,6 @@
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
 
-        // تابع تبدیل ارقام فارسی به انگلیسی (برای کیبوردهای موبایل)
         function toEnglishDigits(str) {
             return String(str || '')
                 .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
@@ -296,9 +274,10 @@
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
 
-                const receiptButton = order.receiptUrl && order.receiptUrl.startsWith('http')
-                    ? `<button type="button" onclick="viewReceipt('${order.receiptUrl}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center gap-1 mb-2">🧾 مشاهده فیش واریز</button>`
-                    : `<div class="text-[11px] text-slate-400 text-center mb-2">فاقد تصویر فیش</div>`;
+                // نمایش شماره پیگیری تراکنش به جای دکمه عکس
+                const receiptInfo = order.receiptUrl 
+                    ? `<div class="bg-orange-50 border border-orange-200 rounded-xl p-2.5 text-xs mb-3 text-slate-700"><strong>شماره پیگیری:</strong> <span class="font-mono font-bold text-orange-800">${order.receiptUrl}</span></div>`
+                    : `<div class="text-[11px] text-slate-400 text-center mb-3">شماره پیگیری ثبت نشده</div>`;
 
                 const approveButton = status === 'منتظر تأیید'
                     ? `<button type="button" onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition shadow-sm">✅ تأیید سفارش</button>`
@@ -328,7 +307,7 @@
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
                         </div>
 
-                        ${receiptButton}
+                        ${receiptInfo}
                         ${approveButton}
                     </div>
 
@@ -347,20 +326,6 @@
 
                 container.appendChild(card);
             });
-        }
-
-        function viewReceipt(url) {
-            document.getElementById('receiptModalImg').src = url;
-            document.getElementById('receiptModalLink').href = url;
-            const modal = document.getElementById('receiptModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeReceiptModal() {
-            const modal = document.getElementById('receiptModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
         }
 
         function approveOrder(orderId) {
