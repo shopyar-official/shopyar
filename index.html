@@ -82,25 +82,6 @@
                 </div>
             </div>
 
-            <!-- بخش اطلاعات کارت به کارت و شماره پیگیری (جایگزین عکس) -->
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-                <div class="text-xs font-bold text-slate-800 flex items-center gap-1">
-                    💳 اطلاعات پرداخت کارت به کارت
-                </div>
-                <p class="text-[11px] text-slate-500 leading-relaxed">
-                    لطفاً مبلغ کل سفارش را به شماره کارت زیر واریز کرده و شماره پیگیری تراکنش را وارد کنید:
-                </p>
-                <div class="bg-white border border-dashed border-slate-300 rounded-xl p-3 text-center space-y-1">
-                    <div class="text-xs font-bold text-slate-700 tracking-wider font-mono">۶۰۳۷-۹۹۷۵-۱۲۳۴-۵۶۷۸</div>
-                    <div class="text-[11px] text-slate-500">به نام: مدیریت فروشگاه شاپ‌یار</div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-medium text-slate-700 mb-1">شماره پیگیری تراکنش / کد ارجاع بانکی <span class="text-rose-500">*</span></label>
-                    <input type="text" id="receiptText" required placeholder="مثلاً: 123456 یا شماره فیش واریزی" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
-                </div>
-            </div>
-
             <button type="submit" id="submitBtn" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
                 ثبت نهایی سفارش
             </button>
@@ -172,7 +153,6 @@
 
         function submitOrder(e) {
             e.preventDefault();
-
             const btn = document.getElementById('submitBtn');
             const resp = document.getElementById('responseMessage');
             
@@ -190,25 +170,23 @@
 
             const fullProductDetails = `${selectedProduct} (تعداد: ${quantity}) | ارسال: ${shippingText} | مبلغ کل: ${totalAmount.toLocaleString()} تومان`;
 
-            const payload = {
+            const formData = new URLSearchParams({
                 action: 'add_order',
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
                 city: document.getElementById('city').value,
                 address: document.getElementById('address').value,
-                product: fullProductDetails,
-                receiptText: document.getElementById('receiptText').value // ارسال شماره پیگیری تراکنش
-            };
+                product: fullProductDetails
+            });
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') {
-                    resp.innerHTML = `<span class="text-emerald-600 font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری سفارش: ${data.orderId}</span>`;
+                    resp.innerHTML = `<span class="text-emerald-600 font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری: ${data.orderId}</span>`;
                     document.getElementById('orderForm').reset();
                     document.getElementById('quantity').value = '1';
                     document.getElementById('productPriceText').textContent = '۰ تومان';
@@ -243,14 +221,13 @@
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
-                        const order = data.find(o => String(o.orderId).toLowerCase() === orderId.toLowerCase());
+                        const order = data.find(o => o.orderId.toLowerCase() === orderId.toLowerCase());
                         if (order) {
                             resultDiv.innerHTML = `
                                 <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-slate-700 space-y-1">
                                     <div><strong>نام:</strong> ${order.name}</div>
                                     <div><strong>محصول:</strong> ${order.product}</div>
-                                    <div><strong>شماره پیگیری:</strong> ${order.receiptUrl || 'ثبت نشده'}</div>
-                                    <div><strong>وضعیت:</strong> <span class="text-orange-600 font-bold">${order.status || 'منتظر تأیید'}</span></div>
+                                    <div><strong>وضعیت:</strong> <span class="text-orange-600 font-bold">${order.status || 'در حال بررسی'}</span></div>
                                     <div><strong>تاریخ ثبت:</strong> ${order.date}</div>
                                 </div>
                             `;
