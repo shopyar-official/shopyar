@@ -105,8 +105,8 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        const ADMIN_USER = 'admin'; // نام کاربری پیش‌فرض
-        const ADMIN_PASS = '1234';  // رمز عبور پیش‌فرض
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = '1234';
         let allOrders = [];
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
@@ -279,6 +279,7 @@
                             <div><strong class="text-slate-700">شهر:</strong> ${order.city || ''}</div>
                             <div><strong class="text-slate-700">آدرس:</strong> ${order.address || ''}</div>
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
+                            <div><strong class="text-orange-700">شماره فیش/پیگیری:</strong> <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">${order.receipt || 'ندارد'}</span></div>
                         </div>
 
                         ${approveButton}
@@ -300,7 +301,6 @@
             });
         }
 
-        // باز کردن مودال تأیید
         function approveOrder(orderId) {
             pendingApproveOrderId = orderId;
             const modal = document.getElementById('confirmModal');
@@ -308,7 +308,6 @@
             modal.classList.add('flex');
         }
 
-        // بستن مودال
         function closeConfirmModal() {
             pendingApproveOrderId = null;
             const modal = document.getElementById('confirmModal');
@@ -316,7 +315,6 @@
             modal.classList.remove('flex');
         }
 
-        // ارسال تأیید سفارش به سرور
         function confirmApproveOrder() {
             if (pendingApproveOrderId === null) return;
 
