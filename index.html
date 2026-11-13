@@ -16,45 +16,45 @@
         
         <div class="text-center mb-6">
             <h1 class="text-xl font-bold text-slate-800">🛍️ ثبت سفارش در شاپ‌یار</h1>
-            <p class="text-xs text-slate-500 mt-1">لطفاً مشخصات خود را جهت ارسال سفارش وارد کنید</p>
+            <p class="text-xs text-slate-500 mt-1">لطفاً مشخصات و اطلاعات پرداخت خود را وارد کنید</p>
         </div>
 
         <form id="orderForm" onsubmit="submitOrder(event)" class="space-y-4">
             
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">نام و نام خانوادگی</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">نام و نام خانوادگی <span class="text-rose-500">*</span></label>
                 <input type="text" id="name" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">شماره موبایل</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">شماره موبایل <span class="text-rose-500">*</span></label>
                 <input type="tel" id="phone" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium" placeholder="09123456789">
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">شهر</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">شهر <span class="text-rose-500">*</span></label>
                 <input type="text" id="city" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">آدرس پستی کامل</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">آدرس پستی کامل <span class="text-rose-500">*</span></label>
                 <textarea id="address" required rows="2" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"></textarea>
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">انتخاب محصول</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">انتخاب محصول <span class="text-rose-500">*</span></label>
                 <select id="productSelect" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
                     <option value="" disabled selected>در حال بارگذاری محصولات...</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">تعداد</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">تعداد <span class="text-rose-500">*</span></label>
                 <input type="number" id="quantity" min="1" value="1" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
             </div>
 
             <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">نوع ارسال</label>
+                <label class="block text-xs font-medium text-slate-700 mb-1">نوع ارسال <span class="text-rose-500">*</span></label>
                 <select id="shippingSelect" onchange="updateTotal()" required class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
                     <option value="0" selected>انتخاب نوع ارسال...</option>
                     <option value="50000">پست پیشتاز (۵۰,۰۰۰ تومان)</option>
@@ -63,10 +63,11 @@
                 </select>
             </div>
 
-            <!-- فیلد شماره پیگیری / فیش (الزامی) -->
-            <div>
-                <label class="block text-xs font-medium text-slate-700 mb-1">شماره فیش واریزی / کد پیگیری تراکنش (الزامی)</label>
-                <input type="text" id="receipt" required placeholder="شماره پیگیری یا ارجاع پرداخت..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
+            <!-- فیلد شماره پیگیری / فیش (کاملاً اجباری) -->
+            <div class="bg-rose-50/50 border border-rose-100 p-3 rounded-2xl">
+                <label class="block text-xs font-bold text-slate-800 mb-1">شماره فیش واریزی / کد پیگیری تراکنش <span class="text-rose-500">* (الزامی)</span></label>
+                <p class="text-[10px] text-slate-500 mb-2">تا زمانی که شماره فیش را وارد نکنید، سفارش ثبت نخواهد شد.</p>
+                <input type="text" id="receipt" required placeholder="مثلاً: 123456 یا کد ارجاع بانکی" class="w-full text-xs bg-white border border-rose-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
             </div>
 
             <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-slate-700 space-y-1 text-xs">
@@ -90,15 +91,6 @@
         </form>
 
         <div id="responseMessage" class="mt-4 text-center text-xs"></div>
-
-        <div class="mt-8 pt-6 border-t border-slate-100">
-            <h3 class="text-xs font-bold text-slate-800 mb-2 flex items-center gap-1">🔍 پیگیری وضعیت سفارش با کد رهگیری</h3>
-            <div class="flex gap-2">
-                <input type="text" id="trackOrderId" placeholder="مثلا SHP-17100" class="flex-1 text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium">
-                <button onclick="trackOrder()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium px-3 py-2 rounded-xl transition">پیگیری</button>
-            </div>
-            <div id="trackResult" class="mt-3 text-xs"></div>
-        </div>
 
     </div>
 
@@ -154,6 +146,14 @@
 
         function submitOrder(e) {
             e.preventDefault();
+            
+            const receiptVal = document.getElementById('receipt').value.trim();
+            if (!receiptVal) {
+                alert('لطفاً شماره فیش واریزی یا کد پیگیری را وارد کنید.');
+                document.getElementById('receipt').focus();
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             const resp = document.getElementById('responseMessage');
             
@@ -178,7 +178,7 @@
                 city: document.getElementById('city').value,
                 address: document.getElementById('address').value,
                 product: fullProductDetails,
-                receipt: document.getElementById('receipt').value.trim()
+                receipt: receiptVal
             });
 
             fetch(SCRIPT_URL, {
@@ -188,7 +188,7 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') {
-                    resp.innerHTML = `<span class="text-emerald-600 font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری: ${data.orderId}</span>`;
+                    resp.innerHTML = `<div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-3 rounded-xl font-bold">سفارش شما با موفقیت ثبت شد!<br>کد پیگیری سفارش: ${data.orderId}</div>`;
                     document.getElementById('orderForm').reset();
                     document.getElementById('quantity').value = '1';
                     document.getElementById('productPriceText').textContent = '۰ تومان';
@@ -206,44 +206,6 @@
                 btn.disabled = false;
                 btn.textContent = 'ثبت نهایی سفارش';
             });
-        }
-
-        function trackOrder() {
-            const orderId = document.getElementById('trackOrderId').value.trim();
-            const resultDiv = document.getElementById('trackResult');
-            
-            if (!orderId) {
-                resultDiv.innerHTML = '<span class="text-rose-500">لطفاً کد سفارش را وارد کنید.</span>';
-                return;
-            }
-
-            resultDiv.innerHTML = '<span class="text-slate-400">در حال جستجو...</span>';
-
-            fetch(`${SCRIPT_URL}?action=get_orders`)
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) {
-                        const order = data.find(o => o.orderId.toLowerCase() === orderId.toLowerCase());
-                        if (order) {
-                            resultDiv.innerHTML = `
-                                <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 text-slate-700 space-y-1">
-                                    <div><strong>نام:</strong> ${order.name}</div>
-                                    <div><strong>محصول:</strong> ${order.product}</div>
-                                    <div><strong>شماره پیگیری:</strong> ${order.receipt || 'ندارد'}</div>
-                                    <div><strong>وضعیت:</strong> <span class="text-orange-600 font-bold">${order.status || 'در حال بررسی'}</span></div>
-                                    <div><strong>تاریخ ثبت:</strong> ${order.date}</div>
-                                </div>
-                            `;
-                        } else {
-                            resultDiv.innerHTML = '<span class="text-rose-500">سفارشی با این کد پیدا نشد!</span>';
-                        }
-                    } else {
-                        resultDiv.innerHTML = '<span class="text-rose-500">خطا در دریافت اطلاعات.</span>';
-                    }
-                })
-                .catch(err => {
-                    resultDiv.innerHTML = '<span class="text-rose-500">خطا در اتصال به سرور.</span>';
-                });
         }
     </script>
 </body>
