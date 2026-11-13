@@ -105,8 +105,6 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        const ADMIN_USER = 'admin';
-        const ADMIN_PASS = '1234';
         let allOrders = [];
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
@@ -124,7 +122,7 @@
             const username = document.getElementById('adminUsername').value.trim();
             const password = document.getElementById('adminPassword').value;
 
-            if (username === ADMIN_USER && password === ADMIN_PASS) {
+            if (username === 'admin' && password === '1234') {
                 localStorage.setItem('shopyar_admin_logged', 'true');
                 showAdminPanel();
             } else {
@@ -279,7 +277,7 @@
                             <div><strong class="text-slate-700">شهر:</strong> ${order.city || ''}</div>
                             <div><strong class="text-slate-700">آدرس:</strong> ${order.address || ''}</div>
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
-                            <div><strong class="text-orange-700">شماره فیش/پیگیری:</strong> <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">${order.receipt || 'ندارد'}</span></div>
+                            <div><strong class="text-orange-700">شماره فیش/پیگیری:</strong> <span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded font-bold">${order.receipt || 'ثبت نشده'}</span></div>
                         </div>
 
                         ${approveButton}
@@ -294,94 +292,3 @@
                             <option value="ارسال شده">ارسال شده</option>
                             <option value="تکمیل شده">تکمیل شده</option>
                         </select>
-                    </div>
-                `;
-
-                container.appendChild(card);
-            });
-        }
-
-        function approveOrder(orderId) {
-            pendingApproveOrderId = orderId;
-            const modal = document.getElementById('confirmModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeConfirmModal() {
-            pendingApproveOrderId = null;
-            const modal = document.getElementById('confirmModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function confirmApproveOrder() {
-            if (pendingApproveOrderId === null) return;
-
-            const orderId = pendingApproveOrderId;
-            const button = document.getElementById('confirmModalBtn');
-            button.disabled = true;
-            button.textContent = 'در حال ثبت...';
-
-            const formData = new URLSearchParams({
-                action: 'approve_order',
-                orderId: orderId
-            });
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const order = allOrders.find(o => String(o.orderId) === String(orderId));
-                    if (order) order.status = 'در حال بررسی';
-
-                    closeConfirmModal();
-                    updateCounts();
-                    renderOrders();
-                } else {
-                    alert(data.message || 'خطا در تأیید سفارش');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('خطا در اتصال به سرور');
-            })
-            .finally(() => {
-                button.disabled = false;
-                button.textContent = 'تأیید و انتقال';
-            });
-        }
-
-        function updateStatus(orderId, newStatus) {
-            const formData = new URLSearchParams({
-                action: 'update_status',
-                orderId: orderId,
-                status: newStatus
-            });
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const order = allOrders.find(o => String(o.orderId) === String(orderId));
-                    if (order) order.status = newStatus;
-                    updateCounts();
-                    renderOrders();
-                } else {
-                    alert(data.message || 'خطا در به‌روزرسانی وضعیت');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('خطا در اتصال به سرور');
-            });
-        }
-    </script>
-</body>
-</html>
