@@ -13,125 +13,91 @@
 <body class="bg-slate-50 min-h-screen p-4 md:p-8 flex items-center justify-center">
 
     <!-- صفحه ورود به مدیریت -->
-    <div id="loginScreen" class="max-w-md w-full bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-100">
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 text-orange-600 rounded-2xl mb-3 text-2xl font-bold">
-                🔒
-            </div>
-            <h1 class="text-xl font-black text-slate-800">ورود به پنل مدیریت</h1>
-            <p class="text-xs text-slate-400 mt-1">جهت دسترسی به سفارشات شاپ‌یار</p>
-        </div>
-
-        <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">نام کاربری</label>
-                <input type="text" id="adminUsername" required placeholder="admin" autocapitalize="none" autocomplete="username" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">رمز عبور</label>
-                <input type="password" id="adminPassword" required placeholder="••••" autocomplete="current-password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition">
-            </div>
-            <div id="loginError" class="text-xs text-rose-500 text-center font-bold min-h-[16px]"></div>
-            <button type="button" onclick="handleLogin()" class="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition shadow-lg shadow-orange-500/20">
+    <div id="loginScreen" class="max-w-md w-full bg-white rounded-3xl shadow-sm border border-slate-100 p-8 text-center">
+        <h1 class="text-xl font-bold text-slate-800 mb-2">🔐 ورود به پنل مدیریت</h1>
+        <p class="text-xs text-slate-500 mb-6">لطفاً نام کاربری و رمز عبور را وارد کنید</p>
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <input type="text" id="adminUsername" required placeholder="نام کاربری..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-center">
+            <input type="password" id="adminPassword" required placeholder="رمز عبور..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-center">
+            <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
                 ورود به پنل
             </button>
         </form>
+        <div id="loginError" class="mt-3 text-xs text-rose-500"></div>
     </div>
 
-    <!-- داشبورد اصلی مدیریت (پیش‌فرض مخفی) -->
+    <!-- محتوای اصلی پنل مدیریت -->
     <div id="adminPanel" class="max-w-6xl w-full mx-auto hidden">
-        <!-- سربرگ -->
-        <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
-                <h1 class="text-xl font-black text-slate-800">مدیریت سفارشات شاپ‌یار</h1>
-                <p class="text-xs text-slate-400 mt-1">مشاهده، بررسی و تغییر وضعیت سفارش‌های ثبت‌شده</p>
+                <h1 class="text-2xl font-bold text-slate-800">📦 مدیریت سفارشات شاپ‌یار</h1>
+                <p class="text-sm text-slate-500 mt-1">مدیریت و پیگیری سفارشات ثبت شده مشتریان</p>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="loadOrders()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-1.5">
-                    🔄 به‌روزرسانی
+            <div class="flex gap-2">
+                <button onclick="loadOrders()" class="bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-medium transition shadow-sm flex items-center gap-2">
+                    🔄 به‌روزرسانی لیست
                 </button>
-                <button onclick="logout()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-1.5">
+                <button onclick="logout()" class="bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 px-4 py-2 rounded-xl text-sm font-medium transition">
                     خروج
                 </button>
             </div>
-        </header>
-
-        <!-- کارت‌های وضعیت و فیلتر -->
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
-            <div onclick="filterOrders('همه')" id="card-all" class="cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-slate-400 block mb-1">همه سفارش‌ها</span>
-                <span id="count-all" class="text-xl font-black text-slate-800">0</span>
-            </div>
-            <div onclick="filterOrders('منتظر تأیید')" id="card-waiting" class="cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-rose-500 font-bold block mb-1">منتظر تأیید</span>
-                <span id="count-waiting" class="text-xl font-black text-rose-600">0</span>
-            </div>
-            <div onclick="filterOrders('در حال بررسی')" id="card-pending" class="cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-amber-500 font-bold block mb-1">در حال بررسی</span>
-                <span id="count-pending" class="text-xl font-black text-amber-600">0</span>
-            </div>
-            <div onclick="filterOrders('در حال آماده‌سازی')" id="card-prep" class="cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-blue-500 font-bold block mb-1">در حال آماده‌سازی</span>
-                <span id="count-prep" class="text-xl font-black text-blue-600">0</span>
-            </div>
-            <div onclick="filterOrders('ارسال شده')" id="card-sent" class="cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-purple-500 font-bold block mb-1">ارسال شده</span>
-                <span id="count-sent" class="text-xl font-black text-purple-600">0</span>
-            </div>
-            <div onclick="filterOrders('تکمیل شده')" id="card-completed" class="cursor-pointer bg-white border-2 border-transparent hover:border-slate-300 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
-                <span class="text-xs text-emerald-500 font-bold block mb-1">تکمیل شده</span>
-                <span id="count-completed" class="text-xl font-black text-emerald-600">0</span>
-            </div>
         </div>
 
-        <!-- نوار جستجو -->
+        <!-- جستجو -->
         <div class="mb-6">
-            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="جستجو بر اساس نام خریدار، شماره تماس، کد سفارش..." class="w-full bg-white border border-slate-200 rounded-2xl px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm transition">
+            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری، شماره موبایل یا کد سفارش..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
         </div>
 
-        <!-- لیست سفارش‌ها -->
+        <!-- کارت‌های فیلتر وضعیت -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+            <div onclick="filterOrders('همه')" id="card-all" class="cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-slate-500 font-medium">همه سفارش‌ها</div>
+                <div id="count-all" class="text-xl font-bold text-slate-800 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('منتظر تأیید')" id="card-waiting" class="cursor-pointer bg-white border-2 border-transparent hover:border-rose-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-rose-600 font-medium">منتظر تأیید</div>
+                <div id="count-waiting" class="text-xl font-bold text-rose-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('در حال بررسی')" id="card-pending" class="cursor-pointer bg-white border-2 border-transparent hover:border-amber-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-amber-600 font-medium">در حال بررسی</div>
+                <div id="count-pending" class="text-xl font-bold text-amber-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('در حال آماده‌سازی')" id="card-prep" class="cursor-pointer bg-white border-2 border-transparent hover:border-blue-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-blue-600 font-medium">در حال آماده‌سازی</div>
+                <div id="count-prep" class="text-xl font-bold text-blue-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('ارسال شده')" id="card-sent" class="cursor-pointer bg-white border-2 border-transparent hover:border-purple-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center">
+                <div class="text-xs text-purple-600 font-medium">ارسال شده</div>
+                <div id="count-sent" class="text-xl font-bold text-purple-600 mt-1">۰</div>
+            </div>
+            <div onclick="filterOrders('تکمیل شده')" id="card-completed" class="cursor-pointer bg-white border-2 border-transparent hover:border-emerald-400 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center col-span-2 md:col-span-1">
+                <div class="text-xs text-emerald-600 font-medium">تکمیل شده</div>
+                <div id="count-completed" class="text-xl font-bold text-emerald-600 mt-1">۰</div>
+            </div>
+        </div>
+
+        <!-- سفارش‌ها -->
         <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- کارت سفارشات از طریق جاوااسکریپت پر می‌شود -->
+            <div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>
         </div>
     </div>
 
     <!-- مودال تأیید سفارش -->
-    <div id="confirmModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
-            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
-                ⚠️
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100 text-center">
+            <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-xl">
+                ✨
             </div>
-            <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش</h3>
-            <p class="text-xs text-slate-500 leading-relaxed mb-6">
-                آیا از تغییر وضعیت این سفارش به <span class="font-bold text-slate-700">«در حال بررسی»</span> اطمینان دارید؟
+            <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+                آیا از تأیید این سفارش اطمینان دارید؟ پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.
             </p>
-            <div class="flex items-center gap-3">
-                <button type="button" onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-xs transition">
+            <div class="flex gap-2">
+                <button type="button" onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
                     انصراف
                 </button>
-                <button type="button" id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm">
+                <button type="button" id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
                     تأیید و انتقال
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- مودال نمایش فیش واریز -->
-    <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-100 text-center flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-bold text-slate-800">تصویر فیش واریز</h3>
-                <button type="button" onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1">✕</button>
-            </div>
-            <div class="flex-1 overflow-auto rounded-xl bg-slate-50 border border-slate-100 p-2 flex items-center justify-center mb-4">
-                <img id="receiptModalImg" src="" alt="فیش واریز" class="max-w-full max-h-[60vh] object-contain rounded-lg">
-            </div>
-            <div class="flex items-center gap-2">
-                <a id="receiptModalLink" href="#" target="_blank" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 px-4 rounded-xl transition">
-                    باز کردن در برگه جدید
-                </a>
-                <button type="button" onclick="closeReceiptModal()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition">
-                    بستن
                 </button>
             </div>
         </div>
@@ -139,35 +105,30 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
-        const ADMIN_USER = 'admin';
-        const ADMIN_PASS = '1234';
+        const ADMIN_USER = 'admin'; // نام کاربری پیش‌فرض
+        const ADMIN_PASS = '1234';  // رمز عبور پیش‌فرض
         let allOrders = [];
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
 
-        // تابع تبدیل ارقام فارسی به انگلیسی (برای کیبوردهای موبایل)
-        function toEnglishDigits(str) {
-            return String(str || '')
-                .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
-                .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('confirmModalBtn').addEventListener('click', confirmApproveOrder);
 
-        function handleLogin() {
-            const rawUser = document.getElementById('adminUsername').value;
-            const rawPass = document.getElementById('adminPassword').value;
+            if (localStorage.getItem('shopyar_admin_logged') === 'true') {
+                showAdminPanel();
+            }
+        });
 
-            const username = toEnglishDigits(rawUser).trim().toLowerCase();
-            const password = toEnglishDigits(rawPass).trim();
-            const errorEl = document.getElementById('loginError');
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
 
             if (username === ADMIN_USER && password === ADMIN_PASS) {
-                errorEl.textContent = '';
-                try {
-                    localStorage.setItem('shopyar_admin_logged', 'true');
-                } catch(err) {}
+                localStorage.setItem('shopyar_admin_logged', 'true');
                 showAdminPanel();
             } else {
-                errorEl.textContent = 'نام کاربری یا رمز عبور اشتباه است!';
+                document.getElementById('loginError').textContent = 'نام کاربری یا رمز عبور اشتباه است!';
             }
         }
 
@@ -179,16 +140,13 @@
         }
 
         function logout() {
-            try {
-                localStorage.removeItem('shopyar_admin_logged');
-            } catch(e) {}
+            localStorage.removeItem('shopyar_admin_logged');
             location.reload();
         }
 
         function loadOrders() {
             const container = document.getElementById('ordersContainer');
-            if (!container) return;
-            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری اطلاعات...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری...</div>';
 
             fetch(`${SCRIPT_URL}?action=get_orders`)
                 .then(res => res.json())
@@ -210,8 +168,8 @@
         function updateCounts() {
             const counts = {
                 'همه': allOrders.length,
-                'منتظر تأیید': allOrders.filter(o => (o.status || 'منتظر تأیید') === 'منتظر تأیید').length,
-                'در حال بررسی': allOrders.filter(o => o.status === 'در حال بررسی').length,
+                'منتظر تأیید': allOrders.filter(o => (o.status || '') === 'منتظر تأیید').length,
+                'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
                 'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
                 'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
                 'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length
@@ -251,13 +209,12 @@
 
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
-            if (!container) return;
             const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
 
             let filtered = allOrders;
 
             if (currentFilter !== 'همه') {
-                filtered = filtered.filter(o => (o.status || 'منتظر تأیید') === currentFilter);
+                filtered = filtered.filter(o => (o.status || 'در حال بررسی') === currentFilter);
             }
 
             if (searchQuery) {
@@ -296,12 +253,8 @@
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
 
-                const receiptButton = order.receiptUrl && order.receiptUrl.startsWith('http')
-                    ? `<button type="button" onclick="viewReceipt('${order.receiptUrl}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center gap-1 mb-2">🧾 مشاهده فیش واریز</button>`
-                    : `<div class="text-[11px] text-slate-400 text-center mb-2">فاقد تصویر فیش</div>`;
-
                 const approveButton = status === 'منتظر تأیید'
-                    ? `<button type="button" onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition shadow-sm">✅ تأیید سفارش</button>`
+                    ? `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition">✅ تأیید سفارش</button>`
                     : '';
 
                 card.innerHTML = `
@@ -328,7 +281,6 @@
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
                         </div>
 
-                        ${receiptButton}
                         ${approveButton}
                     </div>
 
@@ -336,7 +288,6 @@
                         <span class="text-[11px] text-slate-400">${order.date || ''}</span>
                         <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
                             <option value="" disabled selected>تغییر وضعیت...</option>
-                            <option value="منتظر تأیید">منتظر تأیید</option>
                             <option value="در حال بررسی">در حال بررسی</option>
                             <option value="در حال آماده‌سازی">در حال آماده‌سازی</option>
                             <option value="ارسال شده">ارسال شده</option>
@@ -349,20 +300,7 @@
             });
         }
 
-        function viewReceipt(url) {
-            document.getElementById('receiptModalImg').src = url;
-            document.getElementById('receiptModalLink').href = url;
-            const modal = document.getElementById('receiptModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeReceiptModal() {
-            const modal = document.getElementById('receiptModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
+        // باز کردن مودال تأیید
         function approveOrder(orderId) {
             pendingApproveOrderId = orderId;
             const modal = document.getElementById('confirmModal');
@@ -370,6 +308,7 @@
             modal.classList.add('flex');
         }
 
+        // بستن مودال
         function closeConfirmModal() {
             pendingApproveOrderId = null;
             const modal = document.getElementById('confirmModal');
@@ -377,6 +316,7 @@
             modal.classList.remove('flex');
         }
 
+        // ارسال تأیید سفارش به سرور
         function confirmApproveOrder() {
             if (pendingApproveOrderId === null) return;
 
@@ -385,13 +325,14 @@
             button.disabled = true;
             button.textContent = 'در حال ثبت...';
 
+            const formData = new URLSearchParams({
+                action: 'approve_order',
+                orderId: orderId
+            });
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({
-                    action: 'approve_order',
-                    orderId: orderId
-                })
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
@@ -417,14 +358,15 @@
         }
 
         function updateStatus(orderId, newStatus) {
+            const formData = new URLSearchParams({
+                action: 'update_status',
+                orderId: orderId,
+                status: newStatus
+            });
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({
-                    action: 'update_status',
-                    orderId: orderId,
-                    status: newStatus
-                })
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
@@ -442,19 +384,6 @@
                 alert('خطا در اتصال به سرور');
             });
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const confirmBtn = document.getElementById('confirmModalBtn');
-            if (confirmBtn) {
-                confirmBtn.addEventListener('click', confirmApproveOrder);
-            }
-
-            try {
-                if (localStorage.getItem('shopyar_admin_logged') === 'true') {
-                    showAdminPanel();
-                }
-            } catch(e) {}
-        });
     </script>
 </body>
 </html>
