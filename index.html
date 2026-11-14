@@ -3,67 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f8fafc">
   <title>ثبت سفارش - شاپ‌یار</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
-  <style>body{font-family:'Vazirmatn',sans-serif}</style>
-</head>
-<body class="bg-slate-50 min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
+  <style>
+    *{ -webkit-tap-highlight-color: transparent; }
+    body{
+      font-family:'Vazirmatn',sans-serif;
+      background:
+        radial-gradient(900px 420px at 100% -10%, #ffedd5 0%, rgba(255,237,213,0) 60%),
+        radial-gradient(800px 420px at 0% 100%, #e0f2fe 0%, rgba(224,242,254,0) 55%),
+        #f8fafc;
+    }
+    ::selection{ background:#fed7aa; color:#7c2d12; }
 
-<main class="max-w-md w-full bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-8">
-  <div class="text-center mb-6">
-    <h1 class="text-xl font-bold text-slate-800">🛍️ ثبت سفارش در شاپ‌یار</h1>
-    <p class="text-xs text-slate-500 mt-1">لطفاً مشخصات را برای ارسال سفارش وارد کنید.</p>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+    input[type=number]{ -moz-appearance:textfield; }
+
+    .inp{
+      width:100%;
+      font-size:.8rem;
+      color:#0f172a;
+      background-color:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:.9rem;
+      padding:.72rem .9rem;
+      outline:none;
+      transition:background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .inp::placeholder{ color:#9aa7b8; }
+    .inp:hover{ border-color:#cbd5e1; }
+    .inp:focus{
+      background-color:#ffffff;
+      border-color:#fb923c;
+      box-shadow:0 0 0 4px rgba(251,146,60,.16);
+    }
+
+    select.inp{
+      appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:left .85rem center;
+      background-size:1rem;
+      padding-left:2.4rem;
+    }
+
+    .lbl{
+      display:block;
+      font-size:.72rem;
+      font-weight:600;
+      color:#475569;
+      margin-bottom:.4rem;
+    }
+
+    .product-row{
+      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+      transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .product-row:hover{ border-color:#fdba74; box-shadow:0 6px 18px -12px rgba(251,146,60,.7); }
+
+    .num{ font-variant-numeric:tabular-nums; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing:.06em; }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-10 flex flex-col items-center justify-center">
+
+<main class="relative z-10 max-w-md w-full bg-orange-50/95 backdrop-blur rounded-[2rem] shadow-[0_24px_70px_-30px_rgba(15,23,42,.35)] border border-white ring-1 ring-slate-100 p-6 md:p-8">
+
+  <div class="text-center mb-7">
+    <h1 class="text-xl font-extrabold text-slate-800">🛍️ ثبت سفارش در شاپ‌یار</h1>
+    <div class="mx-auto mt-3 h-1 w-14 rounded-full bg-gradient-to-l from-orange-500 to-amber-300"></div>
+    <p class="text-xs text-slate-500 mt-3">لطفاً مشخصات را برای ارسال سفارش وارد کنید.</p>
   </div>
 
-  <form id="orderForm" class="space-y-4">
+  <form id="orderForm" class="space-y-5">
     <div>
-      <label class="block text-xs font-medium mb-1">نام و نام خانوادگی</label>
-      <input id="name" required class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
+      <label class="lbl">نام و نام خانوادگی</label>
+      <input id="name" required class="inp" placeholder="مثلاً علی حسینی">
     </div>
 
     <div>
-      <label class="block text-xs font-medium mb-1">شماره موبایل</label>
-      <input id="phone" type="tel" required placeholder="09123456789"
-             class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
+      <label class="lbl">شماره موبایل</label>
+      <input id="phone" type="tel" required placeholder="09123456789" inputmode="tel" class="inp num">
     </div>
 
     <div>
-      <label class="block text-xs font-medium mb-1">شهر</label>
-      <input id="city" required class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
+      <label class="lbl">شهر</label>
+      <input id="city" required class="inp" placeholder="مثلاً تهران">
     </div>
 
     <div>
-      <label class="block text-xs font-medium mb-1">آدرس پستی کامل</label>
-      <textarea id="address" required rows="2"
-                class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"></textarea>
+      <label class="lbl">آدرس پستی کامل</label>
+      <textarea id="address" required rows="2" class="inp resize-none" placeholder="خیابان، کوچه، پلاک، واحد و کد پستی"></textarea>
     </div>
 
     <!-- ردیف نخست، همان انتخاب محصول و تعداد قبلی است. -->
     <div id="productRows" class="space-y-3">
-      <div class="product-row border border-slate-200 rounded-xl p-3 space-y-2">
+      <div class="product-row border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
         <div>
-          <label class="block text-xs font-medium mb-1">انتخاب محصول</label>
-          <select id="productSelect" class="item-product w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5" required>
+          <label class="lbl">انتخاب محصول</label>
+          <select id="productSelect" class="item-product inp" required>
             <option value="">در حال بارگذاری محصولات...</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-medium mb-1">تعداد</label>
-          <input id="quantity" class="item-quantity w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"
-                 type="number" min="1" step="1" value="1" required>
+          <label class="lbl">تعداد</label>
+          <input id="quantity" class="item-quantity inp num" type="number" min="1" step="1" value="1" required>
         </div>
       </div>
     </div>
 
     <button id="addProductBtn" type="button"
-            class="w-full border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-xl py-2.5 text-xs font-bold">
+            class="w-full border border-dashed border-orange-300 bg-orange-50/60 text-orange-600 hover:bg-orange-100/80 hover:border-orange-400 active:scale-[.99] rounded-2xl py-3 text-xs font-bold transition">
       + افزودن محصول دیگر
     </button>
 
     <div>
-      <label class="block text-xs font-medium mb-1">نوع ارسال</label>
-      <select id="shippingSelect" required class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
+      <label class="lbl">نوع ارسال</label>
+      <select id="shippingSelect" required class="inp">
         <option value="">انتخاب نوع ارسال...</option>
         <option value="50000">پست پیشتاز (۵۰,۰۰۰ تومان)</option>
         <option value="80000">تیپاکس (۸۰,۰۰۰ تومان)</option>
@@ -71,69 +130,72 @@
       </select>
     </div>
 
-    <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-xs space-y-2">
-      <div class="flex justify-between">
-        <span>قیمت محصولات:</span><span id="productPriceText">۰ تومان</span>
+    <div class="rounded-2xl p-4 text-xs space-y-2.5 bg-gradient-to-br from-orange-50 via-amber-50 to-white border border-orange-200/80 shadow-[inset_0_1px_0_#fff]">
+      <div class="flex justify-between text-slate-600">
+        <span>قیمت محصولات:</span>
+        <span id="productPriceText" class="num font-semibold text-slate-800">۰ تومان</span>
       </div>
-      <div class="flex justify-between">
-        <span>هزینه ارسال:</span><span id="shippingPriceText">۰ تومان</span>
+      <div class="flex justify-between text-slate-600">
+        <span>هزینه ارسال:</span>
+        <span id="shippingPriceText" class="num font-semibold text-slate-800">۰ تومان</span>
       </div>
-      <div class="border-t border-orange-200 pt-2 flex justify-between font-bold">
-        <span>مبلغ کل:</span><span id="totalPriceText">۰ تومان</span>
+      <div class="border-t border-orange-200/80 pt-2.5 flex justify-between items-center font-bold">
+        <span class="text-slate-800">مبلغ کل:</span>
+        <span id="totalPriceText" class="num text-sm font-extrabold text-orange-600">۰ تومان</span>
       </div>
     </div>
 
-    <div class="bg-slate-50 border rounded-2xl p-4 space-y-3">
-      <p class="text-xs font-bold">اطلاعات پرداخت:</p>
-      <p class="text-xs text-slate-600">
+    <div class="rounded-2xl p-4 space-y-3.5 bg-slate-50 border border-slate-200">
+      <p class="text-xs font-bold text-slate-800">اطلاعات پرداخت:</p>
+      <p class="text-xs text-slate-600 leading-6">
         پس از واریز مبلغ سفارش، کد رهگیری پرداخت را در کادر زیر وارد کنید.
       </p>
 
-      <div class="bg-white border border-orange-200 rounded-xl p-3 space-y-3">
+      <div class="rounded-2xl p-4 space-y-3 bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 shadow-lg shadow-slate-900/10">
         <div>
-          <span class="block text-xs text-slate-500 mb-1">نام صاحب حساب</span>
-          <div class="text-sm font-bold text-slate-800">علی حسینی</div>
+          <span class="block text-[11px] text-slate-400 mb-1">نام صاحب حساب</span>
+          <div class="text-sm font-bold text-white">علی حسینی</div>
         </div>
         <div>
-          <span class="block text-xs text-slate-500 mb-1">شماره کارت نمونه</span>
-          <div dir="ltr" class="text-sm font-bold text-slate-800 tracking-wider">
+          <span class="block text-[11px] text-slate-400 mb-1">شماره کارت نمونه</span>
+          <div dir="ltr" class="mono text-[13px] font-bold text-amber-300 bg-slate-950/60 rounded-lg px-2.5 py-2 text-center">
             0000-0000-0000-0000
           </div>
         </div>
         <div>
-          <span class="block text-xs text-slate-500 mb-1">شماره شبای نمونه</span>
-          <div dir="ltr" class="text-sm font-bold text-slate-800 tracking-wider">
+          <span class="block text-[11px] text-slate-400 mb-1">شماره شبای نمونه</span>
+          <div dir="ltr" class="mono text-[13px] font-bold text-amber-300 bg-slate-950/60 rounded-lg px-2.5 py-2 text-center">
             IR00 0000 0000 0000 0000 0000 00
           </div>
         </div>
-        <p class="text-[10px] text-rose-600">
+        <p class="text-[10px] text-rose-300 leading-5">
           این اطلاعات صرفاً نمونه و ساختگی است؛ برای پرداخت واقعی استفاده نکنید.
         </p>
       </div>
 
       <div>
-        <label class="block text-xs mb-1">کد رهگیری پرداخت</label>
+        <label class="lbl">کد رهگیری پرداخت</label>
         <input id="paymentCode" required maxlength="200"
                placeholder="کد درج‌شده روی رسید پرداخت را وارد کنید"
-               class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
+               class="inp bg-white num">
       </div>
     </div>
 
     <button id="submitBtn" type="submit"
-            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-xs">
+            class="w-full text-white font-bold py-3.5 rounded-2xl text-xs bg-gradient-to-l from-orange-600 to-amber-500 hover:from-orange-600 hover:to-orange-500 shadow-lg shadow-orange-500/30 active:scale-[.99] disabled:opacity-60 disabled:cursor-not-allowed transition">
       ثبت نهایی سفارش
     </button>
   </form>
 
   <div id="responseMessage" class="mt-4 text-center text-xs"></div>
 
-  <div class="mt-8 pt-6 border-t">
-    <h2 class="text-xs font-bold mb-2">🔍 پیگیری سفارش با کد سفارش</h2>
+  <div class="mt-8 pt-6 border-t border-slate-200/80">
+    <h2 class="text-xs font-bold mb-3 text-slate-800">🔍 پیگیری سفارش با کد سفارش</h2>
     <div class="flex gap-2">
       <input id="trackOrderId" placeholder="مثلاً SHP-123456"
-             class="flex-1 text-xs bg-slate-50 border rounded-xl px-3 py-2">
+             class="flex-1 inp num" dir="ltr">
       <button id="trackBtn" type="button"
-              class="bg-slate-800 text-white text-xs px-3 rounded-xl">پیگیری</button>
+              class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 rounded-2xl active:scale-[.98] transition">پیگیری</button>
     </div>
     <div id="trackResult" class="mt-3 text-xs"></div>
   </div>
@@ -208,18 +270,18 @@ function addProductRow() {
   }
 
   const row = document.createElement("div");
-  row.className = "product-row border border-slate-200 rounded-xl p-3 space-y-2";
+  row.className = "product-row border border-slate-200 rounded-2xl p-3.5 space-y-2.5";
   row.innerHTML = `
     <div>
-      <label class="block text-xs font-medium mb-1">انتخاب محصول</label>
-      <select class="item-product w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5" required></select>
+      <label class="lbl">انتخاب محصول</label>
+      <select class="item-product inp" required></select>
     </div>
     <div>
-      <label class="block text-xs font-medium mb-1">تعداد</label>
-      <input class="item-quantity w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"
+      <label class="lbl">تعداد</label>
+      <input class="item-quantity inp num"
              type="number" min="1" step="1" value="1" required>
     </div>
-    <button type="button" class="remove-product text-xs text-rose-600">
+    <button type="button" class="remove-product w-full text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl py-2 transition">
       حذف این محصول
     </button>
   `;
