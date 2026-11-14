@@ -1,342 +1,597 @@
-<!DOCTYPE html>
+```html<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>پنل مدیریت سفارشات - شاپ‌یار</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
-  <style>body{font-family:'Vazirmatn',sans-serif}</style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>پنل مدیریت سفارشات - شاپ‌یار</title>
+
+ <script src="https://cdn.tailwindcss.com"></script>
+ <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+
+ <style>
+ body {
+ font-family: Vazirmatn, sans-serif;
+ }
+
+ .loading {
+ opacity: .6;
+ pointer-events: none;
+ }
+ </style>
 </head>
+
 <body class="bg-slate-50 min-h-screen p-4 md:p-8">
 
-<main class="max-w-6xl w-full mx-auto">
-  <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-    <div class="flex items-center gap-3">
-      <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-md shadow-amber-200">
-        ش
-      </div>
-      <div>
-        <h1 class="text-xl font-bold text-slate-800">پنل مدیریت شاپ‌یار</h1>
-        <p class="text-xs text-slate-500 mt-1">مدیریت و پیگیری سفارش‌های ثبت‌شده</p>
-      </div>
-    </div>
-    
-    <div class="flex items-center gap-3 w-full md:w-auto">
-      <button onclick="fetchOrders()" class="flex-1 md:flex-initial flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        بروزرسانی لیست
-      </button>
-    </div>
-  </header>
+<main class="max-w-7xl mx-auto">
 
-  <!-- فیلترها و آمار -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-    <button onclick="setFilter('all')" id="filter-all" class="filter-btn bg-white border-2 border-amber-500 p-4 rounded-xl text-right transition shadow-sm">
-      <span class="text-xs text-slate-500 font-medium block">همه سفارش‌ها</span>
-      <span id="count-all" class="text-2xl font-bold text-slate-800 block mt-1">0</span>
-    </button>
-    
-    <button onclick="setFilter('در انتظار پرداخت')" id="filter-pending-pay" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-yellow-600 font-medium block">در انتظار پرداخت</span>
-      <span id="count-pending-pay" class="text-2xl font-bold text-yellow-600 block mt-1">0</span>
-    </button>
+ <header class="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
+ <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-    <button onclick="setFilter('منتظر تأیید')" id="filter-pending" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-amber-600 font-medium block">منتظر تأیید</span>
-      <span id="count-pending" class="text-2xl font-bold text-amber-600 block mt-1">0</span>
-    </button>
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-2xl font-bold">
+ ش </div>
 
-    <button onclick="setFilter('در حال پردازش')" id="filter-processing" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-blue-600 font-medium block">در حال پردازش</span>
-      <span id="count-processing" class="text-2xl font-bold text-blue-600 block mt-1">0</span>
-    </button>
+ <div>
+ <h1 class="font-bold text-xl text-slate-800">
+ پنل مدیریت سفارشات - شاپ‌یار </h1>
 
-    <button onclick="setFilter('ارسال شده')" id="filter-shipped" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-emerald-600 font-medium block">ارسال شده</span>
-      <span id="count-shipped" class="text-2xl font-bold text-emerald-600 block mt-1">0</span>
-    </button>
+ <p class="text-xs text-slate-500 mt-1">
+ مدیریت و پیگیری سفارش‌های ثبت‌شده </p>
+ </div>
+ </div>
 
-    <button onclick="setFilter('رد شده')" id="filter-rejected" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-rose-600 font-medium block">رد شده</span>
-      <span id="count-rejected" class="text-2xl font-bold text-rose-600 block mt-1">0</span>
-    </button>
-  </div>
+ <button id="refreshBtn"
+ type="button"
+ class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium"
+ >
+ بروزرسانی لیست </button>
 
-  <!-- لیست سفارشات -->
-  <div id="orders-container" class="space-y-4">
-    <div class="text-center py-12 bg-white rounded-2xl border border-slate-100 text-slate-500">
-      در حال بارگذاری سفارشات...
-    </div>
-  </div>
+ </div>
+ </header>
+
+ <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+
+ <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
+ <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
+ <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
+ </button>
+
+ <button data-filter="pending-pay" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-yellow-600">در انتظار پرداخت</span>
+ <strong id="count-pending-pay" class="block text-2xl text-yellow-600 mt-1">0</strong>
+ </button>
+
+ <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-amber-600">منتظر تأیید</span>
+ <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
+ </button>
+
+ <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-blue-600">در حال پردازش</span>
+ <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
+ </button>
+
+ <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-emerald-600">ارسال شده</span>
+ <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
+ </button>
+
+ <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-rose-600">رد شده</span>
+ <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
+ </button>
+
+ </section>
+
+ <div id="message"></div>
+
+ <section id="orders-container" class="space-y-4">
+ <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
+ در حال بارگذاری سفارشات...
+ </div>
+ </section>
+
 </main>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
-  let allOrders = [];
-  let currentFilter = 'all';
+ const API_URL =
+ "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
 
-  function normStatus(s) {
-    return (s || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/أ|إ|آ|ا/g, 'ا').replace(/ئ|ی/g, 'ی').trim();
-  }
+ let allOrders = [];
+ let currentFilter = "all";
+ let changingOrder = false;
 
-  function getOrderStatus(o) {
-    return (o.status || o.Status || 'منتظر تأیید').trim();
-  }
+ const STATUS = {
+ PENDING_PAY: "در انتظار پرداخت",
+ PENDING: "منتظر تأیید",
+ PROCESSING: "در حال پردازش",
+ SHIPPED: "ارسال شده",
+ REJECTED: "رد شده"
+ };
 
-  function isPendingPay(st) {
-    const s = normStatus(st);
-    return s.includes('انتظار') && s.includes('پرداخت');
-  }
+ function escapeHtml(value) {
+ return String(value ?? "")
+ .replace(/&/g, "&amp;")
+ .replace(/</g, "&lt;")
+ .replace(/>/g, "&gt;")
+ .replace(/"/g, "&quot;")
+ .replace(/'/g, "&#039;");
+ }
 
-  function isPending(st) {
-    const s = normStatus(st);
-    return (s.includes('منتظر') || s.includes('تایید')) && !s.includes('پرداخت');
-  }
+ function normalize(value) {
+ return String(value ?? "")
+ .replace(/ي/g, "ی")
+ .replace(/ك/g, "ک")
+ .replace(/ۀ/g, "ه")
+ .replace(/ة/g, "ه")
+ .replace(/أ|إ|آ/g, "ا")
+ .replace(/[\u200B-\u200D\uFEFF]/g, "")
+ .replace(/\s+/g, " ")
+ .trim();
+ }
 
-  function isProcessing(st) {
-    const s = normStatus(st);
-    return s.includes('پردازش');
-  }
+ function getOrderId(order) {
+ return String(
+ order.orderId ??
+ order.orderID ??
+ order.id ??
+ ""
+ ).trim();
+ }
 
-  function isShipped(st) {
-    const s = normStatus(st);
-    return s.includes('ارسال');
-  }
+ function getRawStatus(order) {
+ return String(
+ order.status ??
+ order.Status ??
+ order["وضعیت"] ??
+ ""
+ ).trim();
+ }
 
-  function isRejected(st) {
-    const s = normStatus(st);
-    return s.includes('رد');
-  }
+ function statusKey(status) {
+ const s = normalize(status);
 
-  async function fetchOrders() {
-    const container = document.getElementById('orders-container');
-    container.innerHTML = `
-      <div class="text-center py-12 bg-white rounded-2xl border border-slate-100 text-slate-500">
-        در حال بارگذاری سفارشات...
-      </div>
-    `;
+ if (s.includes("پرداخت") && s.includes("انتظار")) {
+ return "pending-pay";
+ }
 
-    try {
-      const res = await fetch(`${API_URL}?action=get_orders`);
-      const data = await res.json();
-      
-      if (Array.isArray(data)) {
-        allOrders = data;
-      } else if (data && Array.isArray(data.data)) {
-        allOrders = data.data;
-      } else if (data && Array.isArray(data.orders)) {
-        allOrders = data.orders;
-      } else {
-        allOrders = [];
-      }
+ if (s.includes("پردازش")) {
+ return "processing";
+ }
 
-      updateCounts();
-      renderOrders();
-    } catch (err) {
-      container.innerHTML = `
-        <div class="text-center py-12 bg-rose-50 rounded-2xl border border-rose-200 text-rose-600">
-          خطا در برقراری ارتباط با دیتابیس: ${err.message}
-        </div>
-      `;
-    }
-  }
+ if (s.includes("ارسال")) {
+ return "shipped";
+ }
 
-  function updateCounts() {
-    let counts = {
-      all: allOrders.length,
-      pendingPay: 0,
-      pending: 0,
-      processing: 0,
-      shipped: 0,
-      rejected: 0
-    };
+ if (s.includes("رد")) {
+ return "rejected";
+ }
 
-    allOrders.forEach(o => {
-      const st = getOrderStatus(o);
-      if (isPendingPay(st)) counts.pendingPay++;
-      else if (isPending(st)) counts.pending++;
-      else if (isProcessing(st)) counts.processing++;
-      else if (isShipped(st)) counts.shipped++;
-      else if (isRejected(st)) counts.rejected++;
-    });
+ if (
+ s.includes("تایید") ||
+ s.includes("تأیید") ||
+ s.includes("منتظر")
+ ) {
+ return "pending";
+ }
 
-    document.getElementById('count-all').textContent = counts.all;
-    document.getElementById('count-pending-pay').textContent = counts.pendingPay;
-    document.getElementById('count-pending').textContent = counts.pending;
-    document.getElementById('count-processing').textContent = counts.processing;
-    document.getElementById('count-shipped').textContent = counts.shipped;
-    document.getElementById('count-rejected').textContent = counts.rejected;
-  }
+ return "unknown";
+ }
 
-  function setFilter(filter) {
-    currentFilter = filter;
-    
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('border-amber-500', 'border-2');
-      btn.classList.add('border-slate-200', 'border');
-    });
+ function statusLabel(key, rawStatus) {
+ if (key === "pending-pay") return STATUS.PENDING_PAY;
+ if (key === "pending") return STATUS.PENDING;
+ if (key === "processing") return STATUS.PROCESSING;
+ if (key === "shipped") return STATUS.SHIPPED;
+ if (key === "rejected") return STATUS.REJECTED;
 
-    const activeMap = {
-      'all': 'filter-all',
-      'در انتظار پرداخت': 'filter-pending-pay',
-      'منتظر تأیید': 'filter-pending',
-      'در حال پردازش': 'filter-processing',
-      'ارسال شده': 'filter-shipped',
-      'رد شده': 'filter-rejected'
-    };
-    
-    const activeBtn = document.getElementById(activeMap[filter]);
-    if (activeBtn) {
-      activeBtn.classList.remove('border-slate-200', 'border');
-      activeBtn.classList.add('border-amber-500', 'border-2');
-    }
+ return rawStatus || "وضعیت نامشخص";
+ }
 
-    renderOrders();
-  }
+ function getStatusClass(key) {
+ if (key === "pending-pay") {
+ return "bg-yellow-100 text-yellow-700";
+ }
 
-  function renderOrders() {
-    const container = document.getElementById('orders-container');
-    
-    let filtered = allOrders;
-    if (currentFilter !== 'all') {
-      filtered = allOrders.filter(o => {
-        const st = getOrderStatus(o);
-        if (currentFilter === 'در انتظار پرداخت') return isPendingPay(st);
-        if (currentFilter === 'منتظر تأیید') return isPending(st);
-        if (currentFilter === 'در حال پردازش') return isProcessing(st);
-        if (currentFilter === 'ارسال شده') return isShipped(st);
-        if (currentFilter === 'رد شده') return isRejected(st);
-        return st === currentFilter;
-      });
-    }
+ if (key === "pending") {
+ return "bg-amber-100 text-amber-700";
+ }
 
-    if (!filtered || filtered.length === 0) {
-      container.innerHTML = `
-        <div class="text-center py-12 bg-white rounded-2xl border border-slate-100 text-slate-500">
-          سفارشی در این وضعیت یافت نشد.
-        </div>
-      `;
-      return;
-    }
+ if (key === "processing") {
+ return "bg-blue-100 text-blue-700";
+ }
 
-    container.innerHTML = filtered.map(order => {
-      const orderId = order.orderId || order.orderID || order.id || '---';
-      const name = order.name || 'بدون نام';
-      const phone = order.phone || 'بدون شماره';
-      const city = order.city || '---';
-      const address = order.address || '---';
-      const product = order.product || '---';
-      const count = order.quantity || order.count || 1;
-      const totalNum = order.totalAmount || order.total;
-      const total = totalNum ? Number(totalNum).toLocaleString('fa-IR') + ' تومان' : '---';
-      const date = order.date || '---';
-      const receipt = order.receiptUrl || order.receipt || '';
-      const tracking = order.paymentCode || order.tracking || '---';
-      const shippingMethod = order.shippingMethod || 'پست پیشتاز';
-      const status = getOrderStatus(order);
-      const isNeedsAction = isPending(status) || isPendingPay(status);
+ if (key === "shipped") {
+ return "bg-emerald-100 text-emerald-700";
+ }
 
-      return `
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div class="flex items-center gap-2">
-              <span class="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg font-mono font-bold">${orderId}</span>
-              <span class="text-xs text-slate-400">${date}</span>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2">
-              ${isNeedsAction ? `
-                <button type="button" onclick="changeStatus('${orderId}', 'در حال پردازش')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  تأیید سفارش
-                </button>
-                <button type="button" onclick="changeStatus('${orderId}', 'رد شده')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium px-2.5 py-1.5 rounded-lg transition border border-rose-200">
-                  رد سفارش
-                </button>
-              ` : ''}
+ if (key === "rejected") {
+ return "bg-rose-100 text-rose-700";
+ }
 
-              <select onchange="changeStatus('${orderId}', this.value)" class="text-xs font-medium border border-slate-300 rounded-lg p-1.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                <option value="در انتظار پرداخت" ${isPendingPay(status) ? 'selected' : ''}>در انتظار پرداخت</option>
-                <option value="منتظر تأیید" ${isPending(status) ? 'selected' : ''}>منتظر تأیید</option>
-                <option value="در حال پردازش" ${isProcessing(status) ? 'selected' : ''}>در حال پردازش</option>
-                <option value="ارسال شده" ${isShipped(status) ? 'selected' : ''}>ارسال شده</option>
-                <option value="رد شده" ${isRejected(status) ? 'selected' : ''}>رد شده</option>
-              </select>
-            </div>
-          </div>
+ return "bg-slate-100 text-slate-600";
+ }
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <p class="text-xs text-slate-400">اطلاعات خریدار:</p>
-              <p class="font-bold text-slate-800 mt-0.5">${name}</p>
-              <p class="text-slate-600 text-xs mt-0.5 dir-ltr text-right">${phone}</p>
-            </div>
-            
-            <div>
-              <p class="text-xs text-slate-400">محصول و تعداد:</p>
-              <p class="font-bold text-slate-800 mt-0.5">${product}</p>
-              <p class="text-slate-600 text-xs mt-0.5">تعداد: ${count} | کل: ${total}</p>
-            </div>
+ function getArrayFromResponse(data) {
+ if (Array.isArray(data)) return data;
+ if (data && Array.isArray(data.data)) return data.data;
+ if (data && Array.isArray(data.orders)) return data.orders;
+ return [];
+ }
 
-            <div>
-              <p class="text-xs text-slate-400">ارسال و پرداخت:</p>
-              <p class="text-slate-700 text-xs mt-0.5">روش ارسال: <span class="font-semibold text-slate-900">${shippingMethod}</span></p>
-              <p class="text-slate-700 text-xs mt-0.5">کد رهگیری: <span class="font-mono text-slate-900 font-bold">${tracking}</span></p>
-            </div>
-          </div>
+ async function fetchOrders() {
+ const container = document.getElementById("orders-container");
+ const refreshBtn = document.getElementById("refreshBtn");
 
-          <div class="bg-slate-50 p-3 rounded-xl text-xs text-slate-600 flex flex-col md:flex-row md:items-center justify-between gap-2">
-            <div>
-              <span class="font-semibold text-slate-700">آدرس:</span> ${city}، ${address}
-            </div>
-            ${receipt ? `
-              <a href="${receipt}" target="_blank" class="inline-flex items-center gap-1 text-amber-600 hover:text-amber-700 font-medium shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                مشاهده تصویر فیش
-              </a>
-            ` : '<span class="text-slate-400">بدون فیش</span>'}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
+ refreshBtn.disabled = true;
+ refreshBtn.classList.add("loading");
 
-  async function changeStatus(orderId, newStatus) {
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          action: 'update_status',
-          orderId: orderId,
-          orderID: orderId,
-          status: newStatus
-        })
-      });
-      const result = await res.json();
-      if (result.status === 'success') {
-        const ord = allOrders.find(o => (o.orderId || o.orderID || o.id) == orderId);
-        if (ord) ord.status = newStatus;
-        updateCounts();
-        renderOrders();
-      } else {
-        alert('خطا در تغییر وضعیت: ' + (result.message || 'نامشخص'));
-      }
-    } catch (err) {
-      alert('خطا در ارتباط با سرور');
-    }
-  }
+ container.innerHTML = `
+ <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
+ در حال دریافت سفارشات از سرور...
+ </div>
+ `;
 
-  // بارگذاری اولیه
-  fetchOrders();
+ try {
+ const response = await fetch(`${API_URL}?action=get_orders`, {
+ method: "GET",
+ cache: "no-store"
+ });
+
+ const data = await response.json();
+ allOrders = getArrayFromResponse(data);
+
+ updateCounts();
+ renderOrders();
+
+ } catch (error) {
+ container.innerHTML = `
+ <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl p-6 text-center">
+ خطا در دریافت سفارشات از سرور:
+ <br>
+ ${escapeHtml(error.message)}
+ </div>
+ `;
+ } finally {
+ refreshBtn.disabled = false;
+ refreshBtn.classList.remove("loading");
+ }
+ }
+
+ function updateCounts() {
+ const counts = {
+ all: allOrders.length,
+ "pending-pay":0,
+ pending:0,
+ processing:0,
+ shipped:0,
+ rejected:0 };
+
+ allOrders.forEach(order => {
+ const key = statusKey(getRawStatus(order));
+
+ if (Object.prototype.hasOwnProperty.call(counts, key)) {
+ counts[key]++;
+ }
+ });
+
+ document.getElementById("count-all").textContent = counts.all;
+ document.getElementById("count-pending-pay").textContent = counts["pending-pay"];
+ document.getElementById("count-pending").textContent = counts.pending;
+ document.getElementById("count-processing").textContent = counts.processing;
+ document.getElementById("count-shipped").textContent = counts.shipped;
+ document.getElementById("count-rejected").textContent = counts.rejected;
+ }
+
+ function setFilter(filter) {
+ currentFilter = filter;
+
+ document.querySelectorAll(".filter-btn").forEach(button => {
+ button.classList.remove("border-2", "border-amber-500");
+ button.classList.add("border", "border-slate-200");
+ });
+
+ const activeButton = document.querySelector(
+ `.filter-btn[data-filter="${filter}"]`
+ );
+
+ if (activeButton) {
+ activeButton.classList.remove("border", "border-slate-200");
+ activeButton.classList.add("border-2", "border-amber-500");
+ }
+
+ renderOrders();
+ }
+
+ function renderOrders() {
+ const container = document.getElementById("orders-container");
+
+ let orders = allOrders;
+
+ if (currentFilter !== "all") {
+ orders = allOrders.filter(order => {
+ return statusKey(getRawStatus(order)) === currentFilter;
+ });
+ }
+
+ if (orders.length ===0) {
+ container.innerHTML = `
+ <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
+ سفارشی در این وضعیت وجود ندارد.
+ </div>
+ `;
+ return;
+ }
+
+ container.innerHTML = orders.map((order, index) => {
+ const orderId = getOrderId(order);
+ const rawStatus = getRawStatus(order);
+ const key = statusKey(rawStatus);
+ const label = statusLabel(key, rawStatus);
+
+ const name = order.name ?? "بدون نام";
+ const phone = order.phone ?? "بدون شماره";
+ const city = order.city ?? "---";
+ const address = order.address ?? "---";
+ const product = order.product ?? "---";
+ const quantity = order.quantity ?? order.count ?? "---";
+ const shippingMethod = order.shippingMethod ?? "نامشخص";
+ const paymentCode = order.paymentCode ?? order.tracking ?? "---";
+ const receiptUrl = order.receiptUrl ?? order.receipt ?? "";
+ const date = order.date ?? "---";
+
+ const totalValue =
+ order.totalAmount ??
+ order.total ??
+ order.totalPrice ??
+ "";
+
+ const total = totalValue !== ""
+ ? Number(totalValue).toLocaleString("fa-IR") + " تومان"
+ : "---";
+
+ const duplicateCount = allOrders.filter(item => {
+ return getOrderId(item) === orderId && orderId !== "";
+ }).length;
+
+ const showActions =
+ key === "pending" ||
+ key === "pending-pay";
+
+ return `
+ <article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+ <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+
+ <div class="flex flex-wrap items-center gap-2">
+ <span class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1 text-xs font-mono font-bold">
+ ${escapeHtml(orderId || "---")}
+ </span>
+
+ <span class="text-xs text-slate-400">
+ ${escapeHtml(date)}
+ </span>
+
+ ${
+ duplicateCount >1 ? `
+ <span class="bg-red-100 text-red-700 rounded-lg px-3 py-1 text-xs">
+ هشدار: شناسه تکراری </span>
+ `
+ : ""
+ }
+ </div>
+
+ <div class="flex flex-wrap items-center gap-2">
+
+ <span class="${getStatusClass(key)} rounded-lg px-3 py-1 text-xs font-bold">
+ وضعیت فعلی: ${escapeHtml(label)}
+ </span>
+
+ ${
+ showActions ? `
+ <button type="button"
+ class="approve-btn bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs"
+ data-order-id="${escapeHtml(orderId)}"
+ data-new-status="${STATUS.PROCESSING}"
+ >
+ تأیید سفارش </button>
+
+ <button type="button"
+ class="reject-btn bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3 py-2 text-xs"
+ data-order-id="${escapeHtml(orderId)}"
+ data-new-status="${STATUS.REJECTED}"
+ >
+ رد سفارش </button>
+ `
+ : ""
+ }
+
+ <select class="status-select border border-slate-300 bg-slate-50 rounded-lg px-2 py-2 text-xs"
+ data-order-id="${escapeHtml(orderId)}"
+ >
+ ${
+ key === "unknown"
+ ? `
+ <option value="" selected disabled>
+ ${escapeHtml(label)}
+ </option>
+ `
+ : ""
+ }
+
+ <option value="${STATUS.PENDING_PAY}" ${key === "pending-pay" ? "selected" : ""}>
+ در انتظار پرداخت </option>
+
+ <option value="${STATUS.PENDING}" ${key === "pending" ? "selected" : ""}>
+ منتظر تأیید </option>
+
+ <option value="${STATUS.PROCESSING}" ${key === "processing" ? "selected" : ""}>
+ در حال پردازش </option>
+
+ <option value="${STATUS.SHIPPED}" ${key === "shipped" ? "selected" : ""}>
+ ارسال شده </option>
+
+ <option value="${STATUS.REJECTED}" ${key === "rejected" ? "selected" : ""}>
+ رد شده </option>
+ </select>
+
+ </div>
+ </div>
+
+ <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
+
+ <div>
+ <p class="text-xs text-slate-400 mb-1">اطلاعات خریدار</p>
+ <p class="font-bold text-slate-800">${escapeHtml(name)}</p>
+ <p class="text-slate-600 mt-1">${escapeHtml(phone)}</p>
+ </div>
+
+ <div>
+ <p class="text-xs text-slate-400 mb-1">محصول و تعداد</p>
+ <p class="font-bold text-slate-800">${escapeHtml(product)}</p>
+ <p class="text-slate-600 mt-1">
+ تعداد: ${escapeHtml(quantity)} |
+ کل: ${escapeHtml(total)}
+ </p>
+ </div>
+
+ <div>
+ <p class="text-xs text-slate-400 mb-1">ارسال و پرداخت</p>
+ <p class="text-slate-700">
+ روش ارسال:
+ <strong>${escapeHtml(shippingMethod)}</strong>
+ </p>
+ <p class="text-slate-700 mt-1">
+ کد رهگیری:
+ <strong class="font-mono">${escapeHtml(paymentCode)}</strong>
+ </p>
+ </div>
+
+ </div>
+
+ <div class="mt-5 bg-slate-50 rounded-xl p-3 text-xs text-slate-600 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+ <div>
+ <strong class="text-slate-700">آدرس:</strong>
+ ${escapeHtml(city)}، ${escapeHtml(address)}
+ </div>
+
+ ${
+ receiptUrl ? `
+ <a href="${escapeHtml(receiptUrl)}"
+ target="_blank"
+ rel="noopener noreferrer"
+ class="text-amber-700 font-bold"
+ >
+ مشاهده تصویر فیش </a>
+ `
+ : `
+ <span class="text-slate-400">
+ بدون فیش </span>
+ `
+ }
+
+ </div>
+
+ </article>
+ `;
+ }).join("");
+ }
+
+ async function changeStatus(orderId, newStatus, sourceElement) {
+ if (changingOrder) return;
+
+ if (!orderId || !newStatus) {
+ alert("شناسه سفارش یا وضعیت جدید خالی است.");
+ return;
+ }
+
+ const confirmed = confirm(
+ `وضعیت سفارش ${orderId} به «${newStatus}» تغییر کند؟`
+ );
+
+ if (!confirmed) {
+ await fetchOrders();
+ return;
+ }
+
+ changingOrder = true;
+
+ if (sourceElement) {
+ sourceElement.disabled = true;
+ sourceElement.classList.add("loading");
+ }
+
+ try {
+ const response = await fetch(API_URL, {
+ method: "POST",
+ headers: {
+ "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+ },
+ body: new URLSearchParams({
+ action: "update_status",
+ orderId: orderId,
+ orderID: orderId,
+ status: newStatus })
+ });
+
+ const result = await response.json();
+
+ if (
+ result.status !== "success" &&
+ result.success !== true ) {
+ throw new Error(result.message || "سرور وضعیت سفارش را تغییر نداد.");
+ }
+
+ await fetchOrders();
+
+ } catch (error) {
+ alert("خطا در تغییر وضعیت:\n" + error.message);
+ await fetchOrders();
+
+ } finally {
+ changingOrder = false;
+ }
+ }
+
+ document.addEventListener("click", event => {
+ const filterButton = event.target.closest(".filter-btn");
+
+ if (filterButton) {
+ setFilter(filterButton.dataset.filter);
+ return;
+ }
+
+ const approveButton = event.target.closest(".approve-btn");
+ const rejectButton = event.target.closest(".reject-btn");
+
+ if (approveButton || rejectButton) {
+ const button = approveButton || rejectButton;
+
+ changeStatus(
+ button.dataset.orderId,
+ button.dataset.newStatus,
+ button );
+ }
+ });
+
+ document.addEventListener("change", event => {
+ const select = event.target.closest(".status-select");
+
+ if (!select) return;
+
+ const oldValue = select.value;
+
+ changeStatus(
+ select.dataset.orderId,
+ oldValue,
+ select );
+ });
+
+ document.getElementById("refreshBtn").addEventListener("click", fetchOrders);
+
+ fetchOrders();
 </script>
+
 </body>
 </html>
