@@ -1,712 +1,263 @@
-```html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>پنل مدیریت سفارشات - شاپ‌یار</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل مدیریت سفارشات - شاپ‌یار</title>
 
- <script src="https://cdn.tailwindcss.com"></script>
- <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
 
- <style>
- body {
- font-family: Vazirmatn, sans-serif;
- }
-
- .loading {
- opacity: .6;
- pointer-events: none;
- }
- </style>
+  <style>
+    body { font-family: Vazirmatn, sans-serif; }
+    .loading { opacity: .6; pointer-events: none; }
+  </style>
 </head>
 
 <body class="bg-slate-50 min-h-screen p-4 md:p-8">
 
 <main class="max-w-7xl mx-auto">
+  <header class="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-2xl font-bold">ش</div>
+        <div>
+          <h1 class="font-bold text-xl text-slate-800">پنل مدیریت سفارشات - شاپ‌یار</h1>
+          <p class="text-xs text-slate-500 mt-1">مدیریت و پیگیری سفارش‌های ثبت‌شده</p>
+        </div>
+      </div>
+      <button id="refreshBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium">
+        بروزرسانی لیست
+      </button>
+    </div>
+  </header>
 
- <header class="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
- <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
+    <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
+      <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
+      <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
+    </button>
+    <button data-filter="pending-pay" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-yellow-600">در انتظار پرداخت</span>
+      <strong id="count-pending-pay" class="block text-2xl text-yellow-600 mt-1">0</strong>
+    </button>
+    <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-amber-600">منتظر تأیید</span>
+      <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
+    </button>
+    <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-blue-600">در حال پردازش</span>
+      <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
+    </button>
+    <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-emerald-600">ارسال شده</span>
+      <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
+    </button>
+    <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-indigo-600">تکمیل شده</span>
+      <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
+    </button>
+    <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+      <span class="block text-xs text-rose-600">رد شده</span>
+      <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
+    </button>
+  </section>
 
- <div class="flex items-center gap-3">
- <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-2xl font-bold">
- ش </div>
+  <div id="message"></div>
 
- <div>
- <h1 class="font-bold text-xl text-slate-800">
- پنل مدیریت سفارشات - شاپ‌یار </h1>
-
- <p class="text-xs text-slate-500 mt-1">
- مدیریت و پیگیری سفارش‌های ثبت‌شده </p>
- </div>
- </div>
-
- <button id="refreshBtn"
- type="button"
- class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium"
- >
- بروزرسانی لیست </button>
-
- </div>
- </header>
-
- <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
-
- <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
- <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
- <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
- </button>
-
- <button data-filter="pending-pay" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-yellow-600">در انتظار پرداخت</span>
- <strong id="count-pending-pay" class="block text-2xl text-yellow-600 mt-1">0</strong>
- </button>
-
- <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-amber-600">منتظر تأیید</span>
- <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
- </button>
-
- <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-blue-600">در حال پردازش</span>
- <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
- </button>
-
- <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-emerald-600">ارسال شده</span>
- <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
- </button>
-
- <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-indigo-600">تکمیل شده</span>
- <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
- </button>
-
- <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
- <span class="block text-xs text-rose-600">رد شده</span>
- <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
- </button>
-
- </section>
-
- <div id="message"></div>
-
- <section id="orders-container" class="space-y-4">
- <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
- در حال بارگذاری سفارشات...
- </div>
- </section>
-
+  <section id="orders-container" class="space-y-4">
+    <div class="bg-white rounded-2xl p-10 text-center text-slate-500">در حال بارگذاری سفارشات...</div>
+  </section>
 </main>
 
 <!-- مودال پیام و تأیید -->
-<div id="modalOverlay"
- class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
-
- <div id="modalBox"
- class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 text-center">
-
- <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl">
- !
- </div>
-
- <h2 id="modalTitle" class="text-lg font-bold text-slate-800 mb-2">
- پیام </h2>
-
- <p id="modalMessage" class="text-sm leading-7 text-slate-600 whitespace-pre-line">
- </p>
-
- <div id="modalActions" class="flex gap-3 mt-6">
-
- <button id="modalConfirmBtn"
- type="button"
- class="flex-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-2.5 text-sm font-bold"
- >
- تأیید </button>
-
- <button id="modalCancelBtn"
- type="button"
- class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl py-2.5 text-sm font-bold"
- >
- انصراف </button>
-
- </div>
-
- <button id="modalCloseBtn"
- type="button"
- class="hidden w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white rounded-xl py-2.5 text-sm font-bold"
- >
- بستن </button>
-
- </div>
+<div id="modalOverlay" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+  <div id="modalBox" class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 text-center">
+    <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl">!</div>
+    <h2 id="modalTitle" class="text-lg font-bold text-slate-800 mb-2">پیام</h2>
+    <p id="modalMessage" class="text-sm leading-7 text-slate-600 whitespace-pre-line"></p>
+    <div id="modalActions" class="flex gap-3 mt-6">
+      <button id="modalConfirmBtn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-2.5 text-sm font-bold">تأیید</button>
+      <button id="modalCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl py-2.5 text-sm font-bold">انصراف</button>
+    </div>
+    <button id="modalCloseBtn" class="hidden w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white rounded-xl py-2.5 text-sm font-bold">بستن</button>
+  </div>
 </div>
 
 <script>
- const API_URL =
- "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
-
- let allOrders = [];
- let currentFilter = "all";
- let changingOrder = false;
-
- const STATUS = {
- PENDING_PAY: "در انتظار پرداخت",
- PENDING: "منتظر تأیید",
- PROCESSING: "در حال پردازش",
- SHIPPED: "ارسال شده",
- COMPLETED: "تکمیل شده",
- REJECTED: "رد شده"
- };
-
- function escapeHtml(value) {
- return String(value ?? "")
- .replace(/&/g, "&amp;")
- .replace(/</g, "&lt;")
- .replace(/>/g, "&gt;")
- .replace(/"/g, "&quot;")
- .replace(/'/g, "&#039;");
- }
-
- function normalize(value) {
- return String(value ?? "")
- .replace(/ي/g, "ی")
- .replace(/ك/g, "ک")
- .replace(/ۀ/g, "ه")
- .replace(/ة/g, "ه")
- .replace(/أ|إ|آ/g, "ا")
- .replace(/[\u200B-\u200D\uFEFF]/g, "")
- .replace(/\s+/g, " ")
- .trim();
- }
-
- function getOrderId(order) {
- return String(
- order.orderId ??
- order.orderID ??
- order.id ??
- ""
- ).trim();
- }
-
- function getRawStatus(order) {
- return String(
- order.status ??
- order.Status ??
- order["وضعیت"] ??
- ""
- ).trim();
- }
-
- function statusKey(status) {
- const s = normalize(status);
-
- if (s.includes("پرداخت") && s.includes("انتظار")) {
- return "pending-pay";
- }
-
- if (s.includes("پردازش")) {
- return "processing";
- }
-
- if (s.includes("ارسال")) {
- return "shipped";
- }
-
- if (s.includes("تکمیل")) {
- return "completed";
- }
-
- if (s.includes("رد")) {
- return "rejected";
- }
-
- if (
- s.includes("تایید") ||
- s.includes("تأیید") ||
- s.includes("منتظر")
- ) {
- return "pending";
- }
-
- return "unknown";
- }
-
- function statusLabel(key, rawStatus) {
- if (key === "pending-pay") return STATUS.PENDING_PAY;
- if (key === "pending") return STATUS.PENDING;
- if (key === "processing") return STATUS.PROCESSING;
- if (key === "shipped") return STATUS.SHIPPED;
- if (key === "completed") return STATUS.COMPLETED;
- if (key === "rejected") return STATUS.REJECTED;
-
- return rawStatus || "وضعیت نامشخص";
- }
-
- function getStatusClass(key) {
- if (key === "pending-pay") {
- return "bg-yellow-100 text-yellow-700";
- }
-
- if (key === "pending") {
- return "bg-amber-100 text-amber-700";
- }
-
- if (key === "processing") {
- return "bg-blue-100 text-blue-700";
- }
-
- if (key === "shipped") {
- return "bg-emerald-100 text-emerald-700";
- }
-
- if (key === "completed") {
- return "bg-indigo-100 text-indigo-700";
- }
-
- if (key === "rejected") {
- return "bg-rose-100 text-rose-700";
- }
-
- return "bg-slate-100 text-slate-600";
- }
-
- function getArrayFromResponse(data) {
- if (Array.isArray(data)) return data;
- if (data && Array.isArray(data.data)) return data.data;
- if (data && Array.isArray(data.orders)) return data.orders;
- return [];
- }
-
- function openModal(title, message, isConfirm) {
- return new Promise(resolve => {
- const overlay = document.getElementById("modalOverlay");
- const titleElement = document.getElementById("modalTitle");
- const messageElement = document.getElementById("modalMessage");
- const actions = document.getElementById("modalActions");
- const confirmButton = document.getElementById("modalConfirmBtn");
- const cancelButton = document.getElementById("modalCancelBtn");
- const closeButton = document.getElementById("modalCloseBtn");
-
- titleElement.textContent = title;
- messageElement.textContent = message;
-
- overlay.classList.remove("hidden");
- overlay.classList.add("flex");
-
- if (isConfirm) {
- actions.classList.remove("hidden");
- closeButton.classList.add("hidden");
-
- confirmButton.onclick = () => {
- overlay.classList.add("hidden");
- overlay.classList.remove("flex");
- resolve(true);
- };
-
- cancelButton.onclick = () => {
- overlay.classList.add("hidden");
- overlay.classList.remove("flex");
- resolve(false);
- };
- } else {
- actions.classList.add("hidden");
- closeButton.classList.remove("hidden");
-
- closeButton.onclick = () => {
- overlay.classList.add("hidden");
- overlay.classList.remove("flex");
- resolve(true);
- };
- }
- });
- }
-
- async function fetchOrders() {
- const container = document.getElementById("orders-container");
- const refreshBtn = document.getElementById("refreshBtn");
-
- refreshBtn.disabled = true;
- refreshBtn.classList.add("loading");
-
- container.innerHTML = `
- <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
- در حال دریافت سفارشات از سرور...
- </div>
- `;
-
- try {
- const response = await fetch(`${API_URL}?action=get_orders`, {
- method: "GET",
- cache: "no-store"
- });
-
- const data = await response.json();
- allOrders = getArrayFromResponse(data);
-
- updateCounts();
- renderOrders();
-
- } catch (error) {
- container.innerHTML = `
- <div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl p-6 text-center">
- خطا در دریافت سفارشات از سرور:
- <br>
- ${escapeHtml(error.message)}
- </div>
- `;
- } finally {
- refreshBtn.disabled = false;
- refreshBtn.classList.remove("loading");
- }
- }
-
- function updateCounts() {
- const counts = {
- all: allOrders.length,
- "pending-pay":0,
- pending:0,
- processing:0,
- shipped:0,
- completed:0,
- rejected:0 };
-
- allOrders.forEach(order => {
- const key = statusKey(getRawStatus(order));
-
- if (Object.prototype.hasOwnProperty.call(counts, key)) {
- counts[key]++;
- }
- });
-
- document.getElementById("count-all").textContent = counts.all;
- document.getElementById("count-pending-pay").textContent = counts["pending-pay"];
- document.getElementById("count-pending").textContent = counts.pending;
- document.getElementById("count-processing").textContent = counts.processing;
- document.getElementById("count-shipped").textContent = counts.shipped;
- document.getElementById("count-completed").textContent = counts.completed;
- document.getElementById("count-rejected").textContent = counts.rejected;
- }
-
- function setFilter(filter) {
- currentFilter = filter;
-
- document.querySelectorAll(".filter-btn").forEach(button => {
- button.classList.remove("border-2", "border-amber-500");
- button.classList.add("border", "border-slate-200");
- });
-
- const activeButton = document.querySelector(
- `.filter-btn[data-filter="${filter}"]`
- );
-
- if (activeButton) {
- activeButton.classList.remove("border", "border-slate-200");
- activeButton.classList.add("border-2", "border-amber-500");
- }
-
- renderOrders();
- }
-
- function renderOrders() {
- const container = document.getElementById("orders-container");
-
- let orders = allOrders;
-
- if (currentFilter !== "all") {
- orders = allOrders.filter(order => {
- return statusKey(getRawStatus(order)) === currentFilter;
- });
- }
-
- if (orders.length ===0) {
- container.innerHTML = `
- <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
- سفارشی در این وضعیت وجود ندارد.
- </div>
- `;
- return;
- }
-
- container.innerHTML = orders.map((order, index) => {
- const orderId = getOrderId(order);
- const rawStatus = getRawStatus(order);
- const key = statusKey(rawStatus);
- const label = statusLabel(key, rawStatus);
-
- const name = order.name ?? "بدون نام";
- const phone = order.phone ?? "بدون شماره";
- const city = order.city ?? "---";
- const address = order.address ?? "---";
- const product = order.product ?? "---";
- const quantity = order.quantity ?? order.count ?? "---";
- const shippingMethod = order.shippingMethod ?? "نامشخص";
- const paymentCode = order.paymentCode ?? order.tracking ?? "---";
- const receiptUrl = order.receiptUrl ?? order.receipt ?? "";
- const date = order.date ?? "---";
-
- const totalValue =
- order.totalAmount ??
- order.total ??
- order.totalPrice ??
- "";
-
- const total = totalValue !== ""
- ? Number(totalValue).toLocaleString("fa-IR") + " تومان"
- : "---";
-
- const duplicateCount = allOrders.filter(item => {
- return getOrderId(item) === orderId && orderId !== "";
- }).length;
-
- const showActions =
- key === "pending" ||
- key === "pending-pay";
-
- return `
- <article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-
- <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
-
- <div class="flex flex-wrap items-center gap-2">
- <span class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1 text-xs font-mono font-bold">
- ${escapeHtml(orderId || "---")}
- </span>
-
- <span class="text-xs text-slate-400">
- ${escapeHtml(date)}
- </span>
-
- ${
- duplicateCount >1 ? `
- <span class="bg-red-100 text-red-700 rounded-lg px-3 py-1 text-xs">
- هشدار: شناسه تکراری </span>
- `
- : ""
- }
- </div>
-
- <div class="flex flex-wrap items-center gap-2">
-
- <span class="${getStatusClass(key)} rounded-lg px-3 py-1 text-xs font-bold">
- وضعیت فعلی: ${escapeHtml(label)}
- </span>
-
- ${
- showActions ? `
- <button type="button"
- class="approve-btn bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs"
- data-order-id="${escapeHtml(orderId)}"
- data-new-status="${STATUS.PROCESSING}"
- >
- تأیید سفارش </button>
-
- <button type="button"
- class="reject-btn bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3 py-2 text-xs"
- data-order-id="${escapeHtml(orderId)}"
- data-new-status="${STATUS.REJECTED}"
- >
- رد سفارش </button>
- `
- : ""
- }
-
- <select class="status-select border border-slate-300 bg-slate-50 rounded-lg px-2 py-2 text-xs"
- data-order-id="${escapeHtml(orderId)}"
- >
- ${
- key === "unknown"
- ? `
- <option value="" selected disabled>
- ${escapeHtml(label)}
- </option>
- `
- : ""
- }
-
- <option value="${STATUS.PENDING_PAY}" ${key === "pending-pay" ? "selected" : ""}>
- در انتظار پرداخت </option>
-
- <option value="${STATUS.PENDING}" ${key === "pending" ? "selected" : ""}>
- منتظر تأیید </option>
-
- <option value="${STATUS.PROCESSING}" ${key === "processing" ? "selected" : ""}>
- در حال پردازش </option>
-
- <option value="${STATUS.SHIPPED}" ${key === "shipped" ? "selected" : ""}>
- ارسال شده </option>
-
- <option value="${STATUS.COMPLETED}" ${key === "completed" ? "selected" : ""}>
- تکمیل شده </option>
-
- <option value="${STATUS.REJECTED}" ${key === "rejected" ? "selected" : ""}>
- رد شده </option>
-
- </select>
-
- </div>
- </div>
-
- <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
-
- <div>
- <p class="text-xs text-slate-400 mb-1">اطلاعات خریدار</p>
- <p class="font-bold text-slate-800">${escapeHtml(name)}</p>
- <p class="text-slate-600 mt-1">${escapeHtml(phone)}</p>
- </div>
-
- <div>
- <p class="text-xs text-slate-400 mb-1">محصول و تعداد</p>
- <p class="font-bold text-slate-800">${escapeHtml(product)}</p>
- <p class="text-slate-600 mt-1">
- تعداد: ${escapeHtml(quantity)} |
- کل: ${escapeHtml(total)}
- </p>
- </div>
-
- <div>
- <p class="text-xs text-slate-400 mb-1">ارسال و پرداخت</p>
- <p class="text-slate-700">
- روش ارسال:
- <strong>${escapeHtml(shippingMethod)}</strong>
- </p>
- <p class="text-slate-700 mt-1">
- کد رهگیری:
- <strong class="font-mono">${escapeHtml(paymentCode)}</strong>
- </p>
- </div>
-
- </div>
-
- <div class="mt-5 bg-slate-50 rounded-xl p-3 text-xs text-slate-600 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-
- <div>
- <strong class="text-slate-700">آدرس:</strong>
- ${escapeHtml(city)}، ${escapeHtml(address)}
- </div>
-
- ${
- receiptUrl ? `
- <a href="${escapeHtml(receiptUrl)}"
- target="_blank"
- rel="noopener noreferrer"
- class="text-amber-700 font-bold"
- >
- مشاهده تصویر فیش </a>
- `
- : `
- <span class="text-slate-400">
- بدون فیش </span>
- `
- }
-
- </div>
-
- </article>
- `;
- }).join("");
- }
-
- async function changeStatus(orderId, newStatus, sourceElement) {
- if (changingOrder) return;
-
- if (!orderId || !newStatus) {
- await openModal(
- "اطلاعات ناقص",
- "شناسه سفارش یا وضعیت جدید خالی است.",
- false );
- return;
- }
-
- const confirmed = await openModal(
- "تغییر وضعیت سفارش",
- `وضعیت سفارش ${orderId} به «${newStatus}» تغییر کند؟`,
- true );
-
- if (!confirmed) {
- await fetchOrders();
- return;
- }
-
- changingOrder = true;
-
- if (sourceElement) {
- sourceElement.disabled = true;
- sourceElement.classList.add("loading");
- }
-
- try {
- const response = await fetch(API_URL, {
- method: "POST",
- headers: {
- "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
- },
- body: new URLSearchParams({
- action: "update_status",
- orderId: orderId,
- orderID: orderId,
- status: newStatus })
- });
-
- const result = await response.json();
-
- if (
- result.status !== "success" &&
- result.success !== true ) {
- throw new Error(result.message || "سرور وضعیت سفارش را تغییر نداد.");
- }
-
- await fetchOrders();
-
- } catch (error) {
- await openModal(
- "خطا در تغییر وضعیت",
- error.message || "خطایی هنگام تغییر وضعیت سفارش رخ داد.",
- false );
-
- await fetchOrders();
-
- } finally {
- changingOrder = false;
- }
- }
-
- document.addEventListener("click", event => {
- const filterButton = event.target.closest(".filter-btn");
-
- if (filterButton) {
- setFilter(filterButton.dataset.filter);
- return;
- }
-
- const approveButton = event.target.closest(".approve-btn");
- const rejectButton = event.target.closest(".reject-btn");
-
- if (approveButton || rejectButton) {
- const button = approveButton || rejectButton;
-
- changeStatus(
- button.dataset.orderId,
- button.dataset.newStatus,
- button );
- }
- });
-
- document.addEventListener("change", event => {
- const select = event.target.closest(".status-select");
-
- if (!select) return;
-
- const newStatus = select.value;
-
- changeStatus(
- select.dataset.orderId,
- newStatus,
- select );
- });
-
- document.getElementById("refreshBtn").addEventListener("click", fetchOrders);
-
- fetchOrders();
+  const API_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
+  let allOrders = [];
+  let currentFilter = "all";
+  let changingOrder = false;
+  const STATUS = { PENDING_PAY: "در انتظار پرداخت", PENDING: "منتظر تأیید", PROCESSING: "در حال پردازش", SHIPPED: "ارسال شده", COMPLETED: "تکمیل شده", REJECTED: "رد شده" };
+
+  function escapeHtml(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+  function normalize(value) { return String(value ?? "").replace(/ي/g, "ی").replace(/ك/g, "ک").replace(/ۀ/g, "ه").replace(/ة/g, "ه").replace(/أ|إ|آ/g, "ا").replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\s+/g, " ").trim(); }
+  function getOrderId(order) { return String(order.orderId ?? order.orderID ?? order.id ?? "").trim(); }
+  function getRawStatus(order) { return String(order.status ?? order.Status ?? order["وضعیت"] ?? "").trim(); }
+  function statusKey(status) { const s = normalize(status); if (s.includes("پرداخت") && s.includes("انتظار")) return "pending-pay"; if (s.includes("پردازش")) return "processing"; if (s.includes("ارسال")) return "shipped"; if (s.includes("تکمیل")) return "completed"; if (s.includes("رد")) return "rejected"; if (s.includes("تایید") || s.includes("تأیید") || s.includes("منتظر")) return "pending"; return "unknown"; }
+  function statusLabel(key, rawStatus) { if (key === "pending-pay") return STATUS.PENDING_PAY; if (key === "pending") return STATUS.PENDING; if (key === "processing") return STATUS.PROCESSING; if (key === "shipped") return STATUS.SHIPPED; if (key === "completed") return STATUS.COMPLETED; if (key === "rejected") return STATUS.REJECTED; return rawStatus || "وضعیت نامشخص"; }
+  function getStatusClass(key) { if (key === "pending-pay") return "bg-yellow-100 text-yellow-700"; if (key === "pending") return "bg-amber-100 text-amber-700"; if (key === "processing") return "bg-blue-100 text-blue-700"; if (key === "shipped") return "bg-emerald-100 text-emerald-700"; if (key === "completed") return "bg-indigo-100 text-indigo-700"; if (key === "rejected") return "bg-rose-100 text-rose-700"; return "bg-slate-100 text-slate-600"; }
+  function getArrayFromResponse(data) { if (Array.isArray(data)) return data; if (data && Array.isArray(data.data)) return data.data; if (data && Array.isArray(data.orders)) return data.orders; return []; }
+
+  function openModal(title, message, isConfirm) {
+    return new Promise(resolve => {
+      const overlay = document.getElementById("modalOverlay");
+      const titleElement = document.getElementById("modalTitle");
+      const messageElement = document.getElementById("modalMessage");
+      const actions = document.getElementById("modalActions");
+      const confirmButton = document.getElementById("modalConfirmBtn");
+      const cancelButton = document.getElementById("modalCancelBtn");
+      const closeButton = document.getElementById("modalCloseBtn");
+      titleElement.textContent = title; messageElement.textContent = message;
+      overlay.classList.remove("hidden"); overlay.classList.add("flex");
+      if (isConfirm) {
+        actions.classList.remove("hidden"); closeButton.classList.add("hidden");
+        confirmButton.onclick = () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); resolve(true); };
+        cancelButton.onclick = () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); resolve(false); };
+      } else {
+        actions.classList.add("hidden"); closeButton.classList.remove("hidden");
+        closeButton.onclick = () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); resolve(true); };
+      }
+    });
+  }
+
+  async function fetchOrders() {
+    const container = document.getElementById("orders-container");
+    const refreshBtn = document.getElementById("refreshBtn");
+    refreshBtn.disabled = true; refreshBtn.classList.add("loading");
+    container.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500">در حال دریافت سفارشات از سرور...</div>`;
+    try {
+      const response = await fetch(`${API_URL}?action=get_orders`, { method: "GET", cache: "no-store" });
+      const data = await response.json();
+      allOrders = getArrayFromResponse(data);
+      updateCounts(); renderOrders();
+    } catch (error) {
+      container.innerHTML = `<div class="bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl p-6 text-center">خطا در دریافت سفارشات: ${escapeHtml(error.message)}</div>`;
+    } finally {
+      refreshBtn.disabled = false; refreshBtn.classList.remove("loading");
+    }
+  }
+
+  function updateCounts() {
+    const counts = { all: allOrders.length, "pending-pay": 0, pending: 0, processing: 0, shipped: 0, completed: 0, rejected: 0 };
+    allOrders.forEach(order => { const key = statusKey(getRawStatus(order)); if (Object.prototype.hasOwnProperty.call(counts, key)) counts[key]++; });
+    document.getElementById("count-all").textContent = counts.all;
+    document.getElementById("count-pending-pay").textContent = counts["pending-pay"];
+    document.getElementById("count-pending").textContent = counts.pending;
+    document.getElementById("count-processing").textContent = counts.processing;
+    document.getElementById("count-shipped").textContent = counts.shipped;
+    document.getElementById("count-completed").textContent = counts.completed;
+    document.getElementById("count-rejected").textContent = counts.rejected;
+  }
+
+  function setFilter(filter) {
+    currentFilter = filter;
+    document.querySelectorAll(".filter-btn").forEach(button => { button.classList.remove("border-2", "border-amber-500"); button.classList.add("border", "border-slate-200"); });
+    const activeButton = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
+    if (activeButton) { activeButton.classList.remove("border", "border-slate-200"); activeButton.classList.add("border-2", "border-amber-500"); }
+    renderOrders();
+  }
+
+  function renderOrders() {
+    const container = document.getElementById("orders-container");
+    let orders = allOrders;
+    if (currentFilter !== "all") orders = allOrders.filter(order => statusKey(getRawStatus(order)) === currentFilter);
+    if (orders.length === 0) { container.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500">سفارشی در این وضعیت وجود ندارد.</div>`; return; }
+    container.innerHTML = orders.map((order) => {
+      const orderId = getOrderId(order);
+      const rawStatus = getRawStatus(order);
+      const key = statusKey(rawStatus);
+      const label = statusLabel(key, rawStatus);
+      const name = order.name ?? "بدون نام";
+      const phone = order.phone ?? "بدون شماره";
+      const city = order.city ?? "---";
+      const address = order.address ?? "---";
+      const product = order.product ?? "---";
+      const quantity = order.quantity ?? order.count ?? "---";
+      const shippingMethod = order.shippingMethod ?? "نامشخص";
+      const paymentCode = order.paymentCode ?? order.tracking ?? "---";
+      const date = order.date ?? "---";
+      const totalValue = order.totalAmount ?? order.total ?? order.totalPrice ?? "";
+      const total = totalValue !== "" ? Number(totalValue).toLocaleString("fa-IR") + " تومان" : "---";
+      const duplicateCount = allOrders.filter(item => getOrderId(item) === orderId && orderId !== "").length;
+      const showActions = key === "pending" || key === "pending-pay";
+      return `
+        <article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1 text-xs font-mono font-bold">${escapeHtml(orderId || "---")}</span>
+              <span class="text-xs text-slate-400">${escapeHtml(date)}</span>
+              ${duplicateCount > 1 ? `<span class="bg-red-100 text-red-700 rounded-lg px-3 py-1 text-xs">هشدار: شناسه تکراری</span>` : ""}
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="${getStatusClass(key)} rounded-lg px-3 py-1 text-xs font-bold">وضعیت فعلی: ${escapeHtml(label)}</span>
+              ${showActions ? `
+                <button type="button" class="approve-btn bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-3 py-2 text-xs" data-order-id="${escapeHtml(orderId)}" data-new-status="${STATUS.PROCESSING}">تأیید سفارش</button>
+                <button type="button" class="reject-btn bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg px-3 py-2 text-xs" data-order-id="${escapeHtml(orderId)}" data-new-status="${STATUS.REJECTED}">رد سفارش</button>
+              ` : ""}
+              <select class="status-select border border-slate-300 bg-slate-50 rounded-lg px-2 py-2 text-xs" data-order-id="${escapeHtml(orderId)}">
+                ${key === "unknown" ? `<option value="" selected disabled>${escapeHtml(label)}</option>` : ""}
+                <option value="${STATUS.PENDING_PAY}" ${key === "pending-pay" ? "selected" : ""}>در انتظار پرداخت</option>
+                <option value="${STATUS.PENDING}" ${key === "pending" ? "selected" : ""}>منتظر تأیید</option>
+                <option value="${STATUS.PROCESSING}" ${key === "processing" ? "selected" : ""}>در حال پردازش</option>
+                <option value="${STATUS.SHIPPED}" ${key === "shipped" ? "selected" : ""}>ارسال شده</option>
+                <option value="${STATUS.COMPLETED}" ${key === "completed" ? "selected" : ""}>تکمیل شده</option>
+                <option value="${STATUS.REJECTED}" ${key === "rejected" ? "selected" : ""}>رد شده</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
+            <div><p class="text-xs text-slate-400 mb-1">اطلاعات خریدار</p><p class="font-bold text-slate-800">${escapeHtml(name)}</p><p class="text-slate-600 mt-1">${escapeHtml(phone)}</p></div>
+            <div><p class="text-xs text-slate-400 mb-1">محصول و تعداد</p><p class="font-bold text-slate-800">${escapeHtml(product)}</p><p class="text-slate-600 mt-1">تعداد: ${escapeHtml(quantity)} | کل: ${escapeHtml(total)}</p></div>
+            <div><p class="text-xs text-slate-400 mb-1">ارسال و پرداخت</p><p class="text-slate-700">روش ارسال: <strong>${escapeHtml(shippingMethod)}</strong></p><p class="text-slate-700 mt-1">کد رهگیری: <strong class="font-mono">${escapeHtml(paymentCode)}</strong></p></div>
+          </div>
+          <div class="mt-5 bg-slate-50 rounded-xl p-3 text-xs text-slate-600">
+            <strong>آدرس:</strong> ${escapeHtml(city)}، ${escapeHtml(address)}
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function changeStatus(orderId, newStatus, sourceElement) {
+    if (changingOrder) return;
+    if (!orderId || !newStatus) { await openModal("اطلاعات ناقص", "شناسه سفارش یا وضعیت جدید خالی است.", false); return; }
+    const confirmed = await openModal("تغییر وضعیت سفارش", `وضعیت سفارش ${orderId} به «${newStatus}» تغییر کند؟`, true);
+    if (!confirmed) { await fetchOrders(); return; }
+    changingOrder = true;
+    if (sourceElement) { sourceElement.disabled = true; sourceElement.classList.add("loading"); }
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: new URLSearchParams({ action: "update_status", orderId: orderId, orderID: orderId, status: newStatus })
+      });
+      const result = await response.json();
+      if (result.status !== "success" && result.success !== true) throw new Error(result.message || "سرور وضعیت سفارش را تغییر نداد.");
+      await fetchOrders();
+    } catch (error) {
+      await openModal("خطا در تغییر وضعیت", error.message || "خطایی رخ داد.", false);
+      await fetchOrders();
+    } finally { changingOrder = false; }
+  }
+
+  document.addEventListener("click", event => {
+    const filterButton = event.target.closest(".filter-btn");
+    if (filterButton) { setFilter(filterButton.dataset.filter); return; }
+    const approveButton = event.target.closest(".approve-btn");
+    const rejectButton = event.target.closest(".reject-btn");
+    if (approveButton || rejectButton) { const button = approveButton || rejectButton; changeStatus(button.dataset.orderId, button.dataset.newStatus, button); }
+  });
+
+  document.addEventListener("change", event => {
+    const select = event.target.closest(".status-select");
+    if (!select) return;
+    changeStatus(select.dataset.orderId, select.value, select);
+  });
+
+  document.getElementById("refreshBtn").addEventListener("click", fetchOrders);
+  fetchOrders();
 </script>
-
 </body>
 </html>
