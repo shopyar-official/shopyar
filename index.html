@@ -68,15 +68,10 @@
     </div>
 
     <div class="bg-slate-50 border rounded-2xl p-4 space-y-3">
-      <p class="text-xs font-bold">اطلاعات پرداخت؛ یکی از دو مورد زیر را وارد کنید:</p>
+      <p class="text-xs font-bold">اطلاعات پرداخت:</p>
       <div>
         <label class="block text-xs mb-1">کد رهگیری پرداخت</label>
-        <input id="paymentCode" maxlength="200" placeholder="کد درج‌شده روی رسید پرداخت" class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
-      </div>
-      <div>
-        <label class="block text-xs mb-1">یا فایل فیش واریزی</label>
-        <input id="receiptFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
-        <p class="text-[11px] text-slate-500 mt-1">JPG، PNG، WEBP یا PDF؛ حداکثر ۲ مگابایت.</p>
+        <input id="paymentCode" required maxlength="200" placeholder="کد درج‌شده روی رسید پرداخت را وارد کنید" class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
       </div>
     </div>
 
@@ -112,24 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadProducts() {
   const select = document.getElementById("productSelect");
-
   try {
     const response = await fetch(SCRIPT_URL + "?action=get_products");
     const data = await response.json();
-
     if (!Array.isArray(data)) throw new Error(data.message || "پاسخ نامعتبر");
-
     productsData = data;
     select.innerHTML = '<option value="">انتخاب محصول...</option>';
-
     data.forEach((product, index) => {
       const option = document.createElement("option");
       option.value = String(index);
-      option.textContent = String(product.name) + " - " +
-        Number(product.price || 0).toLocaleString("fa-IR") + " تومان";
+      option.textContent = String(product.name) + " - " + Number(product.price || 0).toLocaleString("fa-IR") + " تومان";
       select.appendChild(option);
     });
-
     if (!data.length) select.innerHTML = '<option value="">محصولی یافت نشد</option>';
   } catch (err) {
     console.error(err);
@@ -145,28 +134,13 @@ function updateTotal() {
   const unitPrice = product ? Number(product.price || 0) : 0;
   const productsTotal = unitPrice * quantity;
   const total = productsTotal + shippingCost;
-
   document.getElementById("productPriceText").textContent = productsTotal.toLocaleString("fa-IR") + " تومان";
   document.getElementById("shippingPriceText").textContent = shippingCost.toLocaleString("fa-IR") + " تومان";
   document.getElementById("totalPriceText").textContent = total.toLocaleString("fa-IR") + " تومان";
 }
 
-function readFileAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = String(reader.result || "");
-      const base64 = result.split(",")[1];
-      base64 ? resolve(base64) : reject(new Error("خواندن فایل فیش انجام نشد."));
-    };
-    reader.onerror = () => reject(new Error("خواندن فایل فیش انجام نشد."));
-    reader.readAsDataURL(file);
-  });
-}
-
 async function submitOrder(event) {
   event.preventDefault();
-
   const form = document.getElementById("orderForm");
   const button = document.getElementById("submitBtn");
   const message = document.getElementById("responseMessage");
@@ -174,29 +148,12 @@ async function submitOrder(event) {
   if (!form.reportValidity()) return;
 
   const paymentCode = document.getElementById("paymentCode").value.trim();
-  const receiptFile = document.getElementById("receiptFile").files[0];
-
-  if (!paymentCode && !receiptFile) {
-    showMessage("کد رهگیری پرداخت یا فایل فیش را وارد کنید.", false);
-    return;
-  }
-
-  if (receiptFile) {
-    const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-    if (!allowed.includes(receiptFile.type) || receiptFile.size > 2 * 1024 * 1024) {
-      showMessage("فرمت فایل باید JPG، PNG، WEBP یا PDF و حجم آن حداکثر ۲ مگابایت باشد.", false);
-      return;
-    }
-  }
-
   const productIndex = document.getElementById("productSelect").value;
   const product = productsData[productIndex];
   const quantity = Number(document.getElementById("quantity").value);
   const shippingSelect = document.getElementById("shippingSelect");
   const shippingCost = Number(shippingSelect.value);
-  const shippingMethod = shippingSelect.selectedOptions[0]
-    ? shippingSelect.selectedOptions[0].text.split(" (")[0]
-    : "";
+  const shippingMethod = shippingSelect.selectedOptions[0] ? shippingSelect.selectedOptions[0].text.split(" (")[0] : "";
 
   if (!product || !Number.isInteger(quantity) || quantity < 1 || !shippingMethod ||
       !["name","phone","city","address"].every(id => document.getElementById(id).value.trim())) {
@@ -209,8 +166,7 @@ async function submitOrder(event) {
 
   button.disabled = true;
   button.textContent = "در حال ثبت سفارش...";
-  message.textContent = "";
-
+  
   try {
     const body = new URLSearchParams({
       action: "add_order",
@@ -229,16 +185,9 @@ async function submitOrder(event) {
       paymentCode: paymentCode
     });
 
-    if (receiptFile) {
-      body.set("receiptMime", receiptFile.type);
-      body.set("receiptBase64", await readFileAsBase64(receiptFile));
-    }
-
     const response = await fetch(SCRIPT_URL, { method: "POST", body });
     const data = await response.json();
-
     if (data.status !== "success") throw new Error(data.message || "ثبت سفارش ناموفق بود.");
-
     showMessage("سفارش ثبت شد. کد سفارش: " + data.orderId, true);
     form.reset();
     document.getElementById("quantity").value = "1";
@@ -261,23 +210,17 @@ function showMessage(text, success) {
 async function trackOrder() {
   const id = document.getElementById("trackOrderId").value.trim();
   const result = document.getElementById("trackResult");
-
   if (!id) {
     result.textContent = "لطفاً کد سفارش را وارد کنید.";
     result.className = "mt-3 text-xs text-rose-600";
     return;
   }
-
   result.textContent = "در حال جستجو...";
-  result.className = "mt-3 text-xs text-slate-500";
-
   try {
     const response = await fetch(SCRIPT_URL + "?action=track_order&orderId=" + encodeURIComponent(id));
     const data = await response.json();
-
     if (data.status === "success") {
-      result.innerHTML =
-        "<div class='bg-orange-50 border border-orange-200 rounded-xl p-3 space-y-1'>" +
+      result.innerHTML = "<div class='bg-orange-50 border border-orange-200 rounded-xl p-3 space-y-1'>" +
         "<div><b>نام:</b> " + escapeHtml(data.name) + "</div>" +
         "<div><b>محصول:</b> " + escapeHtml(data.product) + "</div>" +
         "<div><b>وضعیت:</b> <b class='text-orange-600'>" + escapeHtml(data.orderStatus) + "</b></div>" +
