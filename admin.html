@@ -78,7 +78,6 @@
   let allOrders = [];
   let currentFilter = 'all';
 
-  // نرمال‌سازی وضعیت برای هماهنگی با هر دو نوع تایپ «تایید» یا «تأیید»
   function normStatus(s) {
     return (s || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/أ|إ|آ|ا/g, 'ا').replace(/ئ|ی/g, 'ی').trim();
   }
@@ -224,7 +223,6 @@
     }
 
     container.innerHTML = filtered.map(order => {
-      // پشتیبانی کامل از نام کلیدهای سرور شما
       const orderId = order.orderId || order.orderID || order.id || '---';
       const name = order.name || 'بدون نام';
       const phone = order.phone || 'بدون شماره';
@@ -239,6 +237,7 @@
       const tracking = order.paymentCode || order.tracking || '---';
       const shippingMethod = order.shippingMethod || 'پست پیشتاز';
       const status = getOrderStatus(order);
+      const isNeedsAction = isPending(status) || isPendingPay(status);
 
       return `
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
@@ -248,7 +247,19 @@
               <span class="text-xs text-slate-400">${date}</span>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              ${isNeedsAction ? `
+                <button onclick="changeStatus('${orderId}', 'در حال پردازش')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                  تأیید سفارش
+                </button>
+                <button onclick="changeStatus('${orderId}', 'رد شده')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-medium px-2.5 py-1.5 rounded-lg transition border border-rose-200">
+                  رد سفارش
+                </button>
+              ` : ''}
+
               <select onchange="changeStatus('${orderId}', this.value)" class="text-xs font-medium border border-slate-300 rounded-lg p-1.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 <option value="در انتظار پرداخت" ${isPendingPay(status) ? 'selected' : ''}>در انتظار پرداخت</option>
                 <option value="منتظر تأیید" ${isPending(status) ? 'selected' : ''}>منتظر تأیید</option>
