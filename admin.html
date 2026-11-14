@@ -12,7 +12,7 @@
 </head>
 <body class="bg-slate-50 min-h-screen p-4 md:p-8">
 
-    <!-- محتوای اصلی پنل مدیریت؛ ورود موقتاً حذف شده است -->
+    <!-- محتوای اصلی پنل مدیریت -->
     <div id="adminPanel" class="max-w-6xl w-full mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <!-- سفارش‌ها -->
+        <!-- لیست سفارش‌ها -->
         <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری سفارشات...</div>
         </div>
@@ -74,64 +74,54 @@
             <h3 class="text-base font-bold text-slate-800 mb-2">تأیید سفارش جدید</h3>
 
             <div class="text-xs text-slate-700 bg-orange-50 rounded-xl p-3 mb-3 text-right space-y-2">
-                <div><strong>کد رهگیری پرداخت:</strong> <span id="modalPaymentCode"></span></div>
+                <div><strong>کد رهگیری پرداخت:</strong> <span id="modalPaymentCode">---</span></div>
                 <div id="modalReceiptRow">
                     <strong>فیش واریزی:</strong>
-                    <a id="modalReceiptLink" href="#" target="_blank" rel="noopener noreferrer" class="text-orange-600 underline">مشاهدهٔ فیش</a>
+                    <a id="modalReceiptLink" href="#" target="_blank" rel="noopener noreferrer" class="text-orange-600 font-bold underline">مشاهدهٔ تصویر فیش</a>
                 </div>
-                <div id="modalNoReceipt" class="hidden text-slate-500">فیشی برای این سفارش ثبت نشده است.</div>
+                <div id="modalNoReceipt" class="hidden text-slate-500">فیشی برای این سفارش آپلود نشده است.</div>
             </div>
 
-            <p class="text-xs text-slate-500 mb-3 leading-relaxed">
-                پس از تأیید، سفارش به بخش «در حال بررسی» منتقل خواهد شد.
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                آیا پس از بررسی صحت واریزی، این سفارش را تأیید می‌کنید؟ سفارش به وضعیت «در حال بررسی» منتقل می‌شود.
             </p>
-
-            <label class="flex items-start gap-2 text-xs text-slate-700 text-right mb-5 cursor-pointer">
-                <input id="paymentReviewed" type="checkbox" class="mt-0.5">
-                <span>کد رهگیری یا فیش ثبت‌شده را بررسی کردم.</span>
-            </label>
 
             <div class="flex gap-2">
                 <button type="button" onclick="closeConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-3 px-4 rounded-xl transition">
                     انصراف
                 </button>
                 <button type="button" id="confirmModalBtn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition shadow-sm">
-                    تأیید و انتقال
+                    تأیید و ثبت
                 </button>
             </div>
         </div>
     </div>
 
     <script>
+        // آدرس اسکریپت شما
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec';
         let allOrders = [];
         let currentFilter = 'همه';
         let pendingApproveOrderId = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // اجرای خودکار پس از باز شدن صفحه
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('confirmModalBtn').addEventListener('click', confirmApproveOrder);
             loadOrders();
         });
 
-        function escapeHtml(value) {
-            return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            })[ch]);
-        }
-
-        function isDriveLink(url) {
-            return /^https:\/\/(?:drive|docs)\.google\.com\//i.test(String(url || ''));
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
         }
 
         function loadOrders() {
             const container = document.getElementById('ordersContainer');
-            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری...</div>';
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال دریافت لیست سفارشات از دیتابیس...</div>';
 
-            fetch(`${SCRIPT_URL}?action=get_orders`)
+            fetch(SCRIPT_URL + '?action=get_orders')
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
@@ -139,12 +129,12 @@
                         updateCounts();
                         renderOrders();
                     } else {
-                        container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">خطا در دریافت اطلاعات از سرور</div>';
+                        container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">پاسخ دریافتی نامعتبر است!</div>';
                     }
                 })
                 .catch(err => {
                     console.error(err);
-                    container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">خطا در اتصال به سرور</div>';
+                    container.innerHTML = '<div class="col-span-full text-center py-12 text-rose-500">خطا در برقراری ارتباط با گوگل‌شیت. لطفاً رفرش کنید.</div>';
                 });
         }
 
@@ -152,10 +142,10 @@
             const counts = {
                 'همه': allOrders.length,
                 'منتظر تأیید': allOrders.filter(o => (o.status || '') === 'منتظر تأیید').length,
-                'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
-                'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
-                'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
-                'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length
+                'در حال بررسی': allOrders.filter(o => (o.status || '') === 'در حال بررسی').length,
+                'در حال آماده‌سازی': allOrders.filter(o => (o.status || '') === 'در حال آماده‌سازی').length,
+                'ارسال شده': allOrders.filter(o => (o.status || '') === 'ارسال شده').length,
+                'تکمیل شده': allOrders.filter(o => (o.status || '') === 'تکمیل شده').length
             };
 
             document.getElementById('count-all').textContent = counts['همه'];
@@ -197,7 +187,7 @@
             let filtered = allOrders;
 
             if (currentFilter !== 'همه') {
-                filtered = filtered.filter(o => (o.status || 'در حال بررسی') === currentFilter);
+                filtered = filtered.filter(o => (o.status || 'منتظر تأیید') === currentFilter);
             }
 
             if (searchQuery) {
@@ -212,7 +202,7 @@
             }
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">هیچ سفارشی یافت نشد</div>';
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-100">سفارشی در این وضعیت یافت نشد</div>';
                 return;
             }
 
@@ -237,12 +227,13 @@
                 card.className = 'bg-white rounded-2xl border border-slate-100 p-5 shadow-sm flex flex-col justify-between gap-4';
 
                 const receiptUrl = String(order.receiptUrl || '').trim();
-                const receiptDisplay = isDriveLink(receiptUrl)
-                    ? `<a href="${escapeHtml(receiptUrl)}" target="_blank" rel="noopener noreferrer" class="text-orange-600 underline">مشاهدهٔ فیش</a>`
-                    : (receiptUrl ? escapeHtml(receiptUrl) : 'ثبت نشده');
+                let receiptDisplay = 'ثبت نشده';
+                if (receiptUrl.startsWith('http')) {
+                    receiptDisplay = `<a href="${receiptUrl}" target="_blank" rel="noopener noreferrer" class="text-orange-600 font-bold underline">مشاهده فیش 📎</a>`;
+                }
 
-                const approveButton = status === 'منتظر تأیید'
-                    ? `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition">✅ تأیید سفارش</button>`
+                const approveButton = (status === 'منتظر تأیید')
+                    ? `<button onclick="approveOrder('${order.orderId}')" class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition shadow-sm mt-2">🔍 بررسی فیش و تأیید سفارش</button>`
                     : '';
 
                 card.innerHTML = `
@@ -251,7 +242,7 @@
                             <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">${order.orderId}</span>
                             <span class="text-xs px-2.5 py-1 rounded-lg border font-medium ${badgeColor}">${status}</span>
                         </div>
-                        <h3 class="text-base font-bold text-slate-800 mb-1">${order.name || 'بدون نام'}</h3>
+                        <h3 class="text-base font-bold text-slate-800 mb-1">${escapeHtml(order.name) || 'بدون نام'}</h3>
 
                         <div class="flex items-center gap-2 mb-3">
                             <a href="tel:${order.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-lg text-center transition flex items-center justify-center gap-1">
@@ -262,13 +253,17 @@
                             </a>
                         </div>
 
-                        <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
-                            <div><strong class="text-slate-700">تلفن:</strong> ${order.phone || ''}</div>
-                            <div><strong class="text-slate-700">شهر:</strong> ${order.city || ''}</div>
-                            <div><strong class="text-slate-700">آدرس:</strong> ${order.address || ''}</div>
-                            <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
-                            <div><strong class="text-slate-700">کد رهگیری پرداخت:</strong> ${escapeHtml(order.paymentCode || 'ثبت نشده')}</div>
-                            <div><strong class="text-slate-700">فیش واریزی:</strong> ${receiptDisplay}</div>
+                        <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-2">
+                            <div><strong class="text-slate-700">تلفن:</strong> ${escapeHtml(order.phone)}</div>
+                            <div><strong class="text-slate-700">شهر:</strong> ${escapeHtml(order.city)}</div>
+                            <div><strong class="text-slate-700">آدرس:</strong> ${escapeHtml(order.address)}</div>
+                            <div><strong class="text-slate-700">اقلام:</strong> ${escapeHtml(order.product)}</div>
+                            <div class="border-t border-slate-200 pt-1 text-slate-800">
+                                <strong>کد پیگیری پرداخت:</strong> <span class="text-orange-600 font-bold">${escapeHtml(order.paymentCode) || 'ندارد'}</span>
+                            </div>
+                            <div>
+                                <strong>فیش پیوست:</strong> ${receiptDisplay}
+                            </div>
                         </div>
 
                         ${approveButton}
@@ -276,7 +271,7 @@
 
                     <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
                         <span class="text-[11px] text-slate-400">${order.date || ''}</span>
-                        <select onchange="updateStatus('${order.orderId}', this.value)" ${status === 'منتظر تأیید' ? 'disabled title="ابتدا فیش یا کد را بررسی و سفارش را تأیید کنید"' : ''} class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
+                        <select onchange="updateStatus('${order.orderId}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium text-slate-700">
                             <option value="" disabled selected>تغییر وضعیت...</option>
                             <option value="در حال بررسی">در حال بررسی</option>
                             <option value="در حال آماده‌سازی">در حال آماده‌سازی</option>
@@ -290,29 +285,23 @@
             });
         }
 
-        // باز کردن مودال تأیید و نمایش اطلاعات پرداخت
         function approveOrder(orderId) {
             const order = allOrders.find(o => String(o.orderId) === String(orderId));
             if (!order) return;
 
             pendingApproveOrderId = orderId;
-            document.getElementById('modalPaymentCode').textContent =
-                String(order.paymentCode || 'ثبت نشده');
-            document.getElementById('paymentReviewed').checked = false;
+            document.getElementById('modalPaymentCode').textContent = order.paymentCode || 'ثبت نشده';
 
             const receiptUrl = String(order.receiptUrl || '').trim();
             const receiptRow = document.getElementById('modalReceiptRow');
             const noReceipt = document.getElementById('modalNoReceipt');
 
-            if (isDriveLink(receiptUrl)) {
+            if (receiptUrl.startsWith('http')) {
                 document.getElementById('modalReceiptLink').href = receiptUrl;
                 receiptRow.classList.remove('hidden');
                 noReceipt.classList.add('hidden');
             } else {
                 receiptRow.classList.add('hidden');
-                noReceipt.textContent = receiptUrl
-                    ? `فیش ثبت‌شده: ${receiptUrl}`
-                    : 'فیشی برای این سفارش ثبت نشده است.';
                 noReceipt.classList.remove('hidden');
             }
 
@@ -329,17 +318,12 @@
         }
 
         function confirmApproveOrder() {
-            if (pendingApproveOrderId === null) return;
-
-            if (!document.getElementById('paymentReviewed').checked) {
-                alert('ابتدا فیش یا کد رهگیری پرداخت را بررسی و گزینهٔ تأیید بررسی را علامت بزنید.');
-                return;
-            }
+            if (!pendingApproveOrderId) return;
 
             const orderId = pendingApproveOrderId;
-            const button = document.getElementById('confirmModalBtn');
-            button.disabled = true;
-            button.textContent = 'در حال ثبت...';
+            const btn = document.getElementById('confirmModalBtn');
+            btn.disabled = true;
+            btn.textContent = 'در حال ثبت...';
 
             const formData = new URLSearchParams({
                 action: 'approve_order',
@@ -355,12 +339,11 @@
                 if (data.status === 'success') {
                     const order = allOrders.find(o => String(o.orderId) === String(orderId));
                     if (order) order.status = 'در حال بررسی';
-
                     closeConfirmModal();
                     updateCounts();
                     renderOrders();
                 } else {
-                    alert(data.message || 'خطا در تأیید سفارش');
+                    alert(data.message || 'خطا در ثبت تأیید');
                 }
             })
             .catch(err => {
@@ -368,8 +351,8 @@
                 alert('خطا در اتصال به سرور');
             })
             .finally(() => {
-                button.disabled = false;
-                button.textContent = 'تأیید و انتقال';
+                btn.disabled = false;
+                btn.textContent = 'تأیید و ثبت';
             });
         }
 
@@ -392,12 +375,12 @@
                     updateCounts();
                     renderOrders();
                 } else {
-                    alert(data.message || 'خطا در به‌روزرسانی وضعیت');
+                    alert(data.message || 'خطا در تغییر وضعیت');
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('خطا در اتصال به سرور');
+                alert('خطا در ارتباط با سرور');
             });
         }
     </script>
