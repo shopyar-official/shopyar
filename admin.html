@@ -105,45 +105,56 @@
 
     <script>
         const SCRIPT_URL = const SCRIPT_URL = https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec
-        const ADMIN_USER = 'admin'; 
-        const ADMIN_PASS = '1234';  
-        let allOrders = [];
-        let currentFilter = 'همه';
-        let pendingApproveOrderId = null;
+       const ADMIN_USER = 'admin'; 
+const ADMIN_PASS = '1234';  
+let allOrders = [];
+let currentFilter = 'همه';
+let pendingApproveOrderId = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('confirmModalBtn').addEventListener('click', confirmApproveOrder);
+window.addEventListener('DOMContentLoaded', () => {
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', confirmApproveOrder);
+    }
 
-            if (localStorage.getItem('shopyar_admin_logged') === 'true') {
-                showAdminPanel();
-            }
-        });
+    if (localStorage.getItem('shopyar_admin_logged') === 'true') {
+        showAdminPanel();
+    }
+});
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('adminUsername').value.trim();
-            const password = document.getElementById('adminPassword').value;
+function handleLogin(e) {
+    e.preventDefault();
+    const usernameInput = document.getElementById('adminUsername');
+    const passwordInput = document.getElementById('adminPassword');
+    const errorDiv = document.getElementById('loginError');
 
-            if (username === ADMIN_USER && password === ADMIN_PASS) {
-                localStorage.setItem('shopyar_admin_logged', 'true');
-                showAdminPanel();
-            } else {
-                document.getElementById('loginError').textContent = 'نام کاربری یا رمز عبور اشتباه است!';
-            }
-        }
+    if (!usernameInput || !passwordInput) return;
 
-        function showAdminPanel() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.body.classList.remove('flex', 'items-center', 'justify-center');
-            document.getElementById('adminPanel').classList.remove('hidden');
-            loadOrders();
-        }
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
 
-        function logout() {
-            localStorage.removeItem('shopyar_admin_logged');
-            location.reload();
-        }
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
+        localStorage.setItem('shopyar_admin_logged', 'true');
+        showAdminPanel();
+    } else {
+        if (errorDiv) errorDiv.textContent = 'نام کاربری یا رمز عبور اشتباه است!';
+    }
+}
 
+function showAdminPanel() {
+    const loginScreen = document.getElementById('loginScreen');
+    const adminPanel = document.getElementById('adminPanel');
+    
+    if (loginScreen) loginScreen.classList.add('hidden');
+    document.body.classList.remove('flex', 'items-center', 'justify-center');
+    if (adminPanel) adminPanel.classList.remove('hidden');
+    loadOrders();
+}
+
+function logout() {
+    localStorage.removeItem('shopyar_admin_logged');
+    location.reload();
+}
         function loadOrders() {
             const container = document.getElementById('ordersContainer');
             container.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400">در حال بارگذاری...</div>';
