@@ -24,7 +24,8 @@
 
     <div>
       <label class="block text-xs font-medium mb-1">شماره موبایل</label>
-      <input id="phone" type="tel" required placeholder="09123456789" class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
+      <input id="phone" type="tel" required placeholder="09123456789"
+             class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
     </div>
 
     <div>
@@ -34,20 +35,31 @@
 
     <div>
       <label class="block text-xs font-medium mb-1">آدرس پستی کامل</label>
-      <textarea id="address" required rows="2" class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"></textarea>
+      <textarea id="address" required rows="2"
+                class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"></textarea>
     </div>
 
-    <div>
-      <label class="block text-xs font-medium mb-1">انتخاب محصول</label>
-      <select id="productSelect" required class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
-        <option value="">در حال بارگذاری محصولات...</option>
-      </select>
+    <!-- ردیف نخست، همان انتخاب محصول و تعداد قبلی است. -->
+    <div id="productRows" class="space-y-3">
+      <div class="product-row border border-slate-200 rounded-xl p-3 space-y-2">
+        <div>
+          <label class="block text-xs font-medium mb-1">انتخاب محصول</label>
+          <select id="productSelect" class="item-product w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5" required>
+            <option value="">در حال بارگذاری محصولات...</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium mb-1">تعداد</label>
+          <input id="quantity" class="item-quantity w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"
+                 type="number" min="1" step="1" value="1" required>
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label class="block text-xs font-medium mb-1">تعداد</label>
-      <input id="quantity" type="number" min="1" step="1" value="1" required class="w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5">
-    </div>
+    <button id="addProductBtn" type="button"
+            class="w-full border border-orange-300 text-orange-600 hover:bg-orange-50 rounded-xl py-2.5 text-xs font-bold">
+      + افزودن محصول دیگر
+    </button>
 
     <div>
       <label class="block text-xs font-medium mb-1">نوع ارسال</label>
@@ -60,8 +72,12 @@
     </div>
 
     <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-xs space-y-2">
-      <div class="flex justify-between"><span>قیمت محصولات:</span><span id="productPriceText">۰ تومان</span></div>
-      <div class="flex justify-between"><span>هزینه ارسال:</span><span id="shippingPriceText">۰ تومان</span></div>
+      <div class="flex justify-between">
+        <span>قیمت محصولات:</span><span id="productPriceText">۰ تومان</span>
+      </div>
+      <div class="flex justify-between">
+        <span>هزینه ارسال:</span><span id="shippingPriceText">۰ تومان</span>
+      </div>
       <div class="border-t border-orange-200 pt-2 flex justify-between font-bold">
         <span>مبلغ کل:</span><span id="totalPriceText">۰ تومان</span>
       </div>
@@ -69,13 +85,42 @@
 
     <div class="bg-slate-50 border rounded-2xl p-4 space-y-3">
       <p class="text-xs font-bold">اطلاعات پرداخت:</p>
+      <p class="text-xs text-slate-600">
+        پس از واریز مبلغ سفارش، کد رهگیری پرداخت را در کادر زیر وارد کنید.
+      </p>
+
+      <div class="bg-white border border-orange-200 rounded-xl p-3 space-y-3">
+        <div>
+          <span class="block text-xs text-slate-500 mb-1">نام صاحب حساب</span>
+          <div class="text-sm font-bold text-slate-800">علی حسینی</div>
+        </div>
+        <div>
+          <span class="block text-xs text-slate-500 mb-1">شماره کارت نمونه</span>
+          <div dir="ltr" class="text-sm font-bold text-slate-800 tracking-wider">
+            0000-0000-0000-0000
+          </div>
+        </div>
+        <div>
+          <span class="block text-xs text-slate-500 mb-1">شماره شبای نمونه</span>
+          <div dir="ltr" class="text-sm font-bold text-slate-800 tracking-wider">
+            IR00 0000 0000 0000 0000 0000 00
+          </div>
+        </div>
+        <p class="text-[10px] text-rose-600">
+          این اطلاعات صرفاً نمونه و ساختگی است؛ برای پرداخت واقعی استفاده نکنید.
+        </p>
+      </div>
+
       <div>
         <label class="block text-xs mb-1">کد رهگیری پرداخت</label>
-        <input id="paymentCode" required maxlength="200" placeholder="کد درج‌شده روی رسید پرداخت را وارد کنید" class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
+        <input id="paymentCode" required maxlength="200"
+               placeholder="کد درج‌شده روی رسید پرداخت را وارد کنید"
+               class="w-full text-xs bg-white border rounded-xl px-3 py-2.5">
       </div>
     </div>
 
-    <button id="submitBtn" type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-xs">
+    <button id="submitBtn" type="submit"
+            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl text-xs">
       ثبت نهایی سفارش
     </button>
   </form>
@@ -85,8 +130,10 @@
   <div class="mt-8 pt-6 border-t">
     <h2 class="text-xs font-bold mb-2">🔍 پیگیری سفارش با کد سفارش</h2>
     <div class="flex gap-2">
-      <input id="trackOrderId" placeholder="مثلاً SHP-123456" class="flex-1 text-xs bg-slate-50 border rounded-xl px-3 py-2">
-      <button id="trackBtn" type="button" class="bg-slate-800 text-white text-xs px-3 rounded-xl">پیگیری</button>
+      <input id="trackOrderId" placeholder="مثلاً SHP-123456"
+             class="flex-1 text-xs bg-slate-50 border rounded-xl px-3 py-2">
+      <button id="trackBtn" type="button"
+              class="bg-slate-800 text-white text-xs px-3 rounded-xl">پیگیری</button>
     </div>
     <div id="trackResult" class="mt-3 text-xs"></div>
   </div>
@@ -98,75 +145,169 @@ let productsData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
+
   document.getElementById("orderForm").addEventListener("submit", submitOrder);
-  document.getElementById("quantity").addEventListener("input", updateTotal);
   document.getElementById("shippingSelect").addEventListener("change", updateTotal);
-  document.getElementById("productSelect").addEventListener("change", updateTotal);
+  document.getElementById("addProductBtn").addEventListener("click", addProductRow);
   document.getElementById("trackBtn").addEventListener("click", trackOrder);
+
+  const rows = document.getElementById("productRows");
+  rows.addEventListener("change", updateTotal);
+  rows.addEventListener("input", updateTotal);
+  rows.addEventListener("click", event => {
+    if (event.target.closest(".remove-product")) {
+      event.target.closest(".product-row").remove();
+      updateTotal();
+    }
+  });
 });
 
-async function loadProducts() {
-  const select = document.getElementById("productSelect");
-  try {
-    const response = await fetch(SCRIPT_URL + "?action=get_products");
-    const data = await response.json();
-    if (!Array.isArray(data)) throw new Error(data.message || "پاسخ نامعتبر");
-    productsData = data;
-    select.innerHTML = '<option value="">انتخاب محصول...</option>';
-    data.forEach((product, index) => {
-      const option = document.createElement("option");
-      option.value = String(index);
-      option.textContent = String(product.name) + " - " + Number(product.price || 0).toLocaleString("fa-IR") + " تومان";
-      select.appendChild(option);
-    });
-    if (!data.length) select.innerHTML = '<option value="">محصولی یافت نشد</option>';
-  } catch (err) {
-    console.error(err);
-    select.innerHTML = '<option value="">خطا در دریافت محصولات</option>';
+function fillProductSelect(select) {
+  select.replaceChildren(new Option("انتخاب محصول...", ""));
+
+  productsData.forEach((product, index) => {
+    const option = new Option(
+      String(product.name) + " - " +
+      Number(product.price || 0).toLocaleString("fa-IR") + " تومان",
+      String(index)
+    );
+    select.add(option);
+  });
+
+  if (!productsData.length) {
+    select.replaceChildren(new Option("محصولی یافت نشد", ""));
   }
 }
 
+async function loadProducts() {
+  const select = document.getElementById("productSelect");
+
+  try {
+    const response = await fetch(SCRIPT_URL + "?action=get_products");
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error(data.message || "پاسخ محصولات نامعتبر است.");
+    }
+
+    productsData = data;
+    document.querySelectorAll(".item-product").forEach(fillProductSelect);
+    updateTotal();
+  } catch (err) {
+    console.error(err);
+    productsData = [];
+    select.replaceChildren(new Option("خطا در دریافت محصولات", ""));
+    showMessage("دریافت محصولات انجام نشد؛ صفحه را دوباره بارگذاری کنید.", false);
+  }
+}
+
+function addProductRow() {
+  if (!productsData.length) {
+    showMessage("ابتدا باید فهرست محصولات بارگذاری شود.", false);
+    return;
+  }
+
+  const row = document.createElement("div");
+  row.className = "product-row border border-slate-200 rounded-xl p-3 space-y-2";
+  row.innerHTML = `
+    <div>
+      <label class="block text-xs font-medium mb-1">انتخاب محصول</label>
+      <select class="item-product w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5" required></select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium mb-1">تعداد</label>
+      <input class="item-quantity w-full text-xs bg-slate-50 border rounded-xl px-3 py-2.5"
+             type="number" min="1" step="1" value="1" required>
+    </div>
+    <button type="button" class="remove-product text-xs text-rose-600">
+      حذف این محصول
+    </button>
+  `;
+
+  document.getElementById("productRows").appendChild(row);
+  fillProductSelect(row.querySelector(".item-product"));
+  updateTotal();
+}
+
+function getSelectedItems() {
+  return Array.from(document.querySelectorAll(".product-row")).map(row => {
+    const indexText = row.querySelector(".item-product").value;
+    const quantity = Number(row.querySelector(".item-quantity").value);
+    const index = indexText === "" ? -1 : Number(indexText);
+    const product = productsData[index];
+
+    return {
+      index,
+      name: product ? String(product.name) : "",
+      price: product ? Number(product.price) : NaN,
+      quantity
+    };
+  });
+}
+
 function updateTotal() {
-  const productIndex = document.getElementById("productSelect").value;
-  const quantity = Math.max(1, Number(document.getElementById("quantity").value) || 1);
+  const productsTotal = getSelectedItems().reduce((sum, item) => {
+    if (!item.name || !Number.isSafeInteger(item.quantity) || item.quantity < 1 ||
+        !Number.isFinite(item.price)) {
+      return sum;
+    }
+    return sum + item.price * item.quantity;
+  }, 0);
+
   const shippingCost = Number(document.getElementById("shippingSelect").value) || 0;
-  const product = productsData[productIndex];
-  const unitPrice = product ? Number(product.price || 0) : 0;
-  const productsTotal = unitPrice * quantity;
-  const total = productsTotal + shippingCost;
-  document.getElementById("productPriceText").textContent = productsTotal.toLocaleString("fa-IR") + " تومان";
-  document.getElementById("shippingPriceText").textContent = shippingCost.toLocaleString("fa-IR") + " تومان";
-  document.getElementById("totalPriceText").textContent = total.toLocaleString("fa-IR") + " تومان";
+
+  document.getElementById("productPriceText").textContent =
+    productsTotal.toLocaleString("fa-IR") + " تومان";
+  document.getElementById("shippingPriceText").textContent =
+    shippingCost.toLocaleString("fa-IR") + " تومان";
+  document.getElementById("totalPriceText").textContent =
+    (productsTotal + shippingCost).toLocaleString("fa-IR") + " تومان";
 }
 
 async function submitOrder(event) {
   event.preventDefault();
+
   const form = document.getElementById("orderForm");
   const button = document.getElementById("submitBtn");
-  const message = document.getElementById("responseMessage");
-
   if (!form.reportValidity()) return;
 
-  const paymentCode = document.getElementById("paymentCode").value.trim();
-  const productIndex = document.getElementById("productSelect").value;
-  const product = productsData[productIndex];
-  const quantity = Number(document.getElementById("quantity").value);
+  const items = getSelectedItems();
   const shippingSelect = document.getElementById("shippingSelect");
   const shippingCost = Number(shippingSelect.value);
-  const shippingMethod = shippingSelect.selectedOptions[0] ? shippingSelect.selectedOptions[0].text.split(" (")[0] : "";
+  const shippingMethod = shippingSelect.selectedOptions[0]
+    ? shippingSelect.selectedOptions[0].text.split(" (")[0]
+    : "";
 
-  if (!product || !Number.isInteger(quantity) || quantity < 1 || !shippingMethod ||
-      !["name","phone","city","address"].every(id => document.getElementById(id).value.trim())) {
-    showMessage("لطفاً همهٔ فیلدهای سفارش را کامل کنید.", false);
+  if (!items.length || items.some(item =>
+        !item.name ||
+        !Number.isSafeInteger(item.index) ||
+        !Number.isSafeInteger(item.quantity) ||
+        item.quantity < 1 ||
+        !Number.isSafeInteger(item.price) ||
+        item.price < 0
+      ) ||
+      !shippingMethod ||
+      !document.getElementById("paymentCode").value.trim() ||
+      !["name", "phone", "city", "address"].every(id =>
+        document.getElementById(id).value.trim()
+      )) {
+    showMessage("لطفاً محصولات، تعدادها و مشخصات سفارش را کامل کنید.", false);
     return;
   }
 
-  const unitPrice = Number(product.price || 0);
-  const totalAmount = unitPrice * quantity + shippingCost;
+  const productsTotal = items.reduce(
+    (sum, item) => sum + item.price * item.quantity, 0
+  );
+  const totalAmount = productsTotal + shippingCost;
+
+  if (!Number.isSafeInteger(totalAmount)) {
+    showMessage("مبلغ سفارش معتبر نیست.", false);
+    return;
+  }
 
   button.disabled = true;
   button.textContent = "در حال ثبت سفارش...";
-  
+
   try {
     const body = new URLSearchParams({
       action: "add_order",
@@ -174,22 +315,36 @@ async function submitOrder(event) {
       phone: document.getElementById("phone").value.trim(),
       city: document.getElementById("city").value.trim(),
       address: document.getElementById("address").value.trim(),
-      product: product.name,
-      quantity: String(quantity),
-      unitPrice: String(unitPrice),
-      shippingMethod: shippingMethod,
+
+      // Code.gs جدید برای این درخواست از items استفاده می‌کند.
+      items: JSON.stringify(items.map(item => ({
+        index: item.index,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      }))),
+
+      shippingMethod,
       shippingCost: String(shippingCost),
       discountCode: "",
       discountAmount: "0",
       totalAmount: String(totalAmount),
-      paymentCode: paymentCode
+      paymentCode: document.getElementById("paymentCode").value.trim()
     });
 
     const response = await fetch(SCRIPT_URL, { method: "POST", body });
     const data = await response.json();
-    if (data.status !== "success") throw new Error(data.message || "ثبت سفارش ناموفق بود.");
+
+    if (data.status !== "success") {
+      throw new Error(data.message || "ثبت سفارش ناموفق بود.");
+    }
+
     showMessage("سفارش ثبت شد. کد سفارش: " + data.orderId, true);
     form.reset();
+
+    document.querySelectorAll("#productRows .product-row:not(:first-child)")
+      .forEach(row => row.remove());
+
     document.getElementById("quantity").value = "1";
     updateTotal();
   } catch (err) {
@@ -204,29 +359,41 @@ async function submitOrder(event) {
 function showMessage(text, success) {
   const el = document.getElementById("responseMessage");
   el.textContent = text;
-  el.className = "mt-4 text-center text-xs " + (success ? "text-emerald-600 font-bold" : "text-rose-600");
+  el.className = "mt-4 text-center text-xs " +
+    (success ? "text-emerald-600 font-bold" : "text-rose-600");
 }
 
 async function trackOrder() {
   const id = document.getElementById("trackOrderId").value.trim();
   const result = document.getElementById("trackResult");
+
   if (!id) {
     result.textContent = "لطفاً کد سفارش را وارد کنید.";
     result.className = "mt-3 text-xs text-rose-600";
     return;
   }
+
   result.textContent = "در حال جستجو...";
+
   try {
-    const response = await fetch(SCRIPT_URL + "?action=track_order&orderId=" + encodeURIComponent(id));
+    const response = await fetch(
+      SCRIPT_URL + "?action=track_order&orderId=" + encodeURIComponent(id)
+    );
     const data = await response.json();
+
     if (data.status === "success") {
-      result.innerHTML = "<div class='bg-orange-50 border border-orange-200 rounded-xl p-3 space-y-1'>" +
+      result.className = "mt-3 text-xs";
+      result.innerHTML =
+        "<div class='bg-orange-50 border border-orange-200 rounded-xl p-3 space-y-1'>" +
         "<div><b>نام:</b> " + escapeHtml(data.name) + "</div>" +
         "<div><b>محصول:</b> " + escapeHtml(data.product) + "</div>" +
-        "<div><b>وضعیت:</b> <b class='text-orange-600'>" + escapeHtml(data.orderStatus) + "</b></div>" +
+        "<div><b>وضعیت:</b> <b class='text-orange-600'>" +
+          escapeHtml(data.orderStatus) + "</b></div>" +
         "<div><b>تاریخ ثبت:</b> " + escapeHtml(data.date) + "</div></div>";
     } else {
-      result.textContent = data.status === "not_found" ? "سفارشی با این کد پیدا نشد." : (data.message || "خطا در پیگیری سفارش.");
+      result.textContent = data.status === "not_found"
+        ? "سفارشی با این کد پیدا نشد."
+        : (data.message || "خطا در پیگیری سفارش.");
       result.className = "mt-3 text-xs text-rose-600";
     }
   } catch (err) {
@@ -237,7 +404,11 @@ async function trackOrder() {
 
 function escapeHtml(value) {
   return String(value == null ? "" : value).replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
   }[ch]));
 }
 </script>
