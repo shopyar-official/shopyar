@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+```html<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
  <meta charset="UTF-8">
@@ -49,7 +49,7 @@
  </div>
  </header>
 
- <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+ <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
 
  <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
  <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
@@ -76,6 +76,11 @@
  <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
  </button>
 
+ <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+ <span class="block text-xs text-indigo-600">تکمیل شده</span>
+ <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
+ </button>
+
  <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
  <span class="block text-xs text-rose-600">رد شده</span>
  <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
@@ -93,6 +98,48 @@
 
 </main>
 
+<!-- مودال پیام و تأیید -->
+<div id="modalOverlay"
+ class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+
+ <div id="modalBox"
+ class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 text-center">
+
+ <div class="mx-auto mb-4 w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl">
+ !
+ </div>
+
+ <h2 id="modalTitle" class="text-lg font-bold text-slate-800 mb-2">
+ پیام </h2>
+
+ <p id="modalMessage" class="text-sm leading-7 text-slate-600 whitespace-pre-line">
+ </p>
+
+ <div id="modalActions" class="flex gap-3 mt-6">
+
+ <button id="modalConfirmBtn"
+ type="button"
+ class="flex-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-2.5 text-sm font-bold"
+ >
+ تأیید </button>
+
+ <button id="modalCancelBtn"
+ type="button"
+ class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl py-2.5 text-sm font-bold"
+ >
+ انصراف </button>
+
+ </div>
+
+ <button id="modalCloseBtn"
+ type="button"
+ class="hidden w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white rounded-xl py-2.5 text-sm font-bold"
+ >
+ بستن </button>
+
+ </div>
+</div>
+
 <script>
  const API_URL =
  "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
@@ -106,6 +153,7 @@
  PENDING: "منتظر تأیید",
  PROCESSING: "در حال پردازش",
  SHIPPED: "ارسال شده",
+ COMPLETED: "تکمیل شده",
  REJECTED: "رد شده"
  };
 
@@ -163,6 +211,10 @@
  return "shipped";
  }
 
+ if (s.includes("تکمیل")) {
+ return "completed";
+ }
+
  if (s.includes("رد")) {
  return "rejected";
  }
@@ -183,6 +235,7 @@
  if (key === "pending") return STATUS.PENDING;
  if (key === "processing") return STATUS.PROCESSING;
  if (key === "shipped") return STATUS.SHIPPED;
+ if (key === "completed") return STATUS.COMPLETED;
  if (key === "rejected") return STATUS.REJECTED;
 
  return rawStatus || "وضعیت نامشخص";
@@ -205,6 +258,10 @@
  return "bg-emerald-100 text-emerald-700";
  }
 
+ if (key === "completed") {
+ return "bg-indigo-100 text-indigo-700";
+ }
+
  if (key === "rejected") {
  return "bg-rose-100 text-rose-700";
  }
@@ -217,6 +274,50 @@
  if (data && Array.isArray(data.data)) return data.data;
  if (data && Array.isArray(data.orders)) return data.orders;
  return [];
+ }
+
+ function openModal(title, message, isConfirm) {
+ return new Promise(resolve => {
+ const overlay = document.getElementById("modalOverlay");
+ const titleElement = document.getElementById("modalTitle");
+ const messageElement = document.getElementById("modalMessage");
+ const actions = document.getElementById("modalActions");
+ const confirmButton = document.getElementById("modalConfirmBtn");
+ const cancelButton = document.getElementById("modalCancelBtn");
+ const closeButton = document.getElementById("modalCloseBtn");
+
+ titleElement.textContent = title;
+ messageElement.textContent = message;
+
+ overlay.classList.remove("hidden");
+ overlay.classList.add("flex");
+
+ if (isConfirm) {
+ actions.classList.remove("hidden");
+ closeButton.classList.add("hidden");
+
+ confirmButton.onclick = () => {
+ overlay.classList.add("hidden");
+ overlay.classList.remove("flex");
+ resolve(true);
+ };
+
+ cancelButton.onclick = () => {
+ overlay.classList.add("hidden");
+ overlay.classList.remove("flex");
+ resolve(false);
+ };
+ } else {
+ actions.classList.add("hidden");
+ closeButton.classList.remove("hidden");
+
+ closeButton.onclick = () => {
+ overlay.classList.add("hidden");
+ overlay.classList.remove("flex");
+ resolve(true);
+ };
+ }
+ });
  }
 
  async function fetchOrders() {
@@ -265,6 +366,7 @@
  pending:0,
  processing:0,
  shipped:0,
+ completed:0,
  rejected:0 };
 
  allOrders.forEach(order => {
@@ -280,6 +382,7 @@
  document.getElementById("count-pending").textContent = counts.pending;
  document.getElementById("count-processing").textContent = counts.processing;
  document.getElementById("count-shipped").textContent = counts.shipped;
+ document.getElementById("count-completed").textContent = counts.completed;
  document.getElementById("count-rejected").textContent = counts.rejected;
  }
 
@@ -431,8 +534,12 @@
  <option value="${STATUS.SHIPPED}" ${key === "shipped" ? "selected" : ""}>
  ارسال شده </option>
 
+ <option value="${STATUS.COMPLETED}" ${key === "completed" ? "selected" : ""}>
+ تکمیل شده </option>
+
  <option value="${STATUS.REJECTED}" ${key === "rejected" ? "selected" : ""}>
  رد شده </option>
+
  </select>
 
  </div>
@@ -502,13 +609,17 @@
  if (changingOrder) return;
 
  if (!orderId || !newStatus) {
- alert("شناسه سفارش یا وضعیت جدید خالی است.");
+ await openModal(
+ "اطلاعات ناقص",
+ "شناسه سفارش یا وضعیت جدید خالی است.",
+ false );
  return;
  }
 
- const confirmed = confirm(
- `وضعیت سفارش ${orderId} به «${newStatus}» تغییر کند؟`
- );
+ const confirmed = await openModal(
+ "تغییر وضعیت سفارش",
+ `وضعیت سفارش ${orderId} به «${newStatus}» تغییر کند؟`,
+ true );
 
  if (!confirmed) {
  await fetchOrders();
@@ -546,7 +657,11 @@
  await fetchOrders();
 
  } catch (error) {
- alert("خطا در تغییر وضعیت:\n" + error.message);
+ await openModal(
+ "خطا در تغییر وضعیت",
+ error.message || "خطایی هنگام تغییر وضعیت سفارش رخ داد.",
+ false );
+
  await fetchOrders();
 
  } finally {
@@ -580,11 +695,11 @@
 
  if (!select) return;
 
- const oldValue = select.value;
+ const newStatus = select.value;
 
  changeStatus(
  select.dataset.orderId,
- oldValue,
+ newStatus,
  select );
  });
 
