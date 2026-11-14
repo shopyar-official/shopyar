@@ -45,7 +45,7 @@
 
         <!-- جستجو -->
         <div class="mb-6">
-            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری، شماره موبایل یا کد سفارش..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
+            <input type="text" id="searchInput" oninput="renderOrders()" placeholder="🔍 جستجوی سفارش بر اساس نام مشتری، شماره موبایل، کد سفارش یا شماره فیش..." class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm">
         </div>
 
         <!-- کارت‌های فیلتر وضعیت -->
@@ -168,11 +168,14 @@
         function updateCounts() {
             const counts = {
                 'همه': allOrders.length,
-                'منتظر تأیید': allOrders.filter(o => (o.status || '') === 'منتظر تأیید').length,
-                'در حال بررسی': allOrders.filter(o => (o.status || 'در حال بررسی') === 'در حال بررسی').length,
-                'در حال آماده‌سازی': allOrders.filter(o => o.status === 'در حال آماده‌سازی').length,
-                'ارسال شده': allOrders.filter(o => o.status === 'ارسال شده').length,
-                'تکمیل شده': allOrders.filter(o => o.status === 'تکمیل شده').length
+                'منتظر تأیید': allOrders.filter(o => String(o.status || '').trim() === 'منتظر تأیید').length,
+                'در حال بررسی': allOrders.filter(o => {
+                    const st = String(o.status || '').trim();
+                    return st === 'در حال بررسی' || st === '';
+                }).length,
+                'در حال آماده‌سازی': allOrders.filter(o => String(o.status || '').trim() === 'در حال آماده‌سازی').length,
+                'ارسال شده': allOrders.filter(o => String(o.status || '').trim() === 'ارسال شده').length,
+                'تکمیل شده': allOrders.filter(o => String(o.status || '').trim() === 'تکمیل شده').length
             };
 
             document.getElementById('count-all').textContent = counts['همه'];
@@ -197,6 +200,7 @@
 
             for (const [key, id] of Object.entries(cards)) {
                 const el = document.getElementById(id);
+                if (!el) continue;
                 if (key === status) {
                     el.className = 'cursor-pointer bg-white border-2 border-orange-500 rounded-2xl p-4 shadow-sm transition hover:shadow-md text-center';
                 } else {
@@ -209,12 +213,19 @@
 
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const searchInput = document.getElementById('searchInput');
+            const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
             let filtered = allOrders;
 
             if (currentFilter !== 'همه') {
-                filtered = filtered.filter(o => (o.status || 'در حال بررسی') === currentFilter);
+                filtered = filtered.filter(o => {
+                    const st = String(o.status || 'در حال بررسی').trim();
+                    if (currentFilter === 'در حال بررسی') {
+                        return st === 'در حال بررسی' || st === '';
+                    }
+                    return st === currentFilter;
+                });
             }
 
             if (searchQuery) {
@@ -238,7 +249,7 @@
             container.innerHTML = '';
 
             filtered.forEach(order => {
-                const status = order.status || 'منتظر تأیید';
+                const status = String(order.status || 'منتظر تأیید').trim();
 
                 let badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
                 if (status === 'منتظر تأیید') badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
@@ -246,7 +257,8 @@
                 if (status === 'ارسال شده') badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
                 if (status === 'تکمیل شده') badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
 
-                let cleanPhone = String(order.phone || '').trim();
+                let rawPhone = String(order.phone || '').trim();
+                let cleanPhone = rawPhone;
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '98' + cleanPhone.substring(1);
                 }
@@ -262,13 +274,13 @@
                 card.innerHTML = `
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">${order.orderId}</span>
+                            <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">${order.orderId || ''}</span>
                             <span class="text-xs px-2.5 py-1 rounded-lg border font-medium ${badgeColor}">${status}</span>
                         </div>
                         <h3 class="text-base font-bold text-slate-800 mb-1">${order.name || 'بدون نام'}</h3>
 
                         <div class="flex items-center gap-2 mb-3">
-                            <a href="tel:${order.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-lg text-center transition flex items-center justify-center gap-1">
+                            <a href="tel:${rawPhone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 px-3 rounded-lg text-center transition flex items-center justify-center gap-1">
                                 📞 تماس
                             </a>
                             <a href="https://wa.me/${cleanPhone}?text=${whatsappMsg}" target="_blank" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium py-1.5 px-3 rounded-lg text-center transition flex items-center justify-center gap-1">
@@ -277,7 +289,7 @@
                         </div>
 
                         <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5 text-slate-600 mb-3">
-                            <div><strong class="text-slate-700">تلفن:</strong> ${order.phone || ''}</div>
+                            <div><strong class="text-slate-700">تلفن:</strong> ${rawPhone}</div>
                             <div><strong class="text-slate-700">شهر:</strong> ${order.city || ''}</div>
                             <div><strong class="text-slate-700">آدرس:</strong> ${order.address || ''}</div>
                             <div><strong class="text-slate-700">خرید:</strong> ${order.product || ''}</div>
@@ -309,15 +321,19 @@
         function approveOrder(orderId) {
             pendingApproveOrderId = orderId;
             const modal = document.getElementById('confirmModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function closeConfirmModal() {
             pendingApproveOrderId = null;
             const modal = document.getElementById('confirmModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         function confirmApproveOrder() {
@@ -325,8 +341,10 @@
 
             const orderId = pendingApproveOrderId;
             const button = document.getElementById('confirmModalBtn');
-            button.disabled = true;
-            button.textContent = 'در حال ثبت...';
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'در حال ثبت...';
+            }
 
             const formData = new URLSearchParams({
                 action: 'approve_order',
@@ -355,8 +373,10 @@
                 alert('خطا در اتصال به سرور');
             })
             .finally(() => {
-                button.disabled = false;
-                button.textContent = 'تأیید و انتقال';
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'تأیید و انتقال';
+                }
             });
         }
 
