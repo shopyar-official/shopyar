@@ -44,8 +44,8 @@
       <span id="count-pending-pay" class="text-2xl font-bold text-yellow-600 block mt-1">0</span>
     </button>
 
-    <button onclick="setFilter('منتظر تایید')" id="filter-pending" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
-      <span class="text-xs text-amber-600 font-medium block">منتظر تایید</span>
+    <button onclick="setFilter('منتظر تأیید')" id="filter-pending" class="filter-btn bg-white border border-slate-200 p-4 rounded-xl text-right transition hover:border-slate-300">
+      <span class="text-xs text-amber-600 font-medium block">منتظر تأیید</span>
       <span id="count-pending" class="text-2xl font-bold text-amber-600 block mt-1">0</span>
     </button>
 
@@ -78,6 +78,40 @@
   let allOrders = [];
   let currentFilter = 'all';
 
+  // نرمال‌سازی وضعیت برای هماهنگی با هر دو نوع تایپ «تایید» یا «تأیید»
+  function normStatus(s) {
+    return (s || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/أ|إ|آ|ا/g, 'ا').replace(/ئ|ی/g, 'ی').trim();
+  }
+
+  function getOrderStatus(o) {
+    return (o.status || o.Status || 'منتظر تأیید').trim();
+  }
+
+  function isPendingPay(st) {
+    const s = normStatus(st);
+    return s.includes('انتظار') && s.includes('پرداخت');
+  }
+
+  function isPending(st) {
+    const s = normStatus(st);
+    return (s.includes('منتظر') || s.includes('تایید')) && !s.includes('پرداخت');
+  }
+
+  function isProcessing(st) {
+    const s = normStatus(st);
+    return s.includes('پردازش');
+  }
+
+  function isShipped(st) {
+    const s = normStatus(st);
+    return s.includes('ارسال');
+  }
+
+  function isRejected(st) {
+    const s = normStatus(st);
+    return s.includes('رد');
+  }
+
   async function fetchOrders() {
     const container = document.getElementById('orders-container');
     container.innerHTML = `
@@ -90,11 +124,12 @@
       const res = await fetch(`${API_URL}?action=get_orders`);
       const data = await res.json();
       
-      // بررسی هر دو حالت: خروجی مستقیم آرایه یا در آبجکت data
       if (Array.isArray(data)) {
         allOrders = data;
       } else if (data && Array.isArray(data.data)) {
         allOrders = data.data;
+      } else if (data && Array.isArray(data.orders)) {
+        allOrders = data.orders;
       } else {
         allOrders = [];
       }
@@ -121,12 +156,12 @@
     };
 
     allOrders.forEach(o => {
-      const st = (o.status || '').trim();
-      if (st.includes('انتظار پرداخت')) counts.pendingPay++;
-      else if (st.includes('منتظر') || st.includes('تایید')) counts.pending++;
-      else if (st.includes('پردازش')) counts.processing++;
-      else if (st.includes('ارسال')) counts.shipped++;
-      else if (st.includes('رد')) counts.rejected++;
+      const st = getOrderStatus(o);
+      if (isPendingPay(st)) counts.pendingPay++;
+      else if (isPending(st)) counts.pending++;
+      else if (isProcessing(st)) counts.processing++;
+      else if (isShipped(st)) counts.shipped++;
+      else if (isRejected(st)) counts.rejected++;
     });
 
     document.getElementById('count-all').textContent = counts.all;
@@ -140,7 +175,6 @@
   function setFilter(filter) {
     currentFilter = filter;
     
-    // بروزرسانی استایل دکمه‌ها
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.classList.remove('border-amber-500', 'border-2');
       btn.classList.add('border-slate-200', 'border');
@@ -149,7 +183,7 @@
     const activeMap = {
       'all': 'filter-all',
       'در انتظار پرداخت': 'filter-pending-pay',
-      'منتظر تایید': 'filter-pending',
+      'منتظر تأیید': 'filter-pending',
       'در حال پردازش': 'filter-processing',
       'ارسال شده': 'filter-shipped',
       'رد شده': 'filter-rejected'
@@ -170,12 +204,12 @@
     let filtered = allOrders;
     if (currentFilter !== 'all') {
       filtered = allOrders.filter(o => {
-        const st = (o.status || '').trim();
-        if (currentFilter === 'در انتظار پرداخت') return st.includes('انتظار پرداخت');
-        if (currentFilter === 'منتظر تایید') return (st.includes('منتظر') || st.includes('تایید')) && !st.includes('پرداخت');
-        if (currentFilter === 'در حال پردازش') return st.includes('پردازش');
-        if (currentFilter === 'ارسال شده') return st.includes('ارسال');
-        if (currentFilter === 'رد شده') return st.includes('رد');
+        const st = getOrderStatus(o);
+        if (currentFilter === 'در انتظار پرداخت') return isPendingPay(st);
+        if (currentFilter === 'منتظر تأیید') return isPending(st);
+        if (currentFilter === 'در حال پردازش') return isProcessing(st);
+        if (currentFilter === 'ارسال شده') return isShipped(st);
+        if (currentFilter === 'رد شده') return isRejected(st);
         return st === currentFilter;
       });
     }
@@ -190,19 +224,21 @@
     }
 
     container.innerHTML = filtered.map(order => {
-      const orderId = order.orderID || order.id || '---';
+      // پشتیبانی کامل از نام کلیدهای سرور شما
+      const orderId = order.orderId || order.orderID || order.id || '---';
       const name = order.name || 'بدون نام';
       const phone = order.phone || 'بدون شماره';
       const city = order.city || '---';
       const address = order.address || '---';
       const product = order.product || '---';
-      const count = order.count || 1;
-      const total = order.total ? Number(order.total).toLocaleString('fa-IR') + ' تومان' : '---';
+      const count = order.quantity || order.count || 1;
+      const totalNum = order.totalAmount || order.total;
+      const total = totalNum ? Number(totalNum).toLocaleString('fa-IR') + ' تومان' : '---';
       const date = order.date || '---';
-      const receipt = order.receipt || '';
-      const tracking = order.tracking || '---';
+      const receipt = order.receiptUrl || order.receipt || '';
+      const tracking = order.paymentCode || order.tracking || '---';
       const shippingMethod = order.shippingMethod || 'پست پیشتاز';
-      const status = (order.status || 'منتظر تایید').trim();
+      const status = getOrderStatus(order);
 
       return `
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
@@ -214,11 +250,11 @@
             
             <div class="flex items-center gap-2">
               <select onchange="changeStatus('${orderId}', this.value)" class="text-xs font-medium border border-slate-300 rounded-lg p-1.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                <option value="در انتظار پرداخت" ${status.includes('انتظار پرداخت') ? 'selected' : ''}>در انتظار پرداخت</option>
-                <option value="منتظر تایید" ${(status.includes('منتظر') || status.includes('تایید')) && !status.includes('پرداخت') ? 'selected' : ''}>منتظر تایید</option>
-                <option value="در حال پردازش" ${status.includes('پردازش') ? 'selected' : ''}>در حال پردازش</option>
-                <option value="ارسال شده" ${status.includes('ارسال') ? 'selected' : ''}>ارسال شده</option>
-                <option value="رد شده" ${status.includes('رد') ? 'selected' : ''}>رد شده</option>
+                <option value="در انتظار پرداخت" ${isPendingPay(status) ? 'selected' : ''}>در انتظار پرداخت</option>
+                <option value="منتظر تأیید" ${isPending(status) ? 'selected' : ''}>منتظر تأیید</option>
+                <option value="در حال پردازش" ${isProcessing(status) ? 'selected' : ''}>در حال پردازش</option>
+                <option value="ارسال شده" ${isShipped(status) ? 'selected' : ''}>ارسال شده</option>
+                <option value="رد شده" ${isRejected(status) ? 'selected' : ''}>رد شده</option>
               </select>
             </div>
           </div>
@@ -269,13 +305,14 @@
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
           action: 'update_status',
+          orderId: orderId,
           orderID: orderId,
           status: newStatus
         })
       });
       const result = await res.json();
       if (result.status === 'success') {
-        const ord = allOrders.find(o => (o.orderID || o.id) == orderId);
+        const ord = allOrders.find(o => (o.orderId || o.orderID || o.id) == orderId);
         if (ord) ord.status = newStatus;
         updateCounts();
         renderOrders();
