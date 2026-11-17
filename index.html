@@ -99,7 +99,6 @@
       <textarea id="address" required rows="2" class="inp resize-none" placeholder="خیابان، کوچه، پلاک، واحد و کد پستی"></textarea>
     </div>
 
-    <!-- ردیف نخست، همان انتخاب محصول و تعداد قبلی است. -->
     <div id="productRows" class="space-y-3">
       <div class="product-row border border-slate-200 rounded-2xl p-3.5 space-y-2.5">
         <div>
@@ -123,10 +122,7 @@
     <div>
       <label class="lbl">نوع ارسال</label>
       <select id="shippingSelect" required class="inp">
-        <option value="">انتخاب نوع ارسال...</option>
-        <option value="50000">پست پیشتاز (۵۰,۰۰۰ تومان)</option>
-        <option value="80000">تیپاکس (۸۰,۰۰۰ تومان)</option>
-        <option value="30000">پیک موتوری (۳۰,۰۰۰ تومان)</option>
+        <option value="">ابتدا شهر را وارد کنید...</option>
       </select>
     </div>
 
@@ -204,12 +200,15 @@
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
 let productsData = [];
+let shippingData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
+  loadShipping();
 
   document.getElementById("orderForm").addEventListener("submit", submitOrder);
   document.getElementById("shippingSelect").addEventListener("change", updateTotal);
+  document.getElementById("city").addEventListener("input", updateShippingOptions);
   document.getElementById("addProductBtn").addEventListener("click", addProductRow);
   document.getElementById("trackBtn").addEventListener("click", trackOrder);
 
@@ -223,6 +222,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+function normalizeShippingText(value) {
+  return String(value == null ? "" : value)
+    .replace(/[يى]/g, "ی")
+    .replace(/[ك]/g, "ک")
+    .replace(/[ۀة]/g, "ه")
+    .replace(/[‌]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
 
 function fillProductSelect(select) {
   select.replaceChildren(new Option("انتخاب محصول...", ""));
@@ -261,6 +271,75 @@ async function loadProducts() {
     select.replaceChildren(new Option("خطا در دریافت محصولات", ""));
     showMessage("دریافت محصولات انجام نشد؛ صفحه را دوباره بارگذاری کنید.", false);
   }
+}
+
+async function loadShipping() {
+  const shippingSelect = document.getElementById("shippingSelect");
+
+  try {
+    const response = await fetch(SCRIPT_URL + "?action=get_shipping");
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error(data.message || "پاسخ روش‌های ارسال نامعتبر است.");
+    }
+
+    shippingData = data.filter(item =>
+      item &&
+      String(item.city || "").trim() &&
+      String(item.method || "").trim() &&
+      Number.isFinite(Number(item.cost)) &&
+      Number(item.cost) >= 0
+    );
+
+    updateShippingOptions();
+  } catch (err) {
+    console.error(err);
+    shippingData = [];
+    shippingSelect.replaceChildren(
+      new Option("خطا در دریافت روش‌های ارسال", "")
+    );
+    updateTotal();
+    showMessage("دریافت روش‌های ارسال انجام نشد؛ صفحه را دوباره بارگذاری کنید.", false);
+  }
+}
+
+function updateShippingOptions() {
+  const cityInput = document.getElementById("city");
+  const shippingSelect = document.getElementById("shippingSelect");
+  const city = normalizeShippingText(cityInput.value);
+
+  shippingSelect.replaceChildren();
+
+  if (!city) {
+    shippingSelect.add(new Option("ابتدا شهر را وارد کنید...", ""));
+    updateTotal();
+    return;
+  }
+
+  const cityOptions = shippingData.filter(item =>
+    normalizeShippingText(item.city) === city
+  );
+
+  if (!cityOptions.length) {
+    shippingSelect.add(new Option("روشی برای این شهر یافت نشد", ""));
+    updateTotal();
+    return;
+  }
+
+  shippingSelect.add(new Option("انتخاب نوع ارسال...", ""));
+
+  cityOptions.forEach(item => {
+    const cost = Number(item.cost);
+    const option = new Option(
+      String(item.method) + " (" + cost.toLocaleString("fa-IR") + " تومان)",
+      String(item.method)
+    );
+    option.dataset.cost = String(cost);
+    shippingSelect.add(option);
+  });
+
+  updateTotal();
 }
 
 function addProductRow() {
@@ -307,6 +386,17 @@ function getSelectedItems() {
   });
 }
 
+function getSelectedShippingCost() {
+  const shippingSelect = document.getElementById("shippingSelect");
+  const selectedOption = shippingSelect.selectedOptions[0];
+
+  if (!selectedOption || !selectedOption.value) {
+    return 0;
+  }
+
+  return Number(selectedOption.dataset.cost) || 0;
+}
+
 function updateTotal() {
   const productsTotal = getSelectedItems().reduce((sum, item) => {
     if (!item.name || !Number.isSafeInteger(item.quantity) || item.quantity < 1 ||
@@ -316,7 +406,7 @@ function updateTotal() {
     return sum + item.price * item.quantity;
   }, 0);
 
-  const shippingCost = Number(document.getElementById("shippingSelect").value) || 0;
+  const shippingCost = getSelectedShippingCost();
 
   document.getElementById("productPriceText").textContent =
     productsTotal.toLocaleString("fa-IR") + " تومان";
@@ -335,10 +425,8 @@ async function submitOrder(event) {
 
   const items = getSelectedItems();
   const shippingSelect = document.getElementById("shippingSelect");
-  const shippingCost = Number(shippingSelect.value);
-  const shippingMethod = shippingSelect.selectedOptions[0]
-    ? shippingSelect.selectedOptions[0].text.split(" (")[0]
-    : "";
+  const shippingMethod = shippingSelect.value.trim();
+  const shippingCost = getSelectedShippingCost();
 
   if (!items.length || items.some(item =>
         !item.name ||
@@ -378,7 +466,6 @@ async function submitOrder(event) {
       city: document.getElementById("city").value.trim(),
       address: document.getElementById("address").value.trim(),
 
-      // Code.gs جدید برای این درخواست از items استفاده می‌کند.
       items: JSON.stringify(items.map(item => ({
         index: item.index,
         name: item.name,
@@ -408,6 +495,7 @@ async function submitOrder(event) {
       .forEach(row => row.remove());
 
     document.getElementById("quantity").value = "1";
+    updateShippingOptions();
     updateTotal();
   } catch (err) {
     console.error(err);
