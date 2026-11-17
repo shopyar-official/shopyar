@@ -49,6 +49,7 @@
       </div>
       <div class="flex items-center gap-3">
         <button id="refreshBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium">بروزرسانی لیست</button>
+        <button id="changePasswordBtn" type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-sm font-medium">تغییر رمز</button>
         <button onclick="logout()" type="button" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 py-2.5 rounded-xl text-sm font-medium">خروج</button>
       </div>
     </div>
@@ -90,17 +91,69 @@
   </section>
 </main>
 
+<!-- پنجره تغییر مشخصات ورود -->
+<div id="credentialsModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold text-slate-800">تغییر مشخصات ورود</h2>
+      <button id="closeCredentialsBtn" type="button" class="text-slate-500 hover:text-slate-800 text-xl" aria-label="بستن">×</button>
+    </div>
+
+    <form id="credentialsForm" class="space-y-4">
+      <div>
+        <label for="currentPassword" class="block text-xs font-medium text-slate-600 mb-1">رمز عبور فعلی</label>
+        <input id="currentPassword" type="password" required autocomplete="current-password"
+          class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+      </div>
+      <div>
+        <label for="newUsername" class="block text-xs font-medium text-slate-600 mb-1">نام کاربری (فعلی یا جدید)</label>
+        <input id="newUsername" type="text" required minlength="3" maxlength="50" autocomplete="username"
+          class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+      </div>
+      <div>
+        <label for="newPassword" class="block text-xs font-medium text-slate-600 mb-1">رمز عبور جدید</label>
+        <input id="newPassword" type="password" required minlength="6" maxlength="100" autocomplete="new-password"
+          class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+      </div>
+      <div>
+        <label for="repeatPassword" class="block text-xs font-medium text-slate-600 mb-1">تکرار رمز عبور جدید</label>
+        <input id="repeatPassword" type="password" required minlength="6" maxlength="100" autocomplete="new-password"
+          class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+      </div>
+
+      <p id="credentialsMessage" class="text-sm text-center min-h-[24px]" role="status"></p>
+
+      <div class="flex gap-3">
+        <button id="saveCredentialsBtn" type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 text-sm font-bold">
+          ذخیره تغییرات
+        </button>
+        <button id="cancelCredentialsBtn" type="button" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl py-3 text-sm font-bold">
+          انصراف
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
   let allOrders = [];
   let currentFilter = "all";
   const STATUS = { PENDING_PAY: "در انتظار پرداخت", PENDING: "منتظر تأیید", PROCESSING: "در حال پردازش", SHIPPED: "ارسال شده", COMPLETED: "تکمیل شده", REJECTED: "رد شده" };
 
-  function escapeHtml(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-  function normalize(value) { return String(value ?? "").replace(/ي/g, "ی").replace(/ك/g, "ک").trim(); }
-  function getOrderId(order) { return String(order.orderId ?? order.id ?? "").trim(); }
-  function getRawStatus(order) { return String(order.status ?? "").trim(); }
-  
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  function normalize(value) {
+    return String(value ?? "").replace(/ي/g, "ی").replace(/ك/g, "ک").trim();
+  }
+  function getOrderId(order) {
+    return String(order.orderId ?? order.id ?? "").trim();
+  }
+  function getRawStatus(order) {
+    return String(order.status ?? "").trim();
+  }
+
   function statusKey(status) {
     const s = normalize(status);
     if (s.includes("پرداخت") && s.includes("انتظار")) return "pending-pay";
@@ -124,7 +177,7 @@
   async function handleLogin(event) {
     event.preventDefault();
     const user = document.getElementById("loginUser").value.trim();
-    const pass = document.getElementById("loginPass").value;
+    const loginPassword = document.getElementById("loginPass").value;
     const errEl = document.getElementById("loginError");
     const btn = document.getElementById("loginBtn");
 
@@ -134,13 +187,16 @@
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "login", username: user, password: pass })
+        body: JSON.stringify({ action: "login", username: user, password: loginPassword })
       });
       const data = await res.json();
-      if (data.status === "success") {
-        localStorage.setItem("shopyar_admin_token", data.token);
+
+      if (data.status === "success" && data["GAPGPTMASKTOKENwn994jckt1X0X"]) {
+        localStorage.setItem("shopyar_admin_token", data["GAPGPTMASKTOKENwn994jckt1X1X"]);
+        localStorage.setItem("shopyar_admin_username", user);
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("adminMain").classList.remove("hidden");
+        errEl.textContent = "";
         fetchOrders();
       } else {
         errEl.textContent = data.message || "نام کاربری یا رمز عبور اشتباه است.";
@@ -158,16 +214,17 @@
   }
 
   async function fetchOrders() {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (!token) { logout(); return; }
+    const adminToken = localStorage.getItem("shopyar_admin_token");
+    if (!adminToken) { logout(); return; }
 
     const container = document.getElementById("orders-container");
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "get_orders", token: token })
+        body: JSON.stringify({ action: "get_orders", ["GAPGPTMASKTOKENwn994jckt1X2X"]: adminToken })
       });
       const data = await res.json();
+
       if (data.status === "success") {
         allOrders = data.orders || [];
         updateCounts();
@@ -198,9 +255,15 @@
 
   function setFilter(filter) {
     currentFilter = filter;
-    document.querySelectorAll(".filter-btn").forEach(b => { b.classList.remove("border-2", "border-amber-500"); b.classList.add("border", "border-slate-200"); });
+    document.querySelectorAll(".filter-btn").forEach(b => {
+      b.classList.remove("border-2", "border-amber-500");
+      b.classList.add("border", "border-slate-200");
+    });
     const active = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
-    if (active) { active.classList.remove("border", "border-slate-200"); active.classList.add("border-2", "border-amber-500"); }
+    if (active) {
+      active.classList.remove("border", "border-slate-200");
+      active.classList.add("border-2", "border-amber-500");
+    }
     renderOrders();
   }
 
@@ -208,7 +271,10 @@
     const container = document.getElementById("orders-container");
     let orders = allOrders;
     if (currentFilter !== "all") orders = allOrders.filter(o => statusKey(getRawStatus(o)) === currentFilter);
-    if (orders.length === 0) { container.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500">سفارشی در این وضعیت وجود ندارد.</div>`; return; }
+    if (orders.length === 0) {
+      container.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500">سفارشی در این وضعیت وجود ندارد.</div>`;
+      return;
+    }
 
     container.innerHTML = orders.map(order => {
       const orderId = getOrderId(order);
@@ -244,12 +310,18 @@
   }
 
   async function updateStatus(orderId, newStatus) {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (!token) { logout(); return; }
+    const adminToken = localStorage.getItem("shopyar_admin_token");
+    if (!adminToken) { logout(); return; }
+
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "update_status", token: token, orderId: orderId, status: newStatus })
+        body: JSON.stringify({
+          action: "update_status",
+          ["GAPGPTMASKTOKENwn994jckt1X3X"]: adminToken,
+          orderId: orderId,
+          status: newStatus
+        })
       });
       const data = await res.json();
       if (data.status !== "success") throw new Error(data.message || "خطا در تغییر وضعیت");
@@ -259,6 +331,87 @@
       fetchOrders();
     }
   }
+
+  const credentialsModal = document.getElementById("credentialsModal");
+  const credentialsForm = document.getElementById("credentialsForm");
+  const credentialsMessage = document.getElementById("credentialsMessage");
+  const saveCredentialsBtn = document.getElementById("saveCredentialsBtn");
+
+  function openCredentialsModal() {
+    credentialsForm.reset();
+    document.getElementById("newUsername").value =
+      localStorage.getItem("shopyar_admin_username") || "";
+    credentialsMessage.textContent = "";
+    credentialsMessage.className = "text-sm text-center min-h-[24px]";
+    credentialsModal.classList.remove("hidden");
+    credentialsModal.classList.add("flex");
+    document.getElementById("currentPassword").focus();
+  }
+
+  function closeCredentialsModal() {
+    credentialsModal.classList.add("hidden");
+    credentialsModal.classList.remove("flex");
+    credentialsForm.reset();
+    credentialsMessage.textContent = "";
+  }
+
+  document.getElementById("changePasswordBtn").addEventListener("click", openCredentialsModal);
+  document.getElementById("closeCredentialsBtn").addEventListener("click", closeCredentialsModal);
+  document.getElementById("cancelCredentialsBtn").addEventListener("click", closeCredentialsModal);
+
+  credentialsForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const adminToken = localStorage.getItem("shopyar_admin_token");
+    const currentPassword = document.getElementById("currentPassword").value;
+    const newUsername = document.getElementById("newUsername").value.trim();
+    const newPassword = document.getElementById("newPassword").value;
+    const repeatPassword = document.getElementById("repeatPassword").value;
+
+    if (!adminToken) {
+      logout();
+      return;
+    }
+
+    if (newPassword !== repeatPassword) {
+      credentialsMessage.textContent = "رمز عبور جدید و تکرار آن یکسان نیستند.";
+      credentialsMessage.className = "text-sm text-center min-h-[24px] text-rose-600";
+      return;
+    }
+
+    credentialsMessage.textContent = "در حال ذخیره...";
+    credentialsMessage.className = "text-sm text-center min-h-[24px] text-amber-600";
+    saveCredentialsBtn.disabled = true;
+    saveCredentialsBtn.classList.add("loading");
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "change_credentials",
+          ["GAPGPTMASKTOKENwn994jckt1X4X"]: adminToken,
+          currentPassword: currentPassword,
+          newUsername: newUsername,
+          newPassword: newPassword
+        })
+      });
+      const data = await res.json();
+      if (data.status !== "success") {
+        throw new Error(data.message || "تغییر مشخصات انجام نشد.");
+      }
+
+      localStorage.setItem("shopyar_admin_username", newUsername);
+      localStorage.removeItem("shopyar_admin_token");
+      alert("مشخصات ورود تغییر کرد. لطفاً با اطلاعات جدید وارد شوید.");
+      location.reload();
+    } catch (err) {
+      credentialsMessage.textContent = err.message || "خطا در تغییر مشخصات.";
+      credentialsMessage.className = "text-sm text-center min-h-[24px] text-rose-600";
+    } finally {
+      saveCredentialsBtn.disabled = false;
+      saveCredentialsBtn.classList.remove("loading");
+    }
+  });
 
   document.addEventListener("click", e => {
     const btn = e.target.closest(".filter-btn");
@@ -272,10 +425,10 @@
 
   document.getElementById("refreshBtn").addEventListener("click", fetchOrders);
 
-  // بررسی توکن ذخیره‌شده هنگام بارگذاری صفحه
+  // بررسی نشست ذخیره‌شده هنگام باز شدن صفحه
   window.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (token) {
+    const adminToken = localStorage.getItem("shopyar_admin_token");
+    if (adminToken) {
       document.getElementById("loginOverlay").classList.add("hidden");
       document.getElementById("adminMain").classList.remove("hidden");
       fetchOrders();
