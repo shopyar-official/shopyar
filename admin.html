@@ -65,11 +65,11 @@
       <strong id="count-pending-pay" class="block text-2xl text-yellow-600 mt-1">0</strong>
     </button>
     <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-amber-600">منتظر تأیید</span>
+      <span class="block text-xs text-amber-600">ثبت شده / جدید</span>
       <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
     </button>
     <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-blue-600">در حال پردازش</span>
+      <span class="block text-xs text-blue-600">در حال آماده‌سازی</span>
       <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
     </button>
     <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
@@ -77,11 +77,11 @@
       <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
     </button>
     <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-indigo-600">تکمیل شده</span>
+      <span class="block text-xs text-indigo-600">تحویل شده</span>
       <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
     </button>
     <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-rose-600">رد شده</span>
+      <span class="block text-xs text-rose-600">لغو شده</span>
       <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
     </button>
   </section>
@@ -139,7 +139,6 @@
   const API_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
   let allOrders = [];
   let currentFilter = "all";
-  const STATUS = { PENDING_PAY: "در انتظار پرداخت", PENDING: "منتظر تأیید", PROCESSING: "در حال پردازش", SHIPPED: "ارسال شده", COMPLETED: "تکمیل شده", REJECTED: "رد شده" };
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
@@ -157,11 +156,11 @@
   function statusKey(status) {
     const s = normalize(status);
     if (s.includes("پرداخت") && s.includes("انتظار")) return "pending-pay";
-    if (s.includes("پردازش")) return "processing";
+    if (s.includes("آماده") || s.includes("پردازش")) return "processing";
     if (s.includes("ارسال")) return "shipped";
-    if (s.includes("تکمیل")) return "completed";
-    if (s.includes("رد")) return "rejected";
-    return "pending";
+    if (s.includes("تحویل") || s.includes("تکمیل")) return "completed";
+    if (s.includes("لغو") || s.includes("رد")) return "rejected";
+    return "pending"; // ثبت شده
   }
 
   function getStatusClass(key) {
@@ -177,7 +176,7 @@
   async function handleLogin(event) {
     event.preventDefault();
     const user = document.getElementById("loginUser").value.trim();
-    const loginPassword = document.getElementById("loginPass").value;
+    const pass = document.getElementById("loginPass").value;
     const errEl = document.getElementById("loginError");
     const btn = document.getElementById("loginBtn");
 
@@ -187,12 +186,12 @@
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "login", username: user, password: loginPassword })
+        body: JSON.stringify({ action: "login", username: user, password: pass })
       });
       const data = await res.json();
 
-      if (data.status === "success" && data["GAPGPTMASKTOKENwn994jckt1X0X"]) {
-        localStorage.setItem("shopyar_admin_token", data["GAPGPTMASKTOKENwn994jckt1X1X"]);
+      if (data.status === "success" && data.token) {
+        localStorage.setItem("shopyar_admin_token", data.token);
         localStorage.setItem("shopyar_admin_username", user);
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("adminMain").classList.remove("hidden");
@@ -221,7 +220,7 @@
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "get_orders", ["GAPGPTMASKTOKENwn994jckt1X2X"]: adminToken })
+        body: JSON.stringify({ action: "get_orders", token: adminToken })
       });
       const data = await res.json();
 
@@ -318,7 +317,7 @@
         method: "POST",
         body: JSON.stringify({
           action: "update_status",
-          ["GAPGPTMASKTOKENwn994jckt1X3X"]: adminToken,
+          token: adminToken,
           orderId: orderId,
           status: newStatus
         })
@@ -389,7 +388,7 @@
         method: "POST",
         body: JSON.stringify({
           action: "change_credentials",
-          ["GAPGPTMASKTOKENwn994jckt1X4X"]: adminToken,
+          token: adminToken,
           currentPassword: currentPassword,
           newUsername: newUsername,
           newPassword: newPassword
