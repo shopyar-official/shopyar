@@ -71,42 +71,63 @@
     </div>
   </header>
 
-  <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-    <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
-      <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
-      <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
-    </button>
+ <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+  <button data-filter="all" class="filter-btn bg-white border-2 border-amber-500 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-slate-500">
+      <span class="text-lg">📦</span>
+      همه سفارش‌ها
+    </span>
+    <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
+  </button>
 
-    <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-amber-600">ثبت شده / جدید</span>
-      <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
-    </button>
+  <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-amber-600">
+      <span class="text-lg">📝</span>
+      ثبت شده / جدید
+    </span>
+    <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
+  </button>
 
-    <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-blue-600">در حال پردازش</span>
-      <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
-    </button>
+  <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-blue-600">
+      <span class="text-lg">⚙️</span>
+      در حال پردازش
+    </span>
+    <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
+  </button>
 
-    <button data-filter="preparing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-cyan-600">در حال آماده‌سازی</span>
-      <strong id="count-preparing" class="block text-2xl text-cyan-600 mt-1">0</strong>
-    </button>
+  <button data-filter="preparing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-cyan-600">
+      <span class="text-lg">📦</span>
+      در حال آماده‌سازی
+    </span>
+    <strong id="count-preparing" class="block text-2xl text-cyan-600 mt-1">0</strong>
+  </button>
 
-    <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-emerald-600">ارسال شده</span>
-      <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
-    </button>
+  <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-emerald-600">
+      <span class="text-lg">🚚</span>
+      ارسال شده
+    </span>
+    <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
+  </button>
 
-    <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
-      <span class="block text-xs text-indigo-600">تحویل شده</span>
-      <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
-    </button>
+  <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
+    <span class="flex items-center gap-2 text-xs text-indigo-600">
+      <span class="text-lg">✅</span>
+      تحویل شده
+    </span>
+    <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
+  </button>
 
-    <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right sm:col-span-1 lg:hidden">
-      <span class="block text-xs text-rose-600">لغو شده</span>
-      <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
-    </button>
-  </section>
+  <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right sm:col-span-1 lg:hidden">
+    <span class="flex items-center gap-2 text-xs text-rose-600">
+      <span class="text-lg">❌</span>
+      لغو شده
+    </span>
+    <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
+  </button>
+</section>
 
   <section id="orders-container" class="space-y-4">
     <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
