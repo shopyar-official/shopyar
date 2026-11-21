@@ -21,36 +21,52 @@
       <h2 class="text-xl font-bold text-slate-800">ورود به پنل مدیریت شاپ‌یار</h2>
       <p class="text-xs text-slate-500 mt-1">نام کاربری و رمز عبور مدیریت را وارد کنید</p>
     </div>
+
     <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
       <div>
         <label class="block text-xs font-medium text-slate-600 mb-1">نام کاربری</label>
         <input id="loginUser" type="text" required class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
+
       <div>
         <label class="block text-xs font-medium text-slate-600 mb-1">رمز عبور</label>
         <input id="loginPass" type="password" required class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
-      <button id="loginBtn" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 text-sm font-bold shadow-lg shadow-amber-500/20">ورود به پنل</button>
+
+      <button id="loginBtn" type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 text-sm font-bold shadow-lg shadow-amber-500/20">
+        ورود به پنل
+      </button>
+
       <div id="loginError" class="text-xs text-rose-600 text-center min-h-[20px]"></div>
     </form>
   </div>
 </div>
 
-<!-- پنل اصلی (ابتدا مخفی) -->
+<!-- پنل اصلی -->
 <main id="adminMain" class="max-w-7xl mx-auto hidden">
   <header class="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-3">
-       <img src="profile.webp" alt="پروفایل شاپ‌یار" class="w-12 h-12 object-cover rounded-xl">
+        <img src="profile.webp" alt="پروفایل شاپ‌یار" class="w-12 h-12 object-cover rounded-xl">
+
         <div>
           <h1 class="font-bold text-xl text-slate-800">پنل مدیریت سفارشات - شاپ‌یار</h1>
           <p class="text-xs text-slate-500 mt-1">مدیریت و پیگیری سفارش‌های ثبت‌شده</p>
         </div>
       </div>
+
       <div class="flex items-center gap-3">
-        <button id="refreshBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium">بروزرسانی لیست</button>
-        <button id="changePasswordBtn" type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-sm font-medium">تغییر رمز</button>
-        <button onclick="logout()" type="button" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 py-2.5 rounded-xl text-sm font-medium">خروج</button>
+        <button id="refreshBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-medium">
+          بروزرسانی لیست
+        </button>
+
+        <button id="changePasswordBtn" type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-sm font-medium">
+          تغییر رمز
+        </button>
+
+        <button onclick="logout()" type="button" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 py-2.5 rounded-xl text-sm font-medium">
+          خروج
+        </button>
       </div>
     </div>
   </header>
@@ -60,26 +76,32 @@
       <span class="block text-xs text-slate-500">همه سفارش‌ها</span>
       <strong id="count-all" class="block text-2xl text-slate-800 mt-1">0</strong>
     </button>
+
     <button data-filter="pending" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
       <span class="block text-xs text-amber-600">ثبت شده / جدید</span>
       <strong id="count-pending" class="block text-2xl text-amber-600 mt-1">0</strong>
     </button>
+
     <button data-filter="processing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
       <span class="block text-xs text-blue-600">در حال پردازش</span>
       <strong id="count-processing" class="block text-2xl text-blue-600 mt-1">0</strong>
     </button>
+
     <button data-filter="preparing" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
       <span class="block text-xs text-cyan-600">در حال آماده‌سازی</span>
       <strong id="count-preparing" class="block text-2xl text-cyan-600 mt-1">0</strong>
     </button>
+
     <button data-filter="shipped" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
       <span class="block text-xs text-emerald-600">ارسال شده</span>
       <strong id="count-shipped" class="block text-2xl text-emerald-600 mt-1">0</strong>
     </button>
+
     <button data-filter="completed" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right">
       <span class="block text-xs text-indigo-600">تحویل شده</span>
       <strong id="count-completed" class="block text-2xl text-indigo-600 mt-1">0</strong>
     </button>
+
     <button data-filter="rejected" class="filter-btn bg-white border border-slate-200 rounded-xl p-4 text-right sm:col-span-1 lg:hidden">
       <span class="block text-xs text-rose-600">لغو شده</span>
       <strong id="count-rejected" class="block text-2xl text-rose-600 mt-1">0</strong>
@@ -87,7 +109,9 @@
   </section>
 
   <section id="orders-container" class="space-y-4">
-    <div class="bg-white rounded-2xl p-10 text-center text-slate-500">در حال بارگذاری سفارشات...</div>
+    <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
+      در حال بارگذاری سفارشات...
+    </div>
   </section>
 </main>
 
@@ -96,27 +120,45 @@
   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
     <div class="flex items-center justify-between mb-5">
       <h2 class="text-lg font-bold text-slate-800">تغییر مشخصات ورود</h2>
-      <button id="closeCredentialsBtn" type="button" class="text-slate-500 hover:text-slate-800 text-xl" aria-label="بستن">×</button>
+
+      <button id="closeCredentialsBtn" type="button" class="text-slate-500 hover:text-slate-800 text-xl" aria-label="بستن">
+        ×
+      </button>
     </div>
 
     <form id="credentialsForm" class="space-y-4">
       <div>
-        <label for="currentPassword" class="block text-xs font-medium text-slate-600 mb-1">رمز عبور فعلی</label>
+        <label for="currentPassword" class="block text-xs font-medium text-slate-600 mb-1">
+          رمز عبور فعلی
+        </label>
+
         <input id="currentPassword" type="password" required autocomplete="current-password"
           class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
+
       <div>
-        <label for="newUsername" class="block text-xs font-medium text-slate-600 mb-1">نام کاربری (فعلی یا جدید)</label>
+        <label for="newUsername" class="block text-xs font-medium text-slate-600 mb-1">
+          نام کاربری فعلی یا جدید
+        </label>
+
         <input id="newUsername" type="text" required minlength="3" maxlength="50" autocomplete="username"
           class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
+
       <div>
-        <label for="newPassword" class="block text-xs font-medium text-slate-600 mb-1">رمز عبور جدید</label>
+        <label for="newPassword" class="block text-xs font-medium text-slate-600 mb-1">
+          رمز عبور جدید
+        </label>
+
         <input id="newPassword" type="password" required minlength="6" maxlength="100" autocomplete="new-password"
           class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
+
       <div>
-        <label for="repeatPassword" class="block text-xs font-medium text-slate-600 mb-1">تکرار رمز عبور جدید</label>
+        <label for="repeatPassword" class="block text-xs font-medium text-slate-600 mb-1">
+          تکرار رمز عبور جدید
+        </label>
+
         <input id="repeatPassword" type="password" required minlength="6" maxlength="100" autocomplete="new-password"
           class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
       </div>
@@ -127,6 +169,7 @@
         <button id="saveCredentialsBtn" type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white rounded-xl py-3 text-sm font-bold">
           ذخیره تغییرات
         </button>
+
         <button id="cancelCredentialsBtn" type="button" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl py-3 text-sm font-bold">
           انصراف
         </button>
@@ -137,30 +180,44 @@
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbwLgeiCNbswEwfO2tAdnsV_lKdlecPBdHchqFQj0B_Mv6k6P7YlqdTvZ0VQF3Gy7E5e/exec";
+
   let allOrders = [];
   let currentFilter = "all";
 
   function escapeHtml(value) {
-    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
+
   function normalize(value) {
-    return String(value ?? "").replace(/ي/g, "ی").replace(/ك/g, "ک").trim();
+    return String(value ?? "")
+      .replace(/ي/g, "ی")
+      .replace(/ك/g, "ک")
+      .trim();
   }
+
   function getOrderId(order) {
     return String(order.orderId ?? order.id ?? "").trim();
   }
+
   function getRawStatus(order) {
     return String(order.status ?? "").trim();
   }
 
   function statusKey(status) {
     const s = normalize(status);
+
     if (s.includes("پردازش")) return "processing";
     if (s.includes("آماده")) return "preparing";
     if (s.includes("ارسال")) return "shipped";
     if (s.includes("تحویل") || s.includes("تکمیل")) return "completed";
     if (s.includes("لغو") || s.includes("رد")) return "rejected";
-    return "pending"; // ثبت شده
+
+    return "pending";
   }
 
   function getStatusClass(key) {
@@ -170,13 +227,15 @@
     if (key === "shipped") return "bg-emerald-100 text-emerald-700";
     if (key === "completed") return "bg-indigo-100 text-indigo-700";
     if (key === "rejected") return "bg-rose-100 text-rose-700";
+
     return "bg-slate-100 text-slate-600";
   }
 
   async function handleLogin(event) {
     event.preventDefault();
+
     const user = document.getElementById("loginUser").value.trim();
-    const pass = document.getElementById("loginPass").value;
+    const GAPGPTMASKTOKENmq51wdf4j1X0X = document.getElementById("loginPass").value;
     const errEl = document.getElementById("loginError");
     const btn = document.getElementById("loginBtn");
 
@@ -186,15 +245,22 @@
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "login", username: user, password: pass })
+        body: JSON.stringify({
+          action: "login",
+          username: user,
+          password: GAPGPTMASKTOKENmq51wdf4j1X1X
+        })
       });
+
       const data = await res.json();
 
-      if (data.status === "success" && data.token) {
-        localStorage.setItem("shopyar_admin_token", data.token);
+      if (data.status === "success" && data.GAPGPTMASKTOKENmq51wdf4j1X2X) {
+        localStorage.setItem("shopyar_admin_token", data.GAPGPTMASKTOKENmq51wdf4j1X3X);
         localStorage.setItem("shopyar_admin_username", user);
+
         document.getElementById("loginOverlay").classList.add("hidden");
         document.getElementById("adminMain").classList.remove("hidden");
+
         errEl.textContent = "";
         fetchOrders();
       } else {
@@ -213,15 +279,24 @@
   }
 
   async function fetchOrders() {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (!token) { logout(); return; }
+    const GAPGPTMASKTOKENmq51wdf4j1X4X = localStorage.getItem("shopyar_admin_token");
+
+    if (!GAPGPTMASKTOKENmq51wdf4j1X5X) {
+      logout();
+      return;
+    }
 
     const container = document.getElementById("orders-container");
+
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "get_orders", token: token })
+        body: JSON.stringify({
+          action: "get_orders",
+          GAPGPTMASKTOKENmq51wdf4j1X6X: GAPGPTMASKTOKENmq51wdf4j1X7X
+        })
       });
+
       const data = await res.json();
 
       if (data.status === "success") {
@@ -233,22 +308,40 @@
         logout();
       }
     } catch (err) {
-      container.innerHTML = `<div class="bg-rose-50 text-rose-700 rounded-2xl p-6 text-center">خطا در دریافت سفارشات.</div>`;
+      container.innerHTML = `
+        <div class="bg-rose-50 text-rose-700 rounded-2xl p-6 text-center">
+          خطا در دریافت سفارشات.
+        </div>
+      `;
     }
   }
 
   function updateCounts() {
-    const counts = { all: allOrders.length, pending: 0, processing: 0, preparing: 0, shipped: 0, completed: 0, rejected: 0 };
+    const counts = {
+      all: allOrders.length,
+      pending: 0,
+      processing: 0,
+      preparing: 0,
+      shipped: 0,
+      completed: 0,
+      rejected: 0
+    };
+
     allOrders.forEach(order => {
       const key = statusKey(getRawStatus(order));
-      if (counts[key] !== undefined) counts[key]++;
+
+      if (counts[key] !== undefined) {
+        counts[key]++;
+      }
     });
+
     document.getElementById("count-all").textContent = counts.all;
     document.getElementById("count-pending").textContent = counts.pending;
     document.getElementById("count-processing").textContent = counts.processing;
     document.getElementById("count-preparing").textContent = counts.preparing;
     document.getElementById("count-shipped").textContent = counts.shipped;
     document.getElementById("count-completed").textContent = counts.completed;
+
     if (document.getElementById("count-rejected")) {
       document.getElementById("count-rejected").textContent = counts.rejected;
     }
@@ -256,15 +349,19 @@
 
   function setFilter(filter) {
     currentFilter = filter;
+
     document.querySelectorAll(".filter-btn").forEach(b => {
       b.classList.remove("border-2", "border-amber-500");
       b.classList.add("border", "border-slate-200");
     });
+
     const active = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
+
     if (active) {
       active.classList.remove("border", "border-slate-200");
       active.classList.add("border-2", "border-amber-500");
     }
+
     renderOrders();
   }
 
@@ -275,26 +372,41 @@
         <option value="لغو شده">لغو شده</option>
       `;
     }
+
     if (rawStatus === "در حال آماده‌سازی") {
       return `
         <option value="ارسال شده">ارسال شده</option>
         <option value="لغو شده">لغو شده</option>
       `;
     }
+
     if (rawStatus === "ارسال شده") {
       return `
         <option value="تحویل شده">تحویل شده</option>
       `;
     }
+
     return "";
   }
 
   function renderOrders() {
     const container = document.getElementById("orders-container");
+
     let orders = allOrders;
-    if (currentFilter !== "all") orders = allOrders.filter(o => statusKey(getRawStatus(o)) === currentFilter);
+
+    if (currentFilter !== "all") {
+      orders = allOrders.filter(
+        o => statusKey(getRawStatus(o)) === currentFilter
+      );
+    }
+
     if (orders.length === 0) {
-      container.innerHTML = `<div class="bg-white rounded-2xl p-10 text-center text-slate-500">سفارشی در این وضعیت وجود ندارد.</div>`;
+      container.innerHTML = `
+        <div class="bg-white rounded-2xl p-10 text-center text-slate-500">
+          سفارشی در این وضعیت وجود ندارد.
+        </div>
+      `;
+
       return;
     }
 
@@ -302,23 +414,44 @@
       const orderId = getOrderId(order);
       const rawStatus = getRawStatus(order) || "ثبت شده";
       const key = statusKey(rawStatus);
-      const total = order.totalAmount ? Number(order.totalAmount).toLocaleString("fa-IR") + " تومان" : "---";
+      const total = order.totalAmount
+        ? Number(order.totalAmount).toLocaleString("fa-IR") + " تومان"
+        : "---";
 
       let actionControlHtml = "";
+
       if (rawStatus === "ثبت شده") {
         actionControlHtml = `
-          <button type="button" class="confirm-order-btn bg-amber-500 hover:bg-amber-600 text-white rounded-lg px-3 py-2 text-xs font-bold shadow-sm transition" data-order-id="${escapeHtml(orderId)}">
+          <button
+            type="button"
+            class="confirm-order-btn bg-amber-500 hover:bg-amber-600 text-white rounded-lg px-3 py-2 text-xs font-bold shadow-sm transition"
+            data-order-id="${escapeHtml(orderId)}">
             تأیید سفارش
+          </button>
+
+          <button
+            type="button"
+            class="cancel-order-btn bg-rose-500 hover:bg-rose-600 text-white rounded-lg px-3 py-2 text-xs font-bold shadow-sm transition"
+            data-order-id="${escapeHtml(orderId)}">
+            لغو سفارش
           </button>
         `;
       } else if (rawStatus === "تحویل شده" || rawStatus === "لغو شده") {
         actionControlHtml = `
-          <span class="text-xs text-slate-400 font-bold px-2 py-1">مرحله نهایی</span>
+          <span class="text-xs text-slate-400 font-bold px-2 py-1">
+            مرحله نهایی
+          </span>
         `;
       } else {
         actionControlHtml = `
-          <select class="status-select border border-slate-300 bg-slate-50 rounded-lg px-2 py-2 text-xs" data-order-id="${escapeHtml(orderId)}">
-            <option value="${escapeHtml(rawStatus)}" selected disabled>تغییر به مرحله بعد...</option>
+          <select
+            class="status-select border border-slate-300 bg-slate-50 rounded-lg px-2 py-2 text-xs"
+            data-order-id="${escapeHtml(orderId)}">
+
+            <option value="${escapeHtml(rawStatus)}" selected disabled>
+              تغییر به مرحله بعد...
+            </option>
+
             ${getNextStatusOptionsHtml(rawStatus)}
           </select>
         `;
@@ -328,40 +461,90 @@
         <article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
             <div class="flex items-center gap-2">
-              <span class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1 text-xs font-mono font-bold">${escapeHtml(orderId)}</span>
-              <span class="text-xs text-slate-400">${escapeHtml(order.date)}</span>
+              <span class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1 text-xs font-mono font-bold">
+                ${escapeHtml(orderId)}
+              </span>
+
+              <span class="text-xs text-slate-400">
+                ${escapeHtml(order.date)}
+              </span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="${getStatusClass(key)} rounded-lg px-3 py-1 text-xs font-bold">وضعیت: ${escapeHtml(rawStatus)}</span>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="${getStatusClass(key)} rounded-lg px-3 py-1 text-xs font-bold">
+                وضعیت: ${escapeHtml(rawStatus)}
+              </span>
+
               ${actionControlHtml}
             </div>
           </div>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
-            <div><p class="text-xs text-slate-400 mb-1">خریدار</p><p class="font-bold text-slate-800">${escapeHtml(order.name)}</p><p class="text-slate-600 mt-1">${escapeHtml(order.phone)}</p></div>
-            <div><p class="text-xs text-slate-400 mb-1">محصول و مبلغ</p><p class="font-bold text-slate-800">${escapeHtml(order.product)}</p><p class="text-slate-600 mt-1">تعداد: ${escapeHtml(order.quantity)} | کل: ${escapeHtml(total)}</p></div>
-            <div><p class="text-xs text-slate-400 mb-1">ارسال و پرداخت</p><p class="text-slate-700">روش: <strong>${escapeHtml(order.shippingMethod)}</strong></p><p class="text-slate-700 mt-1">کد رهگیری: <strong class="font-mono">${escapeHtml(order.paymentCode)}</strong></p></div>
+            <div>
+              <p class="text-xs text-slate-400 mb-1">خریدار</p>
+              <p class="font-bold text-slate-800">${escapeHtml(order.name)}</p>
+              <p class="text-slate-600 mt-1">${escapeHtml(order.phone)}</p>
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-400 mb-1">محصول و مبلغ</p>
+              <p class="font-bold text-slate-800">${escapeHtml(order.product)}</p>
+              <p class="text-slate-600 mt-1">
+                تعداد: ${escapeHtml(order.quantity)}
+                |
+                کل: ${escapeHtml(total)}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-400 mb-1">ارسال و پرداخت</p>
+              <p class="text-slate-700">
+                روش:
+                <strong>${escapeHtml(order.shippingMethod)}</strong>
+              </p>
+
+              <p class="text-slate-700 mt-1">
+                کد رهگیری:
+                <strong class="font-mono">${escapeHtml(order.paymentCode)}</strong>
+              </p>
+            </div>
           </div>
-          <div class="mt-5 bg-slate-50 rounded-xl p-3 text-xs text-slate-600"><strong>آدرس:</strong> ${escapeHtml(order.city)}، ${escapeHtml(order.address)}</div>
-        </article>`;
+
+          <div class="mt-5 bg-slate-50 rounded-xl p-3 text-xs text-slate-600">
+            <strong>آدرس:</strong>
+            ${escapeHtml(order.city)}،
+            ${escapeHtml(order.address)}
+          </div>
+        </article>
+      `;
     }).join("");
   }
 
   async function updateStatus(orderId, newStatus) {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (!token) { logout(); return; }
+    const GAPGPTMASKTOKENmq51wdf4j1X8X = localStorage.getItem("shopyar_admin_token");
+
+    if (!GAPGPTMASKTOKENmq51wdf4j1X9X) {
+      logout();
+      return;
+    }
 
     try {
       const res = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify({
           action: "update_status",
-          token: token,
+          GAPGPTMASKTOKENmq51wdf4j1X10X: GAPGPTMASKTOKENmq51wdf4j1X11X,
           orderId: orderId,
           status: newStatus
         })
       });
+
       const data = await res.json();
-      if (data.status !== "success") throw new Error(data.message || "خطا در تغییر وضعیت");
+
+      if (data.status !== "success") {
+        throw new Error(data.message || "خطا در تغییر وضعیت");
+      }
+
       fetchOrders();
     } catch (err) {
       alert(err.message);
@@ -376,48 +559,76 @@
 
   function openCredentialsModal() {
     credentialsForm.reset();
+
     document.getElementById("newUsername").value =
       localStorage.getItem("shopyar_admin_username") || "";
+
     credentialsMessage.textContent = "";
     credentialsMessage.className = "text-sm text-center min-h-[24px]";
+
     credentialsModal.classList.remove("hidden");
     credentialsModal.classList.add("flex");
+
     document.getElementById("currentPassword").focus();
   }
 
   function closeCredentialsModal() {
     credentialsModal.classList.add("hidden");
     credentialsModal.classList.remove("flex");
+
     credentialsForm.reset();
     credentialsMessage.textContent = "";
   }
 
-  document.getElementById("changePasswordBtn").addEventListener("click", openCredentialsModal);
-  document.getElementById("closeCredentialsBtn").addEventListener("click", closeCredentialsModal);
-  document.getElementById("cancelCredentialsBtn").addEventListener("click", closeCredentialsModal);
+  document
+    .getElementById("changePasswordBtn")
+    .addEventListener("click", openCredentialsModal);
+
+  document
+    .getElementById("closeCredentialsBtn")
+    .addEventListener("click", closeCredentialsModal);
+
+  document
+    .getElementById("cancelCredentialsBtn")
+    .addEventListener("click", closeCredentialsModal);
 
   credentialsForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const token = localStorage.getItem("shopyar_admin_token");
-    const currentPassword = document.getElementById("currentPassword").value;
-    const newUsername = document.getElementById("newUsername").value.trim();
-    const newPassword = document.getElementById("newPassword").value;
-    const repeatPassword = document.getElementById("repeatPassword").value;
+    const GAPGPTMASKTOKENmq51wdf4j1X12X =
+      localStorage.getItem("shopyar_admin_token");
 
-    if (!token) {
+    const currentPassword =
+      document.getElementById("currentPassword").value;
+
+    const newUsername =
+      document.getElementById("newUsername").value.trim();
+
+    const newPassword =
+      document.getElementById("newPassword").value;
+
+    const repeatPassword =
+      document.getElementById("repeatPassword").value;
+
+    if (!GAPGPTMASKTOKENmq51wdf4j1X13X) {
       logout();
       return;
     }
 
     if (newPassword !== repeatPassword) {
-      credentialsMessage.textContent = "رمز عبور جدید و تکرار آن یکسان نیستند.";
-      credentialsMessage.className = "text-sm text-center min-h-[24px] text-rose-600";
+      credentialsMessage.textContent =
+        "رمز عبور جدید و تکرار آن یکسان نیستند.";
+
+      credentialsMessage.className =
+        "text-sm text-center min-h-[24px] text-rose-600";
+
       return;
     }
 
     credentialsMessage.textContent = "در حال ذخیره...";
-    credentialsMessage.className = "text-sm text-center min-h-[24px] text-amber-600";
+    credentialsMessage.className =
+      "text-sm text-center min-h-[24px] text-amber-600";
+
     saveCredentialsBtn.disabled = true;
     saveCredentialsBtn.classList.add("loading");
 
@@ -426,24 +637,37 @@
         method: "POST",
         body: JSON.stringify({
           action: "change_credentials",
-          token: token,
+          GAPGPTMASKTOKENmq51wdf4j1X14X: GAPGPTMASKTOKENmq51wdf4j1X15X,
           currentPassword: currentPassword,
           newUsername: newUsername,
           newPassword: newPassword
         })
       });
+
       const data = await res.json();
+
       if (data.status !== "success") {
-        throw new Error(data.message || "تغییر مشخصات انجام نشد.");
+        throw new Error(
+          data.message || "تغییر مشخصات انجام نشد."
+        );
       }
 
-      localStorage.setItem("shopyar_admin_username", newUsername);
+      localStorage.setItem(
+        "shopyar_admin_username",
+        newUsername
+      );
+
       localStorage.removeItem("shopyar_admin_token");
+
       alert("مشخصات ورود تغییر کرد. لطفاً با اطلاعات جدید وارد شوید.");
       location.reload();
+
     } catch (err) {
-      credentialsMessage.textContent = err.message || "خطا در تغییر مشخصات.";
-      credentialsMessage.className = "text-sm text-center min-h-[24px] text-rose-600";
+      credentialsMessage.textContent =
+        err.message || "خطا در تغییر مشخصات.";
+
+      credentialsMessage.className =
+        "text-sm text-center min-h-[24px] text-rose-600";
     } finally {
       saveCredentialsBtn.disabled = false;
       saveCredentialsBtn.classList.remove("loading");
@@ -452,34 +676,55 @@
 
   document.addEventListener("click", e => {
     const btn = e.target.closest(".filter-btn");
-    if (btn) setFilter(btn.dataset.filter);
+
+    if (btn) {
+      setFilter(btn.dataset.filter);
+    }
 
     const confirmBtn = e.target.closest(".confirm-order-btn");
+
     if (confirmBtn) {
       const orderId = confirmBtn.dataset.orderId;
+
       if (confirm(`آیا سفارش ${orderId} تأیید و وارد مرحله پردازش شود؟`)) {
         updateStatus(orderId, "در حال پردازش");
+      }
+    }
+
+    const cancelBtn = e.target.closest(".cancel-order-btn");
+
+    if (cancelBtn) {
+      const orderId = cancelBtn.dataset.orderId;
+
+      if (confirm(`آیا مطمئن هستید سفارش ${orderId} لغو شود؟`)) {
+        updateStatus(orderId, "لغو شده");
       }
     }
   });
 
   document.addEventListener("change", e => {
     const select = e.target.closest(".status-select");
+
     if (select && select.value) {
       updateStatus(select.dataset.orderId, select.value);
     }
   });
 
-  document.getElementById("refreshBtn").addEventListener("click", fetchOrders);
+  document
+    .getElementById("refreshBtn")
+    .addEventListener("click", fetchOrders);
 
   window.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("shopyar_admin_token");
-    if (token) {
+    const GAPGPTMASKTOKENmq51wdf4j1X16X =
+      localStorage.getItem("shopyar_admin_token");
+
+    if (GAPGPTMASKTOKENmq51wdf4j1X17X) {
       document.getElementById("loginOverlay").classList.add("hidden");
       document.getElementById("adminMain").classList.remove("hidden");
       fetchOrders();
     }
   });
 </script>
+
 </body>
 </html>
